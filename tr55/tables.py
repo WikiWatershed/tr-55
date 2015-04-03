@@ -4,20 +4,20 @@ TR-55 tables
 
 from datetime import date
 
-# The 'yearStart' key points to the date on which this year-long
-# dataset starts.  The 'growingStart' and 'growingEnd' keys point to
+# The 'year_start' key points to the date on which this year-long
+# dataset starts.  The 'growing_start' and 'growing_end' keys point to
 # dates giving the respective start and end of growing season.  The
-# values in the array associated with the 'percipitation' key are
+# values in the array associated with the 'precipitation' key are
 # tuples of a number of consecutive days, and the amount of
-# percipitation during that run of days.
+# precipitation during that run of days.
 SAMPLE_YEAR = {
-    'yearStart': date(1, 10, 15),  # Sample year starts on 10/15
-    'daysPerYear': 365,            # The number of days in the sample year
+    'year_start': date(1, 10, 15),    # Sample year starts on 10/15
+    'days_per_year': 365,             # The number of days in the sample year
 
-    'growingStart': date(1, 4, 15),  # Growing season starts on 4/15
-    'growingEnd': date(1, 10, 14),   # The last day of growing season is 10/14
-    'growingETmax': 0.207,           # Max. e/t during growing season
-    'nonGrowingETmax': 0.0,          # ditto non-growing season
+    'growing_start': date(1, 4, 15),  # Growing season starts on 4/15
+    'growing_end': date(1, 10, 14),   # The last day of growing season is 10/14
+    'growing_ETmax': 0.207,           # Max. e/t during growing season
+    'nongrowing_ETmax': 0.0,          # ditto non-growing season
 
     'precipitation': [
         (120, 0.00),
@@ -115,162 +115,40 @@ SAMPLE_YEAR = {
     ]
 }
 
-# Landuse coefficients.  Used for computing evapotranspiration.
-TABLE_A = {
-    'Water':              0.0,
-    'LI_Residential':     0.42,
-    'HI_Residential':     0.18,
-    'Commercial':         0.06,
-    'Industrial':         0.06,
-    'Transportation':     0.06,
-    'Rock':               0.0,
-    'Sand':               0.0,
-    'Clay':               0.0,
-    'DeciduousForest':    0.7,
-    'EvergreenForest':    0.7,
-    'MixedForest':        0.7,
-    'Grassland':          0.6,
-    'Pasture':            0.6,
-    'Hay':                0.6,
-    'RowCrop':            0.9,
-    'UrbanGrass':         0.7,
-    'WoodyWetland':       1,
-    'HerbaceousWetland':  1,
-    'GreenRoof':          0.4,
-    'PorousPaving':       0.0,
-    'RainGarden':         0.08,
-    'InfiltrationTrench': 0.0,
-    'ClusterHousing':     0.42,
-    'NoTill':             0.9
+LAND_USE_VALUES = {
+    'water': {'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}}, 
+    'li_residential': {'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},
+    'hi_residential': {'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},
+    'commercial': {'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},
+    'industrial': {'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},
+    'transportation': {'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},
+    'rock': {'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},
+    'sand': {'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},
+    'clay': {'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},
+    'deciduous_forest': {'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+    'evergreen_forest': {'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+    'mixed_forest': {'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+    'grassland': {'ki': 0.6, 'cn': {'a': 30, 'b': 58, 'c': 71, 'd': 78}},
+    'pasture': {'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},
+    'hay': {'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},
+    'row_crop': {'ki': 0.9, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},
+    'urban_grass': {'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},
+    'woody_wetland': {'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},
+    'herbaceous_wetland': {'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},
+    'green_roof': {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},
+    'porous_paving': {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73}},
+    'rain_garden': {'ki': 0.08, 'infiltration': {'a': 1.2, 'b': 0.6, 'c': 0.2}},
+    'infiltration_trench': {'ki': 0.0, 'infiltration': {'a': 2.4, 'b': 1.8, 'c': 1.4}},
+    'cluster_housing': {'ki': 0.42},
+    'no_till': {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}}
 }
 
-# Inches of retention for different BMPs on different soil types.
-# Cluster housing (ClusterHousing) and no-till farming (NoTill) do no
-# actively retain water, so they are not considered here.
-TABLE_B = {
-    'soilA': {
-        'GreenRoof':          1.6,
-        'PorousPaving':       7.73,
-        'RainGarden':         1.2,
-        'InfiltrationTrench': 2.4
-    },
-    'soilB': {
-        'GreenRoof':          1.6,
-        'PorousPaving':       4.13,
-        'RainGarden':         0.6,
-        'InfiltrationTrench': 1.8
-    },
-    'soilC': {
-        'GreenRoof':          1.6,
-        'PorousPaving':       1.73,
-        'RainGarden':         0.2,
-        'InfiltrationTrench': 1.4
-    },
-    'soilD': {
-        'GreenRoof': 1.6
-    }
-}
-
-# The set of best management practices that we know about.
-# ClusterHousing and NoTill are excluded for the same reason that they
-# are above.
-BMPS = set(TABLE_B['soilA'].keys())
+# The set of best management practices that we know about.  The
+# cluster_housing and no_till types are excluded because they do not
+# actively retain water.
+BMPS = set(['green_roof', 'porous_paving',
+            'rain_garden', 'infiltration_trench'])
 
 # The set of "built" land uses
-BUILT_TYPES = set(['LI_Residential', 'HI_Residential', 'ClusterHousing',
-                   'Commercial', 'Industrial', 'Transportation', 'UrbanGrass'])
-
-TABLE_C = {
-    'soilA': {
-        'Water':             100,
-        'LI_Residential':    51,
-        'ClusterHousing':    51,
-        'HI_Residential':    77,
-        'Commercial':        89,
-        'Industrial':        89,
-        'Transportation':    89,
-        'Rock':              77,
-        'Sand':              77,
-        'Clay':              77,
-        'DeciduousForest':   30,
-        'EvergreenForest':   30,
-        'MixedForest':       30,
-        'Grassland':         30,
-        'Pasture':           39,
-        'Hay':               39,
-        'RowCrop':           67,
-        'UrbanGrass':        68,
-        'WoodyWetland':      98,
-        'HerbaceousWetland': 98,
-        'NoTill':            57
-    },
-    'soilB': {
-        'Water':             100,
-        'LI_Residential':    68,
-        'ClusterHousing':    68,
-        'HI_Residential':    85,
-        'Commercial':        92,
-        'Industrial':        92,
-        'Transportation':    92,
-        'Rock':              86,
-        'Sand':              86,
-        'Clay':              86,
-        'DeciduousForest':   55,
-        'EvergreenForest':   55,
-        'MixedForest':       55,
-        'Grassland':         58,
-        'Pasture':           61,
-        'Hay':               61,
-        'RowCrop':           78,
-        'UrbanGrass':        79,
-        'WoodyWetland':      98,
-        'HerbaceousWetland': 98,
-        'NoTill':            73
-    },
-    'soilC': {
-        'Water':             100,
-        'LI_Residential':    79,
-        'ClusterHousing':    79,
-        'HI_Residential':    90,
-        'Commercial':        94,
-        'Industrial':        94,
-        'Transportation':    94,
-        'Rock':              86,
-        'Sand':              86,
-        'Clay':              86,
-        'DeciduousForest':   70,
-        'EvergreenForest':   70,
-        'MixedForest':       70,
-        'Grassland':         71,
-        'Pasture':           74,
-        'Hay':               74,
-        'RowCrop':           85,
-        'UrbanGrass':        86,
-        'WoodyWetland':      98,
-        'HerbaceousWetland': 98,
-        'NoTill':            82
-    },
-    'soilD': {
-        'Water':             100,
-        'LI_Residential':    84,
-        'ClusterHousing':    84,
-        'HI_Residential':    92,
-        'Commercial':        95,
-        'Industrial':        95,
-        'Transportation':    95,
-        'Rock':              91,
-        'Sand':              91,
-        'Clay':              91,
-        'DeciduousForest':   77,
-        'EvergreenForest':   77,
-        'MixedForest':       77,
-        'Grassland':         78,
-        'Pasture':           80,
-        'Hay':               80,
-        'RowCrop':           89,
-        'UrbanGrass':        89,
-        'WoodyWetland':      98,
-        'HerbaceousWetland': 98,
-        'NoTill':            86
-    }
-}
+BUILT_TYPES = set(['li_residential', 'hi_residential', 'cluster_housing',
+                   'commercial', 'industrial', 'transportation', 'urban_grass'])
