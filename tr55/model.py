@@ -10,7 +10,8 @@ and variables used in this program are as follows:
  * `init_abs` is Ia, the initial abstraction, another form of infiltration
 """
 
-from datetime import date
+from datetime import date, timedelta
+from tr55.tablelookup import days_in_sample_year
 from tr55.tablelookup import lookup_et, lookup_p, lookup_cn
 from tr55.tablelookup import lookup_bmp_infiltration, is_bmp, is_built_type
 
@@ -37,14 +38,14 @@ def runoff_pitt(precip, land_use):
     urb_grass = (co5 * pr4) + (co6 * pr3) + (co7 * pr2) + (co8 * precip) + co9
 
     runoff_vals = {
-        'Water':          impervious,
-        'LI_Residential': 0.20 * impervious + 0.80 * urb_grass,
-        'ClusterHousing': 0.20 * impervious + 0.80 * urb_grass,
-        'HI_Residential': 0.65 * impervious + 0.35 * urb_grass,
-        'Commercial':     impervious,
-        'Industrial':     impervious,
-        'Transportation': impervious,
-        'UrbanGrass':     urb_grass
+        'water':          impervious,
+        'li_residential': 0.20 * impervious + 0.80 * urb_grass,
+        'cluster_housing': 0.20 * impervious + 0.80 * urb_grass,
+        'hi_residential': 0.65 * impervious + 0.35 * urb_grass,
+        'commercial':     impervious,
+        'industrial':     impervious,
+        'transportation': impervious,
+        'urban_grass':     urb_grass
     }
     if land_use not in runoff_vals:
         raise Exception('Land use %s not a built-type' % land_use)
@@ -53,11 +54,16 @@ def runoff_pitt(precip, land_use):
 
 
 def nrcs_cutoff(precip, curve_number):
+    """
+    A function to find the cutoff between preciptation/curve number
+    pairs that have zero runoff by definition, and those that do not.
+    """
     if precip <= -1 * (2 * (curve_number - 100.0) / curve_number):
         return True
     else:
         return False
-    
+
+
 def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     """
     The runoff equation from the TR-55 document.  The output is a
@@ -96,17 +102,18 @@ def simulate_tile(parameters, tile_string, pre_columbian=False):
     The return value is a triple of runoff, evapotranspiration, and
     infiltration.
     """
+    tile_string = tile_string.lower();
     soil_type, land_use = tile_string.split(':')
 
     pre_columbian_land_uses = set([
-        'Water',
-        'WoodyWetland',
-        'HerbaceousWetland'
+        'water',
+        'woody_wetland',
+        'herbaceous_wetland'
     ])
 
     if pre_columbian:
         if land_use not in pre_columbian_land_uses:
-            land_use = 'MixedForest'
+            land_use = 'mixed_forest'
 
     if type(parameters) is date:
         precip = lookup_p(parameters)  # precipitation
@@ -182,3 +189,23 @@ def simulate_all_tiles(parameters, tile_census, pre_columbian=False):
     return reduce(lambda (a, b, c), (x, y, z): (a+x, b+y, c+z),
                   results,
                   (0.0, 0.0, 0.0))
+
+
+def simulate_year(tile_census, pre_columbian=False):
+    """
+    Simulate an entire year.
+    """
+    year = [date(1, 1, 1) + timedelta(days=i)
+            for i in range(days_in_sample_year())]
+    simulated_year = [simulate_all_tiles(day, tile_census, pre_columbian)
+                      for day in year]
+
+    def day_add(one, two):
+        """
+        Add two simulated days.
+        """
+        (runoff1, et1, inf1) = one
+        (runoff2, et2, inf2) = two
+        return (runoff1 + runoff2, et1 + et2, inf1 + inf2)
+
+    return reduce(day_add, simulated_year)
