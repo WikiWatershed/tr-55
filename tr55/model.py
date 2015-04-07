@@ -166,9 +166,7 @@ def simulate_all_tiles(parameters, tile_census, pre_columbian=False):
     The output is a runoff, evapotranspiration, infiltration triple
     which is an average of those produced by all of the tiles.
     """
-    if 'error' in tile_census:
-        raise Exception('No "error" key')
-    elif 'result' not in tile_census:
+    if 'result' not in tile_census:
         raise Exception('No "result" key')
     elif 'cell_count' not in tile_census['result']:
         raise Exception('No "result.cell_count" key')

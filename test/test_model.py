@@ -657,12 +657,6 @@ class TestModel(unittest.TestCase):
         Test the tile-by-tile simulation.
         """
         # Test invalid responses
-        non_response1 = {
-            "error": {  # Contains the "error" key
-                "message": "boom!",
-                "trace": "blah at line 2"
-            }
-        }
         non_response2 = {
             "result": {  # No "distribution" key
                 "cell_count": 1
@@ -673,7 +667,6 @@ class TestModel(unittest.TestCase):
                 "distribution": {}
             }
         }
-        self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response1))
         self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response2))
         self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response3))
 
