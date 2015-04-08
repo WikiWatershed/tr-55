@@ -8,7 +8,7 @@ from tr55.tables import SAMPLE_YEAR, BMPS, BUILT_TYPES, LAND_USE_VALUES
 
 def lookup_ki(land_use):
     """
-    Lookup the landuse coefficient
+    Lookup the landuse coefficient.
     """
     if land_use not in LAND_USE_VALUES or 'ki' not in LAND_USE_VALUES[land_use]:
         raise Exception('Unknown land use: %s' % land_use)
@@ -26,8 +26,8 @@ def lookup_et(simulation_day, land_use):
     # Compute $ET_{\max}$ based on the time of year
     grow_start = SAMPLE_YEAR['growing_start']
     grow_end = SAMPLE_YEAR['growing_end']
-    grow_et = SAMPLE_YEAR['growing_ETmax']
-    nongrow_et = SAMPLE_YEAR['nongrowing_ETmax']
+    grow_et = SAMPLE_YEAR['growing_etmax']
+    nongrow_et = SAMPLE_YEAR['nongrowing_etmax']
     if grow_start <= simulation_day and simulation_day <= grow_end:
         et_max = grow_et
     else:
@@ -44,7 +44,7 @@ def days_in_sample_year():
     """
     Return the number of days in the sample year.
     """
-    return SAMPLE_YEAR['daysPerYear']
+    return SAMPLE_YEAR['days_per_year']
 
 
 def lookup_p(simulation_day):

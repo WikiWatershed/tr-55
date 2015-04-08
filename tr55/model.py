@@ -126,16 +126,16 @@ def simulate_tile(parameters, tile_string, pre_columbian=False):
     if precip == 0.0:
         return (0.0, evaptrans, 0.0)
 
-    if is_bmp(land_use) and land_use != 'RainGarden':
+    if is_bmp(land_use) and land_use != 'rain_garden':
         inf = lookup_bmp_infiltration(soil_type, land_use)  # infiltration
         runoff = precip - (evaptrans + inf)  # runoff
         return (runoff, evaptrans, inf)  # Q, ET, Inf.
-    elif land_use == 'RainGarden':
+    elif land_use == 'rain_garden':
         # Here, return a mixture of 20% ideal rain garden and 80% high
         # intensity residential.
         inf = lookup_bmp_infiltration(soil_type, land_use)
         runoff = precip - (evaptrans + inf)
-        hi_res_tile = soil_type + ':HI_Residential'
+        hi_res_tile = soil_type + ':hi_residential'
         hi_res = simulate_tile((precip, evaptrans), hi_res_tile)
         return (0.2 * runoff + 0.8 * hi_res[0],
                 0.2 * evaptrans + 0.8 * hi_res[1],

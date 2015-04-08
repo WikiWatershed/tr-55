@@ -13,13 +13,15 @@ from tr55.model import simulate_year
 # TR-55 report.  The data in the PS array are various precipitation
 # levels, and each respective CNx array is the calculated runoff for
 # that particular curve number with the given level of precipitation
-# corrisponding to that in PS.
+# corresponding to that in PS.
 PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
 CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]
 CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]
 CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]
 
+# INPUT and OUTPUT are data that were emailed to Azavea in a
+# spreadsheet for testing the TR-55 model implementation.
 INPUT = [
     (0.5, 'a:water'),
     (1, 'a:water'),
@@ -625,7 +627,10 @@ class TestModel(unittest.TestCase):
 
     def test_simulate_tile_horizontal(self):
         """
-        Test the one-day simulation using sampel input/output.
+        Test the one-day simulation using sample input/output.  The number
+        0.04 is not very meaningful, this test just attempts to give
+        you some idea about the mean error of the three quantities
+        relative to precipitation.
         """
         def similar(incoming, expected):
             precip, tile_string = incoming
@@ -641,7 +646,9 @@ class TestModel(unittest.TestCase):
     def test_simulate_tiles_vertical(self):
         """
         Test the RMSE of the runoff levels produced by the one-day
-        simulation against values sample input/output.
+        simulation against values sample input/output.  The number
+        0.13 is not very meaningful, this test just attempts to show
+        to deviation.
         """
         results = [simulate(precip, tile_string)[0] / precip
                    for precip, tile_string in INPUT
