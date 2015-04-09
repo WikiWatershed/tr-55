@@ -16,8 +16,8 @@ SAMPLE_YEAR = {
 
     'growing_start': date(1, 4, 15),  # Growing season starts on 4/15
     'growing_end': date(1, 10, 14),   # The last day of growing season is 10/14
-    'growing_ETmax': 0.207,           # Max. e/t during growing season
-    'nongrowing_ETmax': 0.0,          # ditto non-growing season
+    'growing_etmax': 0.207,           # Max. e/t during growing season
+    'nongrowing_etmax': 0.0,          # ditto non-growing season
 
     'precipitation': [
         (120, 0.00),
