@@ -182,11 +182,22 @@ def simulate_all_tiles(parameters, tile_census, pre_columbian=False):
         return [(x * local_count) / global_count
                 for x in simulate_tile(parameters, tile_string, pre_columbian)]
 
+    def simulate_plus(left, right):
+        """
+        Add two simulations.
+        """
+        (a, b, c) = left
+        (x, y, z) = right
+        return (a+x, b+y, c+z)
+
     results = [simulate(tile, n)
                for tile, n in tile_census['result']['distribution'].items()]
-    return reduce(lambda (a, b, c), (x, y, z): (a+x, b+y, c+z),
-                  results,
-                  (0.0, 0.0, 0.0))
+
+    area_sum = (0.0, 0.0, 0.0)
+    for result in results:
+        area_sum = simulate_plus(area_sum, result)
+
+    return area_sum
 
 
 def simulate_year(tile_census, pre_columbian=False):
@@ -198,7 +209,7 @@ def simulate_year(tile_census, pre_columbian=False):
     simulated_year = [simulate_all_tiles(day, tile_census, pre_columbian)
                       for day in year]
 
-    def day_add(one, two):
+    def day_plus(one, two):
         """
         Add two simulated days.
         """
@@ -206,4 +217,8 @@ def simulate_year(tile_census, pre_columbian=False):
         (runoff2, et2, inf2) = two
         return (runoff1 + runoff2, et1 + et2, inf1 + inf2)
 
-    return reduce(day_add, simulated_year)
+    year_sum = (0.0, 0.0, 0.0)
+    for day in simulated_year:
+        year_sum = day_plus(year_sum, day)
+
+    return year_sum
