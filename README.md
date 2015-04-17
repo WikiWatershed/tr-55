@@ -17,13 +17,11 @@ The `simulate_all_tiles` function simulates the events of a single day.  It take
    2. `tile_census` is a dictionary containing the number of appearances of each type of tile in the query area, e.g.
    ```Python
        {
-           "result": {
-               "cell_count": 147,
-               "distribution": {
-                   "d:hi_residential": 33,
-                   "c:commercial": 42,
-                   "a:deciduous_forest": 72
-               }
+           "cell_count": 147,
+           "distribution": {
+               "d:hi_residential": 33,
+               "c:commercial": 42,
+               "a:deciduous_forest": 72
            }
        }
    ```
@@ -51,13 +49,11 @@ The following program:
 from tr55.model import simulate_year
 
 tiles = {
-    "result": {
-        "cell_count": 147,
-        "distribution": {
-            "d:hi_residential": 33,
-            "c:commercial": 42,
-            "a:deciduous_forest": 72
-        }
+    "cell_count": 147,
+    "distribution": {
+        "d:hi_residential": 33,
+        "c:commercial": 42,
+        "a:deciduous_forest": 72
     }
 }
 

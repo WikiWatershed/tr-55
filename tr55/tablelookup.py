@@ -3,7 +3,8 @@ Various routines to do table lookups.
 """
 
 from datetime import date
-from tr55.tables import SAMPLE_YEAR, BMPS, BUILT_TYPES, LAND_USE_VALUES
+from tr55.tables import SAMPLE_YEAR, BMPS, BUILT_TYPES, LAND_USE_VALUES, \
+    POLLUTION_LOADS
 
 
 def lookup_ki(land_use):
@@ -106,3 +107,28 @@ def is_built_type(land_use):
     Test to see if the land use is a "built type".
     """
     return land_use in BUILT_TYPES
+
+
+def lookup_load(nlcd_class, pollutant):
+    """
+    Get the Event Mean Concentration of `pollutant` for land use
+    class `nlcd_class`
+    """
+    if pollutant not in ['tn', 'tp', 'bod', 'tss']:
+        raise Exception('Unknown pollutant type: %s' % pollutant)
+
+    if nlcd_class not in POLLUTION_LOADS:
+        raise Exception('Unknown NLCD class: %s' % nlcd_class)
+
+    return POLLUTION_LOADS[nlcd_class][pollutant]
+
+
+def lookup_nlcd(land_use):
+    if land_use not in LAND_USE_VALUES:
+        raise Exception('Unknown land use type: %s' % land_use)
+
+    if 'nlcd' not in LAND_USE_VALUES[land_use]:
+        raise Exception('Land use type %s does not have an NLCD class defined',
+                        land_use)
+
+    return LAND_USE_VALUES[land_use]['nlcd']
