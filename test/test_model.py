@@ -5,21 +5,19 @@ Model test set
 import unittest
 from datetime import date
 from math import sqrt
-from tr55.tablelookup import lookup_ki, is_built_type
+from tr55.tablelookup import lookup_ki
 from tr55.model import runoff_nrcs, simulate_tile, simulate_all_tiles
-from tr55.model import simulate_year
 
 # These data are taken directly from Table 2-1 of the revised (1986)
 # TR-55 report.  The data in the PS array are various precipitation
 # levels, and each respective CNx array is the calculated runoff for
 # that particular curve number with the given level of precipitation
 # corresponding to that in PS.
-PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
-CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]
-CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]
-CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]
-CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]
-
+PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]  # noqa
+CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]  # noqa
+CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
+CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
+CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
 # INPUT and OUTPUT are data that were emailed to Azavea in a
 # spreadsheet for testing the TR-55 model implementation.
 INPUT = [
@@ -594,8 +592,10 @@ def simulate(precip, tile_string):
     ki = lookup_ki(land_use)
     return simulate_tile((precip, 0.209 * ki), tile_string)
 
+
 def average(l):
     return reduce(lambda x, y: x + y, l) / len(l)
+
 
 class TestModel(unittest.TestCase):
     """
@@ -608,7 +608,9 @@ class TestModel(unittest.TestCase):
         # This pair has CN=55 in Table C of the 2010/12/27 memo
         runoffs = [round(runoff_nrcs(precip, 0.0, 'b', 'deciduous_forest'), 2)
                    for precip in PS]
-        self.assertEqual(runoffs[4:], CN55[4:])  # Low curve number and low P cause too-high runoff
+
+        # Low curve number and low P cause too-high runoff
+        self.assertEqual(runoffs[4:], CN55[4:])
 
         # This pair has CN=70
         runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'deciduous_forest'), 2)
@@ -665,64 +667,62 @@ class TestModel(unittest.TestCase):
         """
         # Test invalid responses
         non_response2 = {
-            "result": {  # No "distribution" key
-                "cell_count": 1
-            }
+            "cell_count": 1
         }
         non_response3 = {
-            "result": {  # No "cell_count" key
-                "distribution": {}
-            }
+            "orig_distribution": {}
         }
-        self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response2))
-        self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response3))
+
+        self.assertRaises(Exception, simulate_all_tiles,
+                          (date.today(), non_response2))
+        self.assertRaises(Exception, simulate_all_tiles,
+                          (date.today(), non_response3))
 
         # Test valid responses
         response1 = {
-            "result": {
-                "cell_count": 2,
-                "distribution": {
-                    "a:pasture": 1,
-                    "c:rock": 1
-                }
+            "cell_count": 2,
+            "orig_distribution": {
+                "a:pasture": 1,
+                "c:rock": 1
             }
         }
+
         response2 = {
-            "result": {
-                "cell_count": 20,
-                "distribution": {
-                    "a:pasture": 10,
-                    "c:rock": 10
-                }
+            "cell_count": 20,
+            "orig_distribution": {
+                "a:pasture": 10,
+                "c:rock": 10
             }
         }
+
+        result1 = simulate_all_tiles(date.today(), response1)
+        result2 = simulate_all_tiles(date.today(), response2)
+
         map(self.assertAlmostEqual,
-            simulate_all_tiles(date.today(), response1),
-            simulate_all_tiles(date.today(), response2))
+            result1['totals'].values(),
+            result2['totals'].values())
 
         # Test Pre-Columbian calculation
         response3 = {
-            "result": {
-                "cell_count": 1,
-                "distribution": {
-                    "d:hi_residential": 1
-                }
+            "cell_count": 1,
+            "orig_distribution": {
+                "d:hi_residential": 1
             }
         }
         response4 = {
-            "result": {
-                "cell_count": 10,
-                "distribution": {
-                    "d:pasture": 10
-                }
+            "cell_count": 10,
+            "orig_distribution": {
+                "d:pasture": 10
             }
         }
+
         map(self.assertNotEqual,
-            simulate_all_tiles(date(1, 4, 15), response3),
-            simulate_all_tiles(date(1, 4, 15), response4))
+            simulate_all_tiles(date(1, 4, 15), response3)['totals'].values(),
+            simulate_all_tiles(date(1, 4, 15), response4)['totals'].values())
+
         map(self.assertEqual,
-            simulate_all_tiles(date(1, 4, 15), response3, True),
-            simulate_all_tiles(date(1, 4, 15), response4, True))
+            simulate_all_tiles(date(1, 4, 15), response3, True)['totals'].values(),
+            simulate_all_tiles(date(1, 4, 15), response4, True)['totals'].values())
 
 if __name__ == "__main__":
     unittest.main()
