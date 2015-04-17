@@ -61,12 +61,16 @@ tiles = {
     }
 }
 
-(q,et,inf) = simulate_year(tiles)
-print "%f inches of runoff, %f inches of et, %f inches of infiltration." % (q, et, inf)
+(q, et, inf) = simulate_year(tiles)
+print("%f inches of runoff" % q)
+print("%f inches of et" % et)
+print("%f inches of infiltration" % inf)
 ```
 should produce the following output:
 ```
-17.614212 inches of runoff, 15.167862 inches of et, 20.245580 inches of infiltration.
+17.614212 inches of runoff
+15.167862 inches of et
+20.245580 inches of infiltration
 ```
 
 ## Testing
