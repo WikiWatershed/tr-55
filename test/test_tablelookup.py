@@ -1,36 +1,32 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+
 """
-Table Lookup test set
+Table Lookup test set.
 """
 
 import unittest
-from datetime import date
-from tr55.tables import LAND_USE_VALUES
-from tr55.tablelookup import lookup_et, lookup_p, lookup_bmp_infiltration, lookup_cn
+
+from tr55.tablelookup import lookup_pet, lookup_bmp_infiltration, lookup_cn
 
 
 class TestTablelookups(unittest.TestCase):
     """
     Table Lookup test set
     """
-    def test_lookup_p(self):
+    def test_lookup_pet(self):
         """
         Do some spot-checks on the SampleYear data.
         """
-        self.assertEqual(lookup_p(date(1, 10, 15)), 0.0)
-        self.assertEqual(lookup_p(date(1, 2, 12)), 0.01)
-        self.assertEqual(lookup_p(date(1, 2, 15)), 0.01)
-        self.assertEqual(lookup_p(date(1, 2, 19)), 0.02)
-        self.assertEqual(lookup_p(date(1, 10, 14)), 0.0)
-
-    def test_lookup_et(self):
-        """
-        Do some spot-checks on the data from Table A.
-        """
-        self.assertEqual(lookup_et(date(1, 4, 15), 'woody_wetland'), 0.207)
-        self.assertEqual(lookup_et(date(1, 10, 14), 'woody_wetland'), 0.207)
-        self.assertTrue(lookup_et(date(1, 6, 15), 'commercial') > 0.0)
-        self.assertEqual(lookup_et(date(1, 4, 14), 'woody_wetland'), 0.0)
-        self.assertEqual(lookup_et(date(1, 10, 15), 'woody_wetland'), 0.0)
+        self.assertEqual(lookup_pet(0, 'water')[0], 0.0)
+        self.assertEqual(lookup_pet(52, 'hi_residential')[1], 0.0)
+        self.assertEqual(lookup_pet(104, 'green_roof')[1], 0.0)
+        self.assertEqual(lookup_pet(156, 'cluster_housing')[0], 0.23)
+        self.assertEqual(lookup_pet(208, 'grassland')[0], 0.2)
+        self.assertEqual(lookup_pet(260, 'woody_wetland')[1], 0.207)
+        self.assertEqual(lookup_pet(352, 'hay')[1], 0.207 * 0.6)
 
     def test_lookup_bmp_infiltration(self):
         """
@@ -39,7 +35,7 @@ class TestTablelookups(unittest.TestCase):
         self.assertEqual(lookup_bmp_infiltration('d', 'green_roof'), 1.6)
         self.assertEqual(lookup_bmp_infiltration('c', 'porous_paving'), 1.73)
         self.assertEqual(lookup_bmp_infiltration('b', 'rain_garden'), 0.6)
-        self.assertEqual(lookup_bmp_infiltration('a', 'infiltration_trench'), 2.4)
+        self.assertEqual(lookup_bmp_infiltration('a', 'infiltration_trench'), 2.4)  # noqa
 
     def test_lookup_cn(self):
         """

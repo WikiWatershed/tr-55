@@ -12,7 +12,7 @@ class TestWaterQuality(unittest.TestCase):
 
     def test_volume(self):
         """
-        Test the implementation of the runoff equation.
+        Test the water volume computation.
         """
         cell_res = 30  # meters
         cell_count = 100
@@ -23,6 +23,9 @@ class TestWaterQuality(unittest.TestCase):
                           "Did not calculate the correct runoff volume")
 
     def test_load(self):
+        """
+        Test the pollutant load computation.
+        """
         nlcd = 24
         pollutant = 'tn'
         emc = POLLUTION_LOADS[nlcd][pollutant]
