@@ -24,12 +24,12 @@ def get_volume_of_runoff(runoff, cell_count, cell_resolution):
 
     # Runoff is in inches, so convert to meters which is the units for the cell
     # area and compute the meter-cells in the group.  Multiply the resolution
-    # of the cell to get the runoff volume in cubic meters
+    # of the cell to get the runoff volume in cubic meters.
     inch_to_meter = 0.0254
 
     runoff_m = runoff * inch_to_meter
     meter_cells = runoff_m * cell_count
-    volume_cubic_meters = meter_cells * cell_resolution
+    volume_cubic_meters = meter_cells * cell_resolution  # XXX
 
     liters = volume_cubic_meters * 1000
 
