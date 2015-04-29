@@ -248,7 +248,15 @@ def simulate_year(tile_census, cell_res=10, subst=None, pre_columbian=False):
         cell_count = result['cell_count']
         liters = get_volume_of_runoff(runoff, cell_count, cell_res)
         for pol in get_pollutants():
-            load = get_pollutant_load(use, pol, liters)  # XXX unclear if `use` is correct here in the case of reclassification
+            # XXX unclear if `use` is correct here in the case of
+            # reclassification.  In the case of BMPs, it is clear that
+            # the water quality calculation has to be done using the
+            # "previous" land use, because the various EMCs are not
+            # defined for BMPs.  However, in the case of
+            # reclassification, the EMCs may be defined for the new
+            # land use type ~ it isn't clear whether the new land use
+            # should be used or the old (as is done here).
+            load = get_pollutant_load(use, pol, liters)
             result[pol] = load
 
     return retval
@@ -270,7 +278,6 @@ def simulate_modifications(tile_census, cell_res=10, pre_columbian=False):
 
     def tally_subresults(result):
         retval = {}
-        # retval = result
         for (pair, subresult) in result['distribution'].items():
             retval = dict_plus(retval, subresult)
         retval.pop('modifications', None)
