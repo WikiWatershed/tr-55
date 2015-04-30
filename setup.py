@@ -16,15 +16,14 @@ setup(
     long_description=long_description,
     url='https://github.com/azavea/tr-55',
     author='Azavea Inc.',
-    # TODO Pick a license. Also, add it to classifiers.
-    # See also: https://github.com/azavea/tr-55/issues/6
-    license='',
+    license='Apache License 2.0',
     # TODO Determine Python version support
     # See also: https://github.com/azavea/tr-55/issues/16
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
     ],
