@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+
 """
 TR-55 Model Implementation
 
@@ -10,32 +15,34 @@ and variables used in this program are as follows:
  * `init_abs` is Ia, the initial abstraction, another form of infiltration
 """
 
-from datetime import date, timedelta
-from tr55.tablelookup import days_in_sample_year
-from tr55.tablelookup import lookup_et, lookup_p, lookup_cn
-from tr55.tablelookup import lookup_bmp_infiltration, is_bmp, is_built_type
+import sys
+
+from tr55.tablelookup import lookup_pet, lookup_cn, lookup_bmp_infiltration, \
+    is_bmp, is_built_type, precolumbian, get_pollutants
+from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
+from tr55.operations import dict_minus, dict_plus
 
 
 def runoff_pitt(precip, land_use):
     """
-    The Pitt Small Storm Hydrology method.  This comes from Table D in
-    the 2010/12/27 document.  The output is a runoff value in inches.
+    The Pitt Small Storm Hydrology method.  The output is a runoff
+    value in inches.
     """
-    co1 = +3.638858398e-2
-    co2 = -1.243464039e-1
-    co3 = +1.295682223e-1
-    co4 = +9.375868043e-1
-    co5 = -2.235170859e-2
-    co6 = +0.170228067e0
-    co7 = -3.971810782e-1
-    co8 = +3.887275538e-1
-    co9 = -2.289321859e-2
-    pr4 = pow(precip, 4)
-    pr3 = pow(precip, 3)
-    pr2 = pow(precip, 2)
+    c1 = +3.638858398e-2
+    c2 = -1.243464039e-1
+    c3 = +1.295682223e-1
+    c4 = +9.375868043e-1
+    c5 = -2.235170859e-2
+    c6 = +0.170228067e0
+    c7 = -3.971810782e-1
+    c8 = +3.887275538e-1
+    c9 = -2.289321859e-2
+    p4 = pow(precip, 4)
+    p3 = pow(precip, 3)
+    p2 = pow(precip, 2)
 
-    impervious = (co1 * pr3) + (co2 * pr2) + (co3 * precip) + co4
-    urb_grass = (co5 * pr4) + (co6 * pr3) + (co7 * pr2) + (co8 * precip) + co9
+    impervious = (c1 * p3) + (c2 * p2) + (c3 * precip) + c4
+    urb_grass = (c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9
 
     runoff_vals = {
         'water':          impervious,
@@ -47,8 +54,9 @@ def runoff_pitt(precip, land_use):
         'transportation': impervious,
         'urban_grass':     urb_grass
     }
+
     if land_use not in runoff_vals:
-        raise Exception('Land use %s not a built-type' % land_use)
+        raise Exception('Land use %s not a built-type.' % land_use)
     else:
         return min(runoff_vals[land_use], precip)
 
@@ -71,7 +79,7 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     """
     curve_number = lookup_cn(soil_type, land_use)
     if nrcs_cutoff(precip, curve_number):
-        return 0
+        return 0.0
     potential_retention = (1000.0 / curve_number) - 10
     initial_abs = 0.2 * potential_retention
     precip_minus_initial_abs = precip - initial_abs
@@ -81,55 +89,43 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     return min(runoff, precip - evaptrans)
 
 
-def simulate_tile(parameters, tile_string, pre_columbian=False):
+def simulate_tile(parameters, tile_string):
     """
-    Simulate a tile on a given day using the method given in the
-    flowchart 2011_06_16_Stroud_model_diagram_revised.PNG and as
-    revised by various emails.
+    Simulate a single tile with some particular precipitation and
+    evapotranspiration.
 
-    The first argument can be one of two types.  It can either be a
-    date object, in which case the precipitation and
-    evapotranspiration are looked up from the sample year table.
-    Alternatively, those two values can be supplied directly via this
-    argument as a tuple.
+    The first argument contains the precipitation and
+    evapotranspiration as a tuple.
 
     The second argument is a string which contains a soil type and
-    land use separted by a colon.
+    land use separated by a colon.
 
-    The third argument is a boolean which is true if pre-Columbian
-    circumstances are to be simulated and false otherwise.
-
-    The return value is a triple of runoff, evapotranspiration, and
+    The return value is a dictionary of runoff, evapotranspiration, and
     infiltration.
     """
-    tile_string = tile_string.lower();
-    soil_type, land_use = tile_string.split(':')
-
-    pre_columbian_land_uses = set([
-        'water',
-        'woody_wetland',
-        'herbaceous_wetland'
-    ])
-
-    if pre_columbian:
-        if land_use not in pre_columbian_land_uses:
-            land_use = 'mixed_forest'
-
-    if type(parameters) is date:
-        precip = lookup_p(parameters)  # precipitation
-        evaptrans = lookup_et(parameters, land_use)  # evapotranspiration
-    elif type(parameters) is tuple:
+    if type(parameters) is tuple:
         precip, evaptrans = parameters
     else:
-        raise Exception('First argument must be a date or a (P,ET) pair')
+        raise Exception('First argument must be a (P,ET) pair')
+
+    tile_string = tile_string.lower()
+    soil_type, land_use = tile_string.split(':')
 
     if precip == 0.0:
-        return (0.0, evaptrans, 0.0)
+        return {
+            'runoff': 0.0,
+            'et': evaptrans,
+            'inf': 0.0,
+        }
 
     if is_bmp(land_use) and land_use != 'rain_garden':
         inf = lookup_bmp_infiltration(soil_type, land_use)  # infiltration
         runoff = precip - (evaptrans + inf)  # runoff
-        return (runoff, evaptrans, inf)  # Q, ET, Inf.
+        return {
+            'runoff': runoff,
+            'et': evaptrans,
+            'inf': inf,
+        }
     elif land_use == 'rain_garden':
         # Here, return a mixture of 20% ideal rain garden and 80% high
         # intensity residential.
@@ -137,9 +133,11 @@ def simulate_tile(parameters, tile_string, pre_columbian=False):
         runoff = precip - (evaptrans + inf)
         hi_res_tile = soil_type + ':hi_residential'
         hi_res = simulate_tile((precip, evaptrans), hi_res_tile)
-        return (0.2 * runoff + 0.8 * hi_res[0],
-                0.2 * evaptrans + 0.8 * hi_res[1],
-                0.2 * inf + 0.8 * hi_res[2])
+        return {
+            'runoff': 0.2 * runoff + 0.8 * hi_res[0],
+            'et': 0.2 * evaptrans + 0.8 * hi_res[1],
+            'inf': 0.2 * inf + 0.8 * hi_res[2],
+        }
 
     if is_built_type(land_use) and precip <= 2.0:
         runoff = runoff_pitt(precip, land_use)
@@ -150,75 +148,163 @@ def simulate_tile(parameters, tile_string, pre_columbian=False):
     else:
         runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
     inf = precip - (evaptrans + runoff)
-    return (runoff, evaptrans, max(inf, 0.0))
+
+    return {
+        'runoff': runoff,
+        'et': evaptrans,
+        'inf': max(inf, 0.0),
+    }
 
 
-def simulate_all_tiles(parameters, tile_census, pre_columbian=False):
+def simulate_day(day, tile_census, subst=None, pre_columbian=False):
     """
     Simulate each tile for one day and return the overall results.
 
-    The first argument is either a day or a P,ET double (as in simulate_tile).
+    The first argument is an integer representing the day of the year
+    (day == 0 represents October 15th) or a precip, et pair.
 
-    The second argument is a dictionary (presumably converted from
-    JSON) that gives the number of each type of tile in the query
-    polygon.
+    The second argument is a dictionary that gives a census of all of the
+    tiles in the query area.
 
-    The output is a runoff, evapotranspiration, infiltration triple
-    which is an average of those produced by all of the tiles.
+    The third argument is the tile string substitution to be applied
+    to each tile.  This is used for simulating BMPs and
+    reclassifications.
+
+    The fourth argument is a boolean which is true if pre-Columbian
+    circumstances are to be simulated and false otherwise.  When this
+    argument is true, all land uses except for water and wetland are
+    transformed to mixed forest.
+
+    The output is a runoff, evapotranspiration, infiltration dictionary.
     """
-    if 'result' not in tile_census:
-        raise Exception('No "result" key')
-    elif 'cell_count' not in tile_census['result']:
-        raise Exception('No "result.cell_count" key')
-    elif 'distribution' not in tile_census['result']:
-        raise Exception('No "result.distribution" key')
+    if 'cell_count' not in tile_census:
+        raise Exception('No "cell_count" key.')
+    elif 'distribution' not in tile_census:
+        raise Exception('No "distribution" key.')
 
-    global_count = tile_census['result']['cell_count']
+    def simulate(tile):
+        (soil_type, land_use) = tile.split(':')
 
-    def simulate(tile_string, local_count):
-        """
-        A local helper function which captures various values.
-        """
-        return [(x * local_count) / global_count
-                for x in simulate_tile(parameters, tile_string, pre_columbian)]
+        # If a substitution has been supplied, apply it.
+        if sys.version_info.major == 3:
+            types = (str)
+        else:
+            types = (str, unicode)
+        if isinstance(subst, types) and subst.find(':') >= 0:
+            (subst_soil_type, subst_land_use) = subst.split(':')
+            if len(subst_soil_type) > 0:
+                soil_type = subst_soil_type
+            land_use = subst_land_use
 
-    def simulate_plus(left, right):
-        """
-        Add two simulations.
-        """
-        (a, b, c) = left
-        (x, y, z) = right
-        return (a+x, b+y, c+z)
+        # If a Pre-Columbian simulation has been requested, change the
+        # land use type.
+        if pre_columbian:
+            land_use = precolumbian(land_use)
 
-    results = [simulate(tile, n)
-               for tile, n in tile_census['result']['distribution'].items()]
+        # Retrieve the precipitation and evapotranspiration, then run
+        # the simulation.
+        if isinstance(day, int):
+            parameters = lookup_pet(day, land_use)
+        else:
+            parameters = day
+        return simulate_tile(parameters, soil_type + ':' + land_use)
 
-    area_sum = (0.0, 0.0, 0.0)
-    for result in results:
-        area_sum = simulate_plus(area_sum, result)
+    results = {tile: simulate(tile)
+               for tile in tile_census['distribution'].keys()}
 
-    return area_sum
+    return {
+        'distribution': results
+    }
 
 
-def simulate_year(tile_census, pre_columbian=False):
+def simulate_year(tile_census, cell_res=10, subst=None, pre_columbian=False):
     """
-    Simulate an entire year.
+    Simulate an entire year, including water quality.
+
+    The first argument is a tile census as described in `simulate_day`.
+
+    The second argument is the tile resolution in meters.
+
+    The third parameter is the tile string substitution to be performed.
+
+    The fourth parameter is as in `simulate_day`.
     """
-    year = [date(1, 1, 1) + timedelta(days=i)
-            for i in range(days_in_sample_year())]
-    simulated_year = [simulate_all_tiles(day, tile_census, pre_columbian)
-                      for day in year]
+    # perform a daily simulation for each day of the year
+    simulated_year = [simulate_day(day, tile_census, subst, pre_columbian)
+                      for day in range(365)]
 
-    def day_plus(one, two):
-        """
-        Add two simulated days.
-        """
-        (runoff1, et1, inf1) = one
-        (runoff2, et2, inf2) = two
-        return (runoff1 + runoff2, et1 + et2, inf1 + inf2)
-
-    year_sum = (0.0, 0.0, 0.0)
+    # add those simulations together
+    year_sum = {}
     for day in simulated_year:
-        year_sum = day_plus(year_sum, day)
+        year_sum = dict_plus(year_sum, day)
 
-    return year_sum
+    # add the results into the census
+    retval = dict_plus(year_sum, tile_census)
+
+    # perform water quality computations
+    for (pair, result) in retval['distribution'].items():
+        (soil, use) = pair.split(':')
+        runoff = result['runoff']
+        cell_count = result['cell_count']
+        liters = get_volume_of_runoff(runoff, cell_count, cell_res)
+        for pol in get_pollutants():
+            # XXX unclear if `use` is correct here in the case of
+            # reclassification.  In the case of BMPs, it is clear that
+            # the water quality calculation has to be done using the
+            # "previous" land use, because the various EMCs are not
+            # defined for BMPs.  However, in the case of
+            # reclassification, the EMCs may be defined for the new
+            # land use type ~ it isn't clear whether the new land use
+            # should be used or the old (as is done here).
+            load = get_pollutant_load(use, pol, liters)
+            result[pol] = load
+
+    return retval
+
+
+def simulate_modifications(tile_census, cell_res=10, pre_columbian=False):
+    """
+    Simulate an entire year, including effects of modifications.
+    """
+    N = float(tile_census['cell_count'])
+
+    def scale_subresults(result):
+        for (pair, subresult) in result['distribution'].items():
+            n = subresult['cell_count']
+            p = n / N
+            subresult['runoff'] *= p
+            subresult['et'] *= p
+            subresult['inf'] *= p
+
+    def tally_subresults(result):
+        retval = {}
+        for (pair, subresult) in result['distribution'].items():
+            retval = dict_plus(retval, subresult)
+        retval.pop('modifications', None)
+        return retval
+
+    # compute unmodified results
+    orig_result = simulate_year(tile_census, cell_res, None, pre_columbian)
+    scale_subresults(orig_result)
+
+    # Compute the census ex-modifications and the subresults for each
+    # of the modifications.
+    mod_census = tile_census.copy()
+    subresults = []
+    if 'modifications' in tile_census:
+        for (subst, census) in tile_census['modifications'].items():
+            mod_census = dict_minus(mod_census, census)
+            subresult = simulate_year(census, cell_res, subst, pre_columbian)
+            scale_subresults(subresult)
+            subresults.append(subresult)
+
+    # Compute the result with modifications taken into account.
+    mod_result = simulate_year(mod_census, cell_res, None, pre_columbian)
+    scale_subresults(mod_result)
+    for subresult in subresults:
+        mod_result = dict_plus(mod_result, subresult)
+
+    return {
+        'unmodified': tally_subresults(orig_result),
+        'modified': tally_subresults(mod_result)
+    }
