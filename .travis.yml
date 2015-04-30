@@ -1,0 +1,14 @@
+language: python
+python:
+- '2.7'
+install: pip install -r requirements.txt --use-mirrors
+script: python setup.py test
+deploy:
+  provider: pypi
+  user: azavea
+  password:
+    secure: K/6De0BdqcYyzzrw2hz6A3vOJH1YWTEmK7TKOCviDeX0VmlDXW5KiB/3i0NbYXZtM/89Mi1H+pg6mXUdCGf5LIevN54lA+/8VJK5zBN4TXzz+uYqxIYzxGg4oTWMiQxim0TwhDl/887gWDGsbO/0yx658GivvN9skAd0bm3HjYk=
+  distributions: "sdist bdist_wheel"
+  on:
+    tags: true
+    repo: WikiWatershed/tr-55
