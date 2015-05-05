@@ -9,6 +9,8 @@ with open(path.join(path.abspath(path.dirname(__file__)),
           'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+tests_require = ['nose >= 1.3.4']
+
 setup(
     name='tr55',
     version='0.1.0.dev1',
@@ -32,6 +34,8 @@ setup(
     install_requires=[],
     extras_require={
         'dev': [],
-        'test': ['nose==1.3.4'],
+        'test': tests_require,
     },
+    test_suite='nose.collector',
+    tests_require=tests_require,
 )
