@@ -2,6 +2,12 @@
 
 A Python implementation of TR-55.
 
+## Installation
+You can install the latest version from PyPI
+```bash
+pip install tr55
+```
+
 ## Functions
 
 `simulate_day`, `simulate_year`, `simulate_modifications` are the three functions most likely to be of direct interest for users of this module.
@@ -177,6 +183,21 @@ should produce the following output:
 ## Testing
 
 Run `python setup.py test` from within the project directory.
+
+
+## Deployments
+Deployments to PyPi are handled through [Travis-CI](https://travis-ci.org/WikiWatershed/tr-55). The following git flow commands approximate a release using Travis:
+
+``` bash
+$ git flow release start 0.1.0
+$ vim CHANGELOG.md
+$ git commit -m "0.1.0"
+$ git flow release publish 0.1.0
+$ git flow release finish 0.1.0
+```
+
+To kick off the deployment, you'll still need to push the local tags remotely
+`git push --tags`
 
 ## License
 This project is licensed under the terms of the Apache 2.0 license.
