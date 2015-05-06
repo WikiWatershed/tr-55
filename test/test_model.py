@@ -1,25 +1,28 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+
 """
 Model test set
 """
 
 import unittest
-from datetime import date
 from math import sqrt
-from tr55.tablelookup import lookup_ki, is_built_type
-from tr55.model import runoff_nrcs, simulate_tile, simulate_all_tiles
-from tr55.model import simulate_year
+
+from tr55.tablelookup import lookup_ki
+from tr55.model import runoff_nrcs, simulate_tile, simulate_day
 
 # These data are taken directly from Table 2-1 of the revised (1986)
 # TR-55 report.  The data in the PS array are various precipitation
 # levels, and each respective CNx array is the calculated runoff for
 # that particular curve number with the given level of precipitation
 # corresponding to that in PS.
-PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
-CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]
-CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]
-CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]
-CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]
-
+PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]  # noqa
+CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]  # noqa
+CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
+CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
+CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
 # INPUT and OUTPUT are data that were emailed to Azavea in a
 # spreadsheet for testing the TR-55 model implementation.
 INPUT = [
@@ -592,23 +595,26 @@ OUTPUT = [
 def simulate(precip, tile_string):
     soil_type, land_use = tile_string.split(':')
     ki = lookup_ki(land_use)
-    return simulate_tile((precip, 0.209 * ki), tile_string)
+    return simulate_tile((precip, 0.207 * ki), tile_string)
+
 
 def average(l):
     return reduce(lambda x, y: x + y, l) / len(l)
 
+
 class TestModel(unittest.TestCase):
     """
-    Model test set
+    Model test set.
     """
     def test_nrcs(self):
         """
         Test the implementation of the runoff equation.
         """
-        # This pair has CN=55 in Table C of the 2010/12/27 memo
+        # This pair has CN=55
         runoffs = [round(runoff_nrcs(precip, 0.0, 'b', 'deciduous_forest'), 2)
                    for precip in PS]
-        self.assertEqual(runoffs[4:], CN55[4:])  # Low curve number and low P cause too-high runoff
+        # Low curve number and low P cause too-high runoff
+        self.assertEqual(runoffs[4:], CN55[4:])
 
         # This pair has CN=70
         runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'deciduous_forest'), 2)
@@ -625,104 +631,174 @@ class TestModel(unittest.TestCase):
                    for precip in PS]
         self.assertEqual(runoffs, CN90)
 
-    def test_simulate_tile_horizontal(self):
+    def test_simulate_tile_1(self):
         """
-        Test the one-day simulation using sample input/output.  The number
-        0.04 is not very meaningful, this test just attempts to give
-        you some idea about the mean error of the three quantities
-        relative to precipitation.
+        Test the tile simulation using sample input/output.
+
+        The number 0.04 is not very meaningful, this test just
+        attempts to give some idea about the mean error of the three
+        quantities relative to precipitation.
         """
         def similar(incoming, expected):
             precip, tile_string = incoming
             results = simulate(precip, tile_string)
-            me = average(map(lambda x, y: abs(x - y) / precip, results, expected))
+            results = (results['runoff'], results['et'], results['inf'])
+            lam = lambda x, y: abs(x - y) / precip
+            me = average(map(lam, results, expected))
             # Precipitation levels <= 2 inches are known to be
             # problematic.  It is unclear why the 'rock' type is
             # giving trouble on soil types C and D.
-            if precip > 2 and tile_string != 'c:rock' and tile_string != 'd:rock':
+            if precip > 2 and tile_string != 'c:rock' \
+               and tile_string != 'd:rock':
                 self.assertTrue(me < 0.04, tile_string + ' ' + str(me))
         map(similar, INPUT, OUTPUT)
 
-    def test_simulate_tiles_vertical(self):
+    def test_simulate_tile_2(self):
         """
-        Test the RMSE of the runoff levels produced by the one-day
-        simulation against values sample input/output.  The number
-        0.13 is not very meaningful, this test just attempts to show
-        to deviation.
+        Test the RMSE of the runoff levels produced by the tile simulation
+        against values sample input/output.  The number 0.13 is not
+        very meaningful, this test just attempts to put a bound on the
+        deviation.
         """
-        results = [simulate(precip, tile_string)[0] / precip
+        results = [simulate(precip, tile_string)['runoff'] / precip
                    for precip, tile_string in INPUT
-                   if precip > 2 and tile_string != 'c:rock' and tile_string != 'd:rock']
+                   if precip > 2 and tile_string != 'c:rock' and
+                   tile_string != 'd:rock']
         expected = [OUTPUT[i][0] / INPUT[i][0]
                     for i in range(len(INPUT))
-                    if INPUT[i][0] > 2 and INPUT[i][1] != 'c:rock' and INPUT[i][1] != 'd:rock']
-        rmse = sqrt(average(map(lambda x, y: pow((x - y), 2), results, expected)))
+                    if INPUT[i][0] > 2 and INPUT[i][1] != 'c:rock' and
+                    INPUT[i][1] != 'd:rock']
+        lam = lambda x, y: pow((x - y), 2)
+        rmse = sqrt(average(map(lam, results, expected)))
         self.assertTrue(rmse < 0.13)
 
-    def test_simulate_all_tiles(self):
+    def test_simulate_day_invalid(self):
         """
-        Test the tile-by-tile simulation.
+        Test the daily simulation with bad responses.
         """
-        # Test invalid responses
+        non_response1 = {
+            "cell_count": 1
+        }
+
         non_response2 = {
-            "result": {  # No "distribution" key
-                "cell_count": 1
-            }
+            "distribution": {}
         }
-        non_response3 = {
-            "result": {  # No "cell_count" key
-                "distribution": {}
-            }
-        }
-        self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response2))
-        self.assertRaises(Exception, simulate_all_tiles, (date.today(), non_response3))
 
-        # Test valid responses
+        self.assertRaises(Exception, simulate_day, (0, non_response1))
+        self.assertRaises(Exception, simulate_day, (0, non_response2))
+
+    def test_simulate_day_valid(self):
+        """
+        Test the daily simulation with valid responses.
+        """
         response1 = {
-            "result": {
-                "cell_count": 2,
-                "distribution": {
-                    "a:pasture": 1,
-                    "c:rock": 1
-                }
+            "cell_count": 2,
+            "distribution": {
+                "a:pasture": 1,
+                "c:rock": 1
             }
         }
-        response2 = {
-            "result": {
-                "cell_count": 20,
-                "distribution": {
-                    "a:pasture": 10,
-                    "c:rock": 10
-                }
-            }
-        }
-        map(self.assertAlmostEqual,
-            simulate_all_tiles(date.today(), response1),
-            simulate_all_tiles(date.today(), response2))
 
-        # Test Pre-Columbian calculation
-        response3 = {
-            "result": {
-                "cell_count": 1,
-                "distribution": {
-                    "d:hi_residential": 1
-                }
+        response2 = {
+            "cell_count": 20,
+            "distribution": {
+                "a:pasture": 10,
+                "c:rock": 10
             }
         }
-        response4 = {
-            "result": {
-                "cell_count": 10,
-                "distribution": {
-                    "d:pasture": 10
-                }
+
+        self.assertEqual(
+            simulate_day(0, response1),
+            simulate_day(0, response2))
+
+    def test_simulate_day_precolumbian(self):
+        """
+        Test the daily simulation in Pre-Columbian times.
+        """
+        response1 = {
+            "cell_count": 1,
+            "distribution": {
+                "d:hi_residential": 1
             }
         }
-        map(self.assertNotEqual,
-            simulate_all_tiles(date(1, 4, 15), response3),
-            simulate_all_tiles(date(1, 4, 15), response4))
-        map(self.assertEqual,
-            simulate_all_tiles(date(1, 4, 15), response3, True),
-            simulate_all_tiles(date(1, 4, 15), response4, True))
+
+        response2 = {
+            "cell_count": 10,
+            "distribution": {
+                "d:pasture": 10
+            }
+        }
+
+        result1 = simulate_day(182, response1)
+        result2 = simulate_day(182, response2)
+        self.assertNotEqual(
+            result1['distribution']['d:hi_residential'],
+            result2['distribution']['d:pasture'])
+
+        result3 = simulate_day(182, response1, pre_columbian=True)
+        result4 = simulate_day(182, response2, pre_columbian=True)
+        self.assertEqual(
+            result3['distribution']['d:hi_residential'],
+            result4['distribution']['d:pasture'])
+
+    def test_simulate_day_subst_1(self):
+        """
+        Test the daily simulation with BMP substitution.
+        """
+        response1 = {
+            "cell_count": 1,
+            "distribution": {
+                "d:hi_residential": 1
+            }
+        }
+
+        response2 = {
+            "cell_count": 1,
+            "distribution": {
+                "d:no_till": 1
+            }
+        }
+
+        result1 = simulate_day(182, response1)
+        result2 = simulate_day(182, response2)
+        self.assertNotEqual(
+            result1['distribution']['d:hi_residential'],
+            result2['distribution']['d:no_till'])
+
+        result1 = simulate_day(182, response1, subst=':no_till')
+        self.assertEqual(
+            result1['distribution']['d:hi_residential'],
+            result2['distribution']['d:no_till'])
+
+    def test_simulate_day_subst_2(self):
+        """
+        Test the daily simulation with reclassification.
+        """
+        response1 = {
+            "cell_count": 1,
+            "distribution": {
+                "d:mixed_forest": 1
+            }
+        }
+
+        response2 = {
+            "cell_count": 1,
+            "distribution": {
+                "a:rock": 1
+            }
+        }
+
+        result1 = simulate_day(182, response1)
+        result2 = simulate_day(182, response2)
+        self.assertNotEqual(
+            result1['distribution']['d:mixed_forest'],
+            result2['distribution']['a:rock'])
+
+        result1 = simulate_day(182, response1, subst='a:rock')
+        self.assertEqual(
+            result1['distribution']['d:mixed_forest'],
+            result2['distribution']['a:rock'])
+
 
 if __name__ == "__main__":
     unittest.main()
