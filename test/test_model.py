@@ -10,8 +10,10 @@ Model test set
 import unittest
 from math import sqrt
 
+from tr55.model import runoff_nrcs, \
+    simulate_cell_day, simulate_cell_year, simulate_water_quality, \
+    create_unmodified_census, create_modified_census
 from tr55.tablelookup import lookup_ki
-from tr55.model import runoff_nrcs, simulate_tile, simulate_day
 
 # These data are taken directly from Table 2-1 of the revised (1986)
 # TR-55 report.  The data in the PS array are various precipitation
@@ -23,6 +25,7 @@ CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.
 CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
 CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
+
 # INPUT and OUTPUT are data that were emailed to Azavea in a
 # spreadsheet for testing the TR-55 model implementation.
 INPUT = [
@@ -595,7 +598,7 @@ OUTPUT = [
 def simulate(precip, tile_string):
     soil_type, land_use = tile_string.split(':')
     ki = lookup_ki(land_use)
-    return simulate_tile((precip, 0.207 * ki), tile_string)
+    return simulate_cell_day((precip, 0.207 * ki), tile_string, 1)
 
 
 def average(l):
@@ -631,18 +634,18 @@ class TestModel(unittest.TestCase):
                    for precip in PS]
         self.assertEqual(runoffs, CN90)
 
-    def test_simulate_tile_1(self):
+    def test_simulate_day_1(self):
         """
         Test the tile simulation using sample input/output.
-
-        The number 0.04 is not very meaningful, this test just
-        attempts to give some idea about the mean error of the three
-        quantities relative to precipitation.
         """
+        # The number 0.04 is not very meaningful, this test just
+        # attempts to give some idea about the mean error of the three
+        # quantities, relative to precipitation, compared to the
+        # sample output that was emailed to us.
         def similar(incoming, expected):
             precip, tile_string = incoming
             results = simulate(precip, tile_string)
-            results = (results['runoff'], results['et'], results['inf'])
+            results = (results['runoff-vol'], results['et-vol'], results['inf-vol'])
             lam = lambda x, y: abs(x - y) / precip
             me = average(map(lam, results, expected))
             # Precipitation levels <= 2 inches are known to be
@@ -653,14 +656,16 @@ class TestModel(unittest.TestCase):
                 self.assertTrue(me < 0.04, tile_string + ' ' + str(me))
         map(similar, INPUT, OUTPUT)
 
-    def test_simulate_tile_2(self):
+    def test_simulate_day_2(self):
         """
-        Test the RMSE of the runoff levels produced by the tile simulation
-        against values sample input/output.  The number 0.13 is not
-        very meaningful, this test just attempts to put a bound on the
-        deviation.
+        Another test of the tile simulation using sample input/output.
         """
-        results = [simulate(precip, tile_string)['runoff'] / precip
+        # Test the RMSE of the runoff levels produced by the tile
+        # simulation against values sample input/output.  The number
+        # 0.13 is not very meaningful, this test just attempts to put
+        # a bound on the deviation between the current output and the
+        # sample output that was mailed to us.
+        results = [simulate(precip, tile_string)['runoff-vol'] / precip
                    for precip, tile_string in INPUT
                    if precip > 2 and tile_string != 'c:rock' and
                    tile_string != 'd:rock']
@@ -672,133 +677,217 @@ class TestModel(unittest.TestCase):
         rmse = sqrt(average(map(lam, results, expected)))
         self.assertTrue(rmse < 0.13)
 
-    def test_simulate_day_invalid(self):
+    def test_simulate_day_3(self):
         """
-        Test the daily simulation with bad responses.
+        Daily simulation.
         """
-        non_response1 = {
-            "cell_count": 1
-        }
+        result1 = simulate_cell_day((42, 93), 'a:rock', 1)
+        result2 = simulate_cell_day((42, 93), 'a:rock', 2)
+        self.assertEqual(result1['runoff-vol'] * 2, result2['runoff-vol'])
 
-        non_response2 = {
-            "distribution": {}
-        }
-
-        self.assertRaises(Exception, simulate_day, (0, non_response1))
-        self.assertRaises(Exception, simulate_day, (0, non_response2))
-
-    def test_simulate_day_valid(self):
+    def test_simulate_year(self):
         """
-        Test the daily simulation with valid responses.
+        Yearly simulation.
         """
-        response1 = {
+        result1 = simulate_cell_year('a:hi_residential', 42, False)
+        result2 = simulate_cell_year('a:mixed_forest', 42, False)
+        self.assertNotEqual(result1, result2)
+        self.assertGreater(result1['runoff-vol'], result2['runoff-vol'])
+
+    def test_simulate_year_precolumbian(self):
+        """
+        Yearly simulation in Pre-Columbian times.
+        """
+        result1 = simulate_cell_year('a:hi_residential', 42, True)
+        result2 = simulate_cell_year('a:mixed_forest', 42, True)
+        self.assertEqual(result1, result2)
+
+    def test_create_unmodified_census(self):
+        """
+        Test create_unmodified_census.
+        """
+        census = {
             "cell_count": 2,
             "distribution": {
-                "a:pasture": {"cell_count": 1},
-                "c:rock": {"cell_count": 1}
-            }
+                "a:rock": {"cell_count": 1},
+                "a:water": {"cell_count": 1}
+            },
+            "modifications": [
+                {
+                    "bmp": "cluster_housing",
+                    "cell_count": 1,
+                    "distribution": {
+                        "a:rock": {"cell_count": 1}
+                    }
+                }
+            ]
         }
 
-        response2 = {
-            "cell_count": 20,
-            "distribution": {
-                "a:pasture": {"cell_count": 10},
-                "c:rock": {"cell_count": 10}
-            }
-        }
+        result = create_unmodified_census(census)
+        census.pop("modifications", None)
+        self.assertEqual(census, result)
 
-        self.assertEqual(
-            simulate_day(0, response1),
-            simulate_day(0, response2))
-
-    def test_simulate_day_precolumbian(self):
+    def test_create_modified_census_1(self):
         """
-        Test the daily simulation in Pre-Columbian times.
+        create_modified_census with a census tree without modifications.
         """
-        response1 = {
-            "cell_count": 1,
+        census = {
+            "cell_count": 5,
             "distribution": {
-                "d:hi_residential": {"cell_count": 1}
+                "a:rock": {"cell_count": 3},
+                "a:water": {"cell_count": 2}
             }
         }
 
-        response2 = {
-            "cell_count": 10,
-            "distribution": {
-                "d:pasture": {"cell_count": 10}
-            }
-        }
+        result = create_modified_census(census)
+        census.pop("modifications", None)
+        self.assertEqual(census, result)
 
-        result1 = simulate_day(182, response1)
-        result2 = simulate_day(182, response2)
-        self.assertNotEqual(
-            result1['distribution']['d:hi_residential']['runoff'],
-            result2['distribution']['d:pasture']['runoff'] / 10.0)
-
-        result3 = simulate_day(182, response1, pre_columbian=True)
-        result4 = simulate_day(182, response2, pre_columbian=True)
-        self.assertEqual(
-            result3['distribution']['d:hi_residential']['runoff'],
-            result4['distribution']['d:pasture']['runoff'] / 10.0)
-
-    def test_simulate_day_subst_1(self):
+    def test_create_modified_census_2(self):
         """
-        Test the daily simulation with BMP substitution.
+        create_modified_census with a census tree with trivial
+        modifications.
         """
-        response1 = {
-            "cell_count": 1,
+        census = {
+            "cell_count": 3,
             "distribution": {
-                "d:hi_residential": {"cell_count": 1}
-            }
+                "a:rock": {"cell_count": 2},
+                "a:water": {"cell_count": 1}
+            },
+            "modifications": []
         }
 
-        response2 = {
-            "cell_count": 1,
-            "distribution": {
-                "d:no_till": {"cell_count": 1}
-            }
-        }
+        result = create_modified_census(census)
+        census.pop("modifications", None)
+        self.assertEqual(census, result)
 
-        result1 = simulate_day(182, response1)
-        result2 = simulate_day(182, response2)
-        self.assertNotEqual(
-            result1['distribution']['d:hi_residential'],
-            result2['distribution']['d:no_till'])
-
-        result1 = simulate_day(182, response1, subst=':no_till')
-        self.assertEqual(
-            result1['distribution']['d:hi_residential'],
-            result2['distribution']['d:no_till'])
-
-    def test_simulate_day_subst_2(self):
+    def test_create_modified_census_3(self):
         """
-        Test the daily simulation with reclassification.
+        create_modified_census with a census tree non-trivial
+        modifications.
         """
-        response1 = {
-            "cell_count": 1,
+        census1 = {
+            "cell_count": 144,
             "distribution": {
-                "d:mixed_forest": {"cell_count": 1}
+                "a:rock": {"cell_count": 55},
+                "a:water": {"cell_count": 89}
+            },
+            "modifications": [
+                {
+                    "bmp": "cluster_housing",
+                    "cell_count": 34,
+                    "distribution": {
+                        "a:rock": {"cell_count": 34}
+                    }
+                }
+            ]
+        }
+
+        census2 = {
+            "cell_count": 144,
+            "distribution": {
+                "a:rock": {
+                    "cell_count": 55,
+                    "distribution": {
+                        "a:cluster_housing": {"cell_count": 34},
+                        "a:rock": {"cell_count": 21}
+                    }
+                },
+                "a:water": {"cell_count": 89}
             }
         }
 
-        response2 = {
-            "cell_count": 1,
+        result = create_modified_census(census1)
+        self.assertEqual(census2, result)
+
+    def test_simulate_water_quality_1(self):
+        """
+        Test the water quality simulation.
+        """
+        census = {
+            "cell_count": 5,
             "distribution": {
-                "a:rock": {"cell_count": 1}
+                "a:rock": {"cell_count": 3},
+                "a:water": {"cell_count": 2}
             }
         }
 
-        result1 = simulate_day(182, response1)
-        result2 = simulate_day(182, response2)
-        self.assertNotEqual(
-            result1['distribution']['d:mixed_forest'],
-            result2['distribution']['a:rock'])
+        def fn(cell, cell_count):
+            return simulate_cell_year(cell, cell_count, False)
 
-        result1 = simulate_day(182, response1, subst='a:rock')
-        self.assertEqual(
-            result1['distribution']['d:mixed_forest'],
-            result2['distribution']['a:rock'])
+        simulate_water_quality(census, 93, fn)
+        left = census['distribution']['a:rock']
+        right = census['distribution']['a:water']
+        for key in set(census.keys()) - set(['distribution']):
+            self.assertEqual(left[key] + right[key], census[key])
 
+    def test_simulate_water_quality_2(self):
+        """
+        Test the water quality simulation in the presence of modifications.
+        """
+        census = {
+            "cell_count": 2,
+            "distribution": {
+                "a:rock": {"cell_count": 1},
+                "a:water": {"cell_count": 1}
+            },
+            "modifications": [
+                {
+                    "reclassification": "d:hi_residential",
+                    "cell_count": 1,
+                    "distribution": {
+                        "a:rock": {"cell_count": 1}
+                    }
+                }
+            ]
+        }
+
+        census1 = create_modified_census(census)
+        census2 = {
+            "cell_count": 2,
+            "distribution": {
+                "d:hi_residential": {"cell_count": 1},
+                "a:water": {"cell_count": 1}
+            }
+        }
+
+        def fn(cell, cell_count):
+            return simulate_cell_year(cell, cell_count, False)
+
+        simulate_water_quality(census1, 93, fn)
+        simulate_water_quality(census2, 93, fn)
+        for key in set(census1.keys()) - set(['distribution']):
+            self.assertEqual(census1[key], census2[key])
+
+    def test_simulate_water_quality_precolumbian(self):
+        """
+        Test the water quality simulation in Pre-Columbian times.
+        """
+        census1 = {
+            "cell_count": 3,
+            "distribution": {
+                "a:rock": {"cell_count": 1},
+                "b:herbaceous_wetland": {"cell_count": 1},
+                "a:water": {"cell_count": 1}
+            }
+        }
+
+        census2 = {
+            "cell_count": 3,
+            "distribution": {
+                "a:mixed_forest": {"cell_count": 1},
+                "b:herbaceous_wetland": {"cell_count": 1},
+                "a:water": {"cell_count": 1}
+            }
+        }
+
+        def fn(cell, cell_count):
+            return simulate_cell_year(cell, cell_count, True)
+
+        simulate_water_quality(census1, 93, fn)
+        simulate_water_quality(census2, 93, fn)
+        for key in set(census1.keys()) - set(['distribution']):
+            self.assertEqual(census1[key], census2[key])
 
 if __name__ == "__main__":
     unittest.main()

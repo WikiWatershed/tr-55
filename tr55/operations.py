@@ -45,22 +45,8 @@ def plus(x, y):
     return x + y
 
 
-def minus(x, y):
-    """
-    Difference of two numbers.
-    """
-    return x - y
-
-
 def dict_plus(left, right):
     """
     Sum of two similarly-structured dictionaries.
     """
     return tandem_walk(plus, isnumber, left, right)
-
-
-def dict_minus(left, right):
-    """
-    Difference of two similarly-structured dictionaries.
-    """
-    return tandem_walk(minus, isnumber, left, right)
