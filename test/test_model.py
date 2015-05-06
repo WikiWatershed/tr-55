@@ -694,16 +694,16 @@ class TestModel(unittest.TestCase):
         response1 = {
             "cell_count": 2,
             "distribution": {
-                "a:pasture": 1,
-                "c:rock": 1
+                "a:pasture": {"cell_count": 1},
+                "c:rock": {"cell_count": 1}
             }
         }
 
         response2 = {
             "cell_count": 20,
             "distribution": {
-                "a:pasture": 10,
-                "c:rock": 10
+                "a:pasture": {"cell_count": 10},
+                "c:rock": {"cell_count": 10}
             }
         }
 
@@ -718,28 +718,28 @@ class TestModel(unittest.TestCase):
         response1 = {
             "cell_count": 1,
             "distribution": {
-                "d:hi_residential": 1
+                "d:hi_residential": {"cell_count": 1}
             }
         }
 
         response2 = {
             "cell_count": 10,
             "distribution": {
-                "d:pasture": 10
+                "d:pasture": {"cell_count": 10}
             }
         }
 
         result1 = simulate_day(182, response1)
         result2 = simulate_day(182, response2)
         self.assertNotEqual(
-            result1['distribution']['d:hi_residential'],
-            result2['distribution']['d:pasture'])
+            result1['distribution']['d:hi_residential']['runoff'],
+            result2['distribution']['d:pasture']['runoff'] / 10.0)
 
         result3 = simulate_day(182, response1, pre_columbian=True)
         result4 = simulate_day(182, response2, pre_columbian=True)
         self.assertEqual(
-            result3['distribution']['d:hi_residential'],
-            result4['distribution']['d:pasture'])
+            result3['distribution']['d:hi_residential']['runoff'],
+            result4['distribution']['d:pasture']['runoff'] / 10.0)
 
     def test_simulate_day_subst_1(self):
         """
@@ -748,14 +748,14 @@ class TestModel(unittest.TestCase):
         response1 = {
             "cell_count": 1,
             "distribution": {
-                "d:hi_residential": 1
+                "d:hi_residential": {"cell_count": 1}
             }
         }
 
         response2 = {
             "cell_count": 1,
             "distribution": {
-                "d:no_till": 1
+                "d:no_till": {"cell_count": 1}
             }
         }
 
@@ -777,14 +777,14 @@ class TestModel(unittest.TestCase):
         response1 = {
             "cell_count": 1,
             "distribution": {
-                "d:mixed_forest": 1
+                "d:mixed_forest": {"cell_count": 1}
             }
         }
 
         response2 = {
             "cell_count": 1,
             "distribution": {
-                "a:rock": 1
+                "a:rock": {"cell_count": 1}
             }
         }
 
