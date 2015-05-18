@@ -75,7 +75,7 @@ def make_precolumbian(land_use):
     """
     Project the given land use to a Pre-Columbian one.
     """
-    if not land_use in PRE_COLUMBIAN_LAND_USES:
+    if land_use not in PRE_COLUMBIAN_LAND_USES:
         return 'mixed_forest'
     else:
         return land_use

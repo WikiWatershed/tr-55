@@ -404,6 +404,10 @@ LAND_USE_VALUES = {
     'urban_grass':          {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
     'woody_wetland':        {'nlcd': 90, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
     'herbaceous_wetland':   {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'chaparral':            {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'tall_grass_prairie':   {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'short_grass_prairie':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'desert':               {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
 
     'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},  # noqa
     'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73}},  # noqa
