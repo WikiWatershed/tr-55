@@ -71,7 +71,7 @@ def is_built_type(land_use):
     return land_use in BUILT_TYPES
 
 
-def precolumbian(land_use):
+def make_precolumbian(land_use):
     """
     Project the given land use to a Pre-Columbian one.
     """
