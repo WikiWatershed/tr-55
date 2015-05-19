@@ -645,7 +645,9 @@ class TestModel(unittest.TestCase):
         def similar(incoming, expected):
             precip, tile_string = incoming
             results = simulate(precip, tile_string)
-            results = (results['runoff-vol'], results['et-vol'], results['inf-vol'])
+            results = (results['runoff-vol'],
+                       results['et-vol'],
+                       results['inf-vol'])
             lam = lambda x, y: abs(x - y) / precip
             me = average(map(lam, results, expected))
             # Precipitation levels <= 2 inches are known to be

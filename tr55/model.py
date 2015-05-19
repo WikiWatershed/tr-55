@@ -237,7 +237,8 @@ def create_modified_census(census):
     return mod
 
 
-def simulate_water_quality(tree, cell_res, fn, parent_cell=None, current_cell=None):
+def simulate_water_quality(tree, cell_res, fn,
+                           parent_cell=None, current_cell=None):
     """
     Perform a water quality simulation by doing simulations on each
     type of cells (leaves), then adding them together going upward
