@@ -1,6 +1,6 @@
 # tr-55
 
-A Python implementation of TR-55.
+A Python implementation of a modified TR-55 stormwater runoff model with STEP-L like water quality routines.
 
 ## Installation
 You can install the latest version from PyPI
