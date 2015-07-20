@@ -27,7 +27,7 @@ def lookup_pet(day, land_use):
     Lookup/compute evapotranspiration from the tables.
     """
     (precip, et_max) = SAMPLE_YEAR[day]
-    ki = LAND_USE_VALUES[land_use]['ki']
+    ki = lookup_ki(land_use)
     return (precip, et_max * ki)
 
 

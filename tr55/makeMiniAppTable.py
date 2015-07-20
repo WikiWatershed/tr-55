@@ -7,8 +7,7 @@ from itertools import product
 import csv
 import sys
 
-from tr55.model import simulate_modifications, simulate_cell_day
-from tr55.tablelookup import lookup_ki
+from tr55.model import simulate_day
 
 if len(sys.argv) != 2:
     print 'Usage: python -m tr55.makeMiniAppTable csv_file_name'
@@ -44,9 +43,6 @@ with open(csv_file_name, 'wb') as csv_file:
 
     soil_types = ['a', 'b', 'c', 'd']
 
-    et_max = 0.207
-    pre_columbian = False
-
     # For each input value, compute the model outputs for a
     # single day and tile.
     for precip, land_use, soil_type in product(precips,
@@ -59,12 +55,7 @@ with open(csv_file_name, 'wb') as csv_file:
             }
         }
 
-        def fn(cell, cell_count):
-            (soil_type, land_use) = cell.lower().split(':')
-            et = et_max * lookup_ki(land_use)
-            return simulate_cell_day((precip, et), cell, cell_count)
-
-        model_out = (simulate_modifications(cells, fn=fn)
+        model_out = (simulate_day(cells, precip)
                      ['unmodified']['distribution'].values()[0])
         writer.writerow((precip, land_use,
                          soil_type, model_out['et'],
