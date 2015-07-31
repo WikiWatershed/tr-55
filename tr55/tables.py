@@ -428,11 +428,8 @@ BUILT_TYPES = set(['li_residential', 'hi_residential', 'cluster_housing',
                    'commercial', 'industrial', 'transportation',
                    'urban_grass'])
 
-PRE_COLUMBIAN_LAND_USES = set([
-    'water',
-    'woody_wetland',
-    'herbaceous_wetland'
-])
+NON_NATURAL = set(['pasture', 'hay', 'row_crop', 'green_roof']) \
+    | set(['no_till']) | BMPS | BUILT_TYPES
 
 # The set of pollutants that we are concerned with.
 POLLUTANTS = set(['tn', 'tp', 'bod', 'tss'])
