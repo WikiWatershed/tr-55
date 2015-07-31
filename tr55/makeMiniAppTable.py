@@ -31,7 +31,7 @@ with open(csv_file_name, 'wb') as csv_file:
         'hi_residential',
         'commercial',
         'grassland',
-        'mixed_forest',
+        'deciduous_forest',
         'urban_grass',
         'pasture',
         'row_crop',
@@ -42,6 +42,13 @@ with open(csv_file_name, 'wb') as csv_file:
     ]
 
     soil_types = ['a', 'b', 'c', 'd']
+
+    soil_type_map = {
+        'a': 0,
+        'b': 1,
+        'c': 2,
+        'd': 3
+    }
 
     # For each input value, compute the model outputs for a
     # single day and tile.
@@ -55,8 +62,11 @@ with open(csv_file_name, 'wb') as csv_file:
             }
         }
 
-        model_out = (simulate_day(cells, precip)
-                     ['unmodified']['distribution'].values()[0])
-        writer.writerow((precip, land_use,
-                         soil_type, model_out['et'],
-                         model_out['inf'], model_out['runoff']))
+        model_out = simulate_day(cells, precip)['unmodified']
+
+        writer.writerow((precip,
+                         land_use,
+                         soil_type_map[soil_type],
+                         model_out['et'],
+                         model_out['inf'],
+                         model_out['runoff']))
