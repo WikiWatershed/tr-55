@@ -31,8 +31,6 @@ The `simulate_cell_year` function simulates the events of an entire year for one
 
    2. `cell_count` is the number of occurrences of that type of cell in the area of interest.
 
-   3. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
-
 The output of this function is a dictionary with three keys: `runoff-vol`, `et-vol`, and `inf-vol`.  These are the volumes of runoff, evapotranspiration, and infiltration, respectively, in units of inch-cells.  The algorithm used to calculate these quantities is close to TR-55, the algorithm found in [the USDA's Technical Release 55, revised 1986](http://www.cpesc.org/reference/tr55.pdf), but with a few differences.  The main difference is the use of *Pitt Small Storm Hydrology Model* for low levels of precipitation when the land use is a built-type.
 
 ### `simulate_water_quality`
@@ -62,9 +60,11 @@ The `simulate_water_quality` function does a water quality calculation over an e
 
    The single cells of *deciduous forest*, *no-till*, and the *rock* are all underneath a node of three cells of type *deciduous forest*.  That indicates a land use modification has taken place: in this case, two of three original cells of *deciduous forest* have undergone modifications.
 
-   2. The `cell_res` parameter gives the resolution (size) of each cell.  It is used for converting runoff, evapotranspiration, and infiltration amounts from inches to volumes.
+   2. `fn` is the function that is used to perform the runoff, evapotranspiration, and infiltration calculation.  It is similar to `simulate_cell_year`, except it only takes `cell` and `cell_count` arguments.
 
-   3. `fn` is the function that is used to perform the runoff, evapotranspiration, and infiltration calculation.  It is similar to `simulate_cell_year`, except it only takes `cell` and `cell_count` arguments.
+   3. The `cell_res` parameter gives the resolution (size) of each cell.  It is used for converting runoff, evapotranspiration, and infiltration amounts from inches to volumes.
+
+   4. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
 ### `simulate_modifications`
 
@@ -102,9 +102,11 @@ This function is used to simulate the effects of land use modifications.  The ar
 
    Modifications are given as an array of dictionaries.  Each dictionary contains a `change` key whose value encodes the modification that has taken place.  In the example above, `"::no_till"` indicates that the no-till farming BMP has been applied, while `"a:rock:"` means that that particular area has been reclassified as being mostl rocks sitting on top of A-type soil.
 
-   2. The `fn` argument is as described previously, it is responsible for performing the simulation at each cell.
+   2. The `cell_res` argument is as described previously.
 
-   3. The `cell_res` argument is as described previously.
+   3. The `fn` argument is as described previously, it is responsible for performing the simulation at each cell.
+
+   4. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
 The output is dictionary with two keys, `modified` and `unmodified`.  These respectively contain modified and unmodified trees (the trees are as described in the discussion of `simulate_water_quality`) with runoff, evapotranspiration, infiltration, and pollutant loads included.
 

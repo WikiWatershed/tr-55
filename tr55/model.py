@@ -174,7 +174,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     }
 
 
-def simulate_cell_year(cell, cell_count, precolumbian):
+def simulate_cell_year(cell, cell_count):
     """
     Simulate a cell-type for an entire year using sample precipitation and
     evapotranspiration data.
@@ -192,11 +192,6 @@ def simulate_cell_year(cell, cell_count, precolumbian):
     split = cell.split(':')
     if (len(split) == 2):
         split.append('')
-
-    if precolumbian:
-        split[1] = make_precolumbian(split[1])
-
-    cell = '%s:%s:%s' % tuple(split[:3])
     land_use = split[1]
     bmp = split[2]
 
@@ -254,7 +249,7 @@ def create_modified_census(census):
     return mod
 
 
-def simulate_water_quality(tree, cell_res, fn, current_cell=None):
+def simulate_water_quality(tree, cell_res, fn, current_cell=None, precolumbian=False):
     """
     Perform a water quality simulation by doing simulations on each of
     the cell types (leaves), then adding them together by summing the
@@ -280,7 +275,7 @@ def simulate_water_quality(tree, cell_res, fn, current_cell=None):
         if n != 0:
             tally = {}
             for cell, subtree in tree['distribution'].items():
-                simulate_water_quality(subtree, cell_res, fn, cell)
+                simulate_water_quality(subtree, cell_res, fn, cell, precolumbian)
                 subtree_ex_dist = subtree.copy()
                 subtree_ex_dist.pop('distribution', None)
                 tally = dict_plus(tally, subtree_ex_dist)
@@ -294,14 +289,17 @@ def simulate_water_quality(tree, cell_res, fn, current_cell=None):
     # Leaf node.
     elif 'cell_count' in tree and 'distribution' not in tree:
         n = tree['cell_count']
-        result = fn(current_cell, n)  # runoff, et, inf
+        split = current_cell.split(':')
+        if (len(split) == 2):
+            split.append('')
+        if precolumbian:
+            split[1] = make_precolumbian(split[1])
+
+        result = fn('%s:%s:%s' % tuple(split), n)  # runoff, et, inf
         tree.update(result)
 
         # water quality
         if n != 0:
-            split = current_cell.split(':')
-            if (len(split) == 2):
-                split.append('')
             soil_type, land_use, bmp = split
             runoff = result['runoff-vol'] / n
             liters = get_volume_of_runoff(runoff, n, cell_res)
@@ -332,7 +330,7 @@ def postpass(tree):
             postpass(subtree)
 
 
-def simulate_modifications(census, fn, cell_res):
+def simulate_modifications(census, fn, cell_res, precolumbian=False):
     """
     Simulate an entire year, including effects of modifications.
 
@@ -343,11 +341,11 @@ def simulate_modifications(census, fn, cell_res):
     `cell_res` is as described in `simulate_water_quality`.
     """
     mod = create_modified_census(census)
-    simulate_water_quality(mod, cell_res, fn)
+    simulate_water_quality(mod, cell_res, fn, precolumbian=precolumbian)
     postpass(mod)
 
     unmod = create_unmodified_census(census)
-    simulate_water_quality(unmod, cell_res, fn)
+    simulate_water_quality(unmod, cell_res, fn, precolumbian=precolumbian)
     postpass(unmod)
 
     return {
@@ -367,12 +365,12 @@ def simulate_year(census, cell_res=10, precolumbian=False):
     `precolumbian` is as described in `simulate_cell_year`.
     """
     def fn(cell, cell_count):
-        return simulate_cell_year(cell, cell_count, precolumbian)
+        return simulate_cell_year(cell, cell_count)
 
-    return simulate_modifications(census, fn, cell_res)
+    return simulate_modifications(census, fn, cell_res, precolumbian)
 
 
-def simulate_day(census, precip, cell_res=10):
+def simulate_day(census, precip, cell_res=10, precolumbian=False):
     """
     Simulate a day, including effects of modifications.
 
@@ -388,12 +386,10 @@ def simulate_day(census, precip, cell_res=10):
         split = cell.split(':')
         if (len(split) == 2):
             split.append('')
-        cell = '%s:%s:%s' % tuple(split[:3])
 
-        land_use = split[1]
-        bmp = split[2]
+        (_, land_use, bmp) = split
         et = et_max * lookup_ki(bmp or land_use)
 
         return simulate_cell_day(precip, et, cell, cell_count)
 
-    return simulate_modifications(census, fn, cell_res)
+    return simulate_modifications(census, fn, cell_res, precolumbian)

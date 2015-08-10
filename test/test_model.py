@@ -1386,22 +1386,14 @@ class TestModel(unittest.TestCase):
         result2 = simulate_cell_day(42, 93, 'a:rock:', 2)
         self.assertEqual(result1['runoff-vol'] * 2, result2['runoff-vol'])
 
-    def test_simulate_year(self):
+    def test_simulate_cell_year(self):
         """
         Yearly simulation.
         """
-        result1 = simulate_cell_year('a:hi_residential', 42, False)
-        result2 = simulate_cell_year('a:mixed_forest', 42, False)
+        result1 = simulate_cell_year('a:hi_residential:', 42)
+        result2 = simulate_cell_year('a:mixed_forest:', 42)
         self.assertNotEqual(result1, result2)
         self.assertGreater(result1['runoff-vol'], result2['runoff-vol'])
-
-    def test_simulate_year_precolumbian(self):
-        """
-        Yearly simulation in Pre-Columbian times.
-        """
-        result1 = simulate_cell_year('a:hi_residential', 42, True)
-        result2 = simulate_cell_year('a:mixed_forest', 42, True)
-        self.assertEqual(result1, result2)
 
     def test_create_unmodified_census(self):
         """
@@ -1512,7 +1504,7 @@ class TestModel(unittest.TestCase):
         }
 
         def fn(cell, cell_count):
-            return simulate_cell_year(cell, cell_count, False)
+            return simulate_cell_year(cell, cell_count)
 
         simulate_water_quality(census, 93, fn)
         left = census['distribution']['a:rock']
@@ -1551,7 +1543,7 @@ class TestModel(unittest.TestCase):
         }
 
         def fn(cell, cell_count):
-            return simulate_cell_year(cell, cell_count, False)
+            return simulate_cell_year(cell, cell_count)
 
         simulate_water_quality(census1, 93, fn)
         simulate_water_quality(census2, 93, fn)
@@ -1563,30 +1555,47 @@ class TestModel(unittest.TestCase):
         Test the water quality simulation in Pre-Columbian times.
         """
         census1 = {
-            "cell_count": 3,
+            "cell_count": 8,
             "distribution": {
-                "a:rock": {"cell_count": 1},
-                "b:herbaceous_wetland": {"cell_count": 1},
-                "a:water": {"cell_count": 1}
+                "a:hi_residential": {"cell_count": 1},
+                "b:no_till": {"cell_count": 1},
+                "c:pasture": {"cell_count": 1},
+                "d:row_crop": {"cell_count": 1},
+                "a:water": {"cell_count": 1},
+                "b:chaparral": {"cell_count": 1},
+                "c:desert": {"cell_count": 1},
+                "d:tall_grass_prairie": {"cell_count": 1}
             }
         }
 
         census2 = {
-            "cell_count": 3,
+            "cell_count": 8,
             "distribution": {
                 "a:mixed_forest": {"cell_count": 1},
-                "b:herbaceous_wetland": {"cell_count": 1},
-                "a:water": {"cell_count": 1}
+                "b:mixed_forest": {"cell_count": 1},
+                "c:mixed_forest": {"cell_count": 1},
+                "d:mixed_forest": {"cell_count": 1},
+                "a:water": {"cell_count": 1},
+                "b:chaparral": {"cell_count": 1},
+                "c:desert": {"cell_count": 1},
+                "d:tall_grass_prairie": {"cell_count": 1}
             }
         }
 
-        def fn(cell, cell_count):
-            return simulate_cell_year(cell, cell_count, True)
+        census3 = census2.copy()
 
-        simulate_water_quality(census1, 93, fn)
-        simulate_water_quality(census2, 93, fn)
+        def fn(cell, cell_count):
+            return simulate_cell_year(cell, cell_count)
+
+        simulate_water_quality(census1, 93, fn, precolumbian=True)
+        simulate_water_quality(census2, 93, fn, precolumbian=True)
+        simulate_water_quality(census3, 93, fn, precolumbian=False)
+
         for key in set(census1.keys()) - set(['distribution']):
-            self.assertEqual(census1[key], census2[key])
+            self.assertAlmostEqual(census1[key], census2[key])
+
+        for key in set(census1.keys()) - set(['distribution']):
+            self.assertAlmostEqual(census2[key], census3[key])
 
     def test_year_1(self):
         """
