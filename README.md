@@ -1,6 +1,6 @@
 # tr-55
 
-A Python implementation of TR-55.
+A Python implementation of a modified TR-55 stormwater runoff model with STEP-L like water quality routines.
 
 ## Installation
 You can install the latest version from PyPI
@@ -8,9 +8,20 @@ You can install the latest version from PyPI
 pip install tr55
 ```
 
-## Functions
+`simulate_year` and `simulate_day` are the two functions most likely to be of direct interest for users of this module.
+`simulate_cell_year`, `simulate_water_quality`, and `simulate_modifications` are three other functions which can be used to create simulations with additional behaviors beyond those supplied by `simulate_day` and `simulate_year`.
 
-`simulate_cell_year`, `simulate_water_quality`, and `simulate_modifications` are the three functions most likely to be of direct interest for users of this module.
+## Functions for Normal Use
+
+### `simulate_year`
+
+This function takes three arguments: a census of the area of interest, an optional cell resolution, and an optimal boolean parameter which determines whether the simulation is done under Pre-Columbian conditions.
+
+### `simulate_day`
+
+This function takes three arguments: a census of the area of interest (see the description given below in the discussion of `simulate_modifications`), an amount of precipitation in inches, and an optional cell resolution (the size of a cell in square meters).
+
+## Functions for Custom Scenarios
 
 ### `simulate_cell_year`
 
@@ -19,8 +30,6 @@ The `simulate_cell_year` function simulates the events of an entire year for one
    1. `cell` is a string consisting of a soil type and land use pair separated by a colon, for example `"a:rock"`.
 
    2. `cell_count` is the number of occurrences of that type of cell in the area of interest.
-
-   3. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
 The output of this function is a dictionary with three keys: `runoff-vol`, `et-vol`, and `inf-vol`.  These are the volumes of runoff, evapotranspiration, and infiltration, respectively, in units of inch-cells.  The algorithm used to calculate these quantities is close to TR-55, the algorithm found in [the USDA's Technical Release 55, revised 1986](http://www.cpesc.org/reference/tr55.pdf), but with a few differences.  The main difference is the use of *Pitt Small Storm Hydrology Model* for low levels of precipitation when the land use is a built-type.
 
@@ -51,9 +60,11 @@ The `simulate_water_quality` function does a water quality calculation over an e
 
    The single cells of *deciduous forest*, *no-till*, and the *rock* are all underneath a node of three cells of type *deciduous forest*.  That indicates a land use modification has taken place: in this case, two of three original cells of *deciduous forest* have undergone modifications.
 
-   2. The `cell_res` parameter gives the resolution (size) of each cell.  It is used for converting runoff, evapotranspiration, and infiltration amounts from inches to volumes.
+   2. `fn` is the function that is used to perform the runoff, evapotranspiration, and infiltration calculation.  It is similar to `simulate_cell_year`, except it only takes `cell` and `cell_count` arguments.
 
-   3. `fn` is the function that is used to perform the runoff, evapotranspiration, and infiltration calculation.  It is similar to `simulate_cell_year`, except it only takes `cell` and `cell_count` arguments.
+   3. The `cell_res` parameter gives the resolution (size) of each cell.  It is used for converting runoff, evapotranspiration, and infiltration amounts from inches to volumes.
+
+   4. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
 ### `simulate_modifications`
 
@@ -70,14 +81,14 @@ This function is used to simulate the effects of land use modifications.  The ar
        },
        "modifications": [
            {
-               "bmp": "no_till",
+               "change": "::no_till",
                "cell_count": 1,
                "distribution": {
                    "a:deciduous_forest": {"cell_count": 1},
                }
            },
            {
-               "reclassification": "d:rock",
+               "change": "d:rock:",
                "cell_count": 1,
                "distribution": {
                    "a:deciduous_forest": {"cell_count": 1}
@@ -87,17 +98,17 @@ This function is used to simulate the effects of land use modifications.  The ar
    }
    ```
 
-   is the census that corresponds to the `tree` given in the discusson of `simulate_wate_quality` above.  There is an area of interest eight cells in size, with five of type `"c:commercial"` and three of type `"a:deciduous_forest"`.
+   is the census that corresponds to the `tree` given in the discusson of `simulate_water_quality` above.  There is an area of interest eight cells in size, with five of type `"c:commercial"` and three of type `"a:deciduous_forest"`.
 
-   modifications are given as an array of dictionaries.  Each dictionary contains a either a `bmp` key or a `reclassification` key, indicating what type of modification has taken place.
+   Modifications are given as an array of dictionaries.  Each dictionary contains a `change` key whose value encodes the modification that has taken place.  In the example above, `"::no_till"` indicates that the no-till farming BMP has been applied, while `"a:rock:"` means that that particular area has been reclassified as being mostl rocks sitting on top of A-type soil.
 
    2. The `cell_res` argument is as described previously.
 
-   3. The `precolumbian` argument is as described previously.
+   3. The `fn` argument is as described previously, it is responsible for performing the simulation at each cell.
 
-   4. The `fn` argument is as described previously.  If this argument is not supplied, then `simulate_cell_year` will be used to compute the runoff, evapotranspiration, and infiltration values.  A custom function can be supplied to do different types of calculations, such as calculations over shorter or longer time spans.  If a custom function is supplied, the `precolumbian` argument will be ignored.
+   4. `precolumbian` is a boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
-The output is dictionary with two keys, `modified` and `unmodified`.  These respectively contain modified and unmodified trees (as described in the discussion of `simulate_water_quality`) with runoff, evapotranspiration, infiltration, and pollutant loads included.
+The output is dictionary with two keys, `modified` and `unmodified`.  These respectively contain modified and unmodified trees (the trees are as described in the discussion of `simulate_water_quality`) with runoff, evapotranspiration, infiltration, and pollutant loads included.
 
 ## Usage Example
 
@@ -110,9 +121,9 @@ from __future__ import division
 
 import pprint
 
-from tr55.model import simulate_modifications
+from tr55.model import simulate_year
 
-cells = {
+census = {
     "cell_count": 147,
     "distribution": {
         "d:hi_residential": {"cell_count": 33},
@@ -121,7 +132,7 @@ cells = {
     },
     "modifications": [
         {
-            "bmp": "no_till",
+            "change": "::no_till",
             "cell_count": 30,
             "distribution": {
                 "d:hi_residential": {"cell_count": 10},
@@ -129,7 +140,7 @@ cells = {
             }
         },
         {
-            "reclassification": "d:rock",
+            "change": "d:rock:",
             "cell_count": 5,
             "distribution": {
                 "a:deciduous_forest": {"cell_count": 5}
@@ -138,7 +149,7 @@ cells = {
     ]
 }
 
-pprint.pprint(simulate_modifications(cells))
+pprint.pprint(simulate_year(census))
 ```
 is partially reproduced here:
 ```Python
@@ -176,7 +187,7 @@ is partially reproduced here:
                 'tss': 300.2237717935762}
 ```
 
-The output shown is another tree-like dictionary, akin to the one in the discussion of the first parameter of the `simulate_water_quality` function, except with additional keys and values attached to each  node in the tree.  The additional keys, `runoff`, `tss`, and so on, have associated values which are the water volumes and pollutant loads that have been calculated.  The volumes and loads at the leaves of the tree are those returned by the `fn` function (the fourth parameter of the `simulate_modifications` function), while those of internal nodes are the sums of the amounts found in their child nodes.
+The output shown is a tree-like dictionary, akin to the one in the discussion of the first parameter of the `simulate_water_quality` function, except with additional keys and values attached to each  node in the tree.  The additional keys, `runoff`, `tss`, and so on, have associated values which are the water volumes and pollutant loads that have been calculated.  The volumes and loads at the leaves of the tree are those returned by the `fn` function (the second parameter of the `simulate_modifications` function), while those of internal nodes are the sums of the amounts found in their child nodes.
 
 ## Testing
 

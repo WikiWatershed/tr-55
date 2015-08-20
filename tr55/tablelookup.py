@@ -8,7 +8,7 @@ Various routines to do table lookups.
 """
 
 from tr55.tables import SAMPLE_YEAR, BMPS, BUILT_TYPES, LAND_USE_VALUES, \
-    PRE_COLUMBIAN_LAND_USES, POLLUTANTS, POLLUTION_LOADS
+    NON_NATURAL, POLLUTANTS, POLLUTION_LOADS
 
 
 def lookup_ki(land_use):
@@ -27,7 +27,7 @@ def lookup_pet(day, land_use):
     Lookup/compute evapotranspiration from the tables.
     """
     (precip, et_max) = SAMPLE_YEAR[day]
-    ki = LAND_USE_VALUES[land_use]['ki']
+    ki = lookup_ki(land_use)
     return (precip, et_max * ki)
 
 
@@ -75,7 +75,7 @@ def make_precolumbian(land_use):
     """
     Project the given land use to a Pre-Columbian one.
     """
-    if land_use not in PRE_COLUMBIAN_LAND_USES:
+    if land_use in NON_NATURAL:
         return 'mixed_forest'
     else:
         return land_use
