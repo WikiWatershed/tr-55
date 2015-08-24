@@ -1294,6 +1294,7 @@ YEAR_OUTPUT_2 = {
     }
 }
 
+
 def simulate(precip, tile_string):
     land_use = tile_string.split(':')[1]
     ki = lookup_ki(land_use)
@@ -1490,6 +1491,58 @@ class TestModel(unittest.TestCase):
 
         result = create_modified_census(census1)
         self.assertEqual(census2, result)
+
+    def test_create_modified_census_4(self):
+        """
+        create_modified_census with different types of changes.
+        """
+        census = {
+            "distribution": {
+                "a:li_residential": {
+                    "cell_count": 3
+                }
+            },
+            "cell_count": 3,
+            "modifications": [
+                {
+                    "distribution": {
+                        "a:li_residential": {
+                            "cell_count": 1
+                        }
+                    },
+                    "cell_count": 1,
+                    "change": ":deciduous_forest:cluster_housing"
+                },
+                {
+                    "distribution": {
+                        "a:li_residential": {
+                            "cell_count": 1
+                        }
+                    },
+                    "cell_count": 1,
+                    "change": ":deciduous_forest:"
+                },
+                {
+                    "distribution": {
+                        "a:li_residential": {
+                            "cell_count": 1
+                        }
+                    },
+                    "cell_count": 1,
+                    "change": "::cluster_housing"
+                },
+            ]
+        }
+
+        expected = set([
+            'a:deciduous_forest:',
+            'a:li_residential',
+            'a:deciduous_forest:cluster_housing',
+            'a:li_residential:cluster_housing'])
+        modified = create_modified_census(census)
+        distrib = modified['distribution']['a:li_residential']['distribution']
+        actual = set(distrib.keys())
+        self.assertEqual(actual, expected)
 
     def test_simulate_water_quality_1(self):
         """
