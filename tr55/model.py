@@ -241,15 +241,17 @@ def create_modified_census(census):
                 else:
                     raise Exception('Unknown modification type.')
 
-                parent['distribution'] = {
-                    cell: {"cell_count": n - m},
-                    changed_cell: {"cell_count": m}
-                }
+                if 'distribution' not in parent:
+                    parent['distribution'] = {cell: {'cell_count': n}}
+
+                parent['distribution'][cell]['cell_count'] -= m
+                parent['distribution'][changed_cell] = {'cell_count': m}
 
     return mod
 
 
-def simulate_water_quality(tree, cell_res, fn, current_cell=None, precolumbian=False):
+def simulate_water_quality(tree, cell_res, fn,
+                           current_cell=None, precolumbian=False):
     """
     Perform a water quality simulation by doing simulations on each of
     the cell types (leaves), then adding them together by summing the
@@ -275,7 +277,8 @@ def simulate_water_quality(tree, cell_res, fn, current_cell=None, precolumbian=F
         if n != 0:
             tally = {}
             for cell, subtree in tree['distribution'].items():
-                simulate_water_quality(subtree, cell_res, fn, cell, precolumbian)
+                simulate_water_quality(subtree, cell_res, fn,
+                                       cell, precolumbian)
                 subtree_ex_dist = subtree.copy()
                 subtree_ex_dist.pop('distribution', None)
                 tally = dict_plus(tally, subtree_ex_dist)

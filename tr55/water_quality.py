@@ -16,7 +16,7 @@ def get_volume_of_runoff(runoff, cell_count, cell_resolution):
 
         cell_count (integer): The number of cells included in the area
 
-        cell_resolution (integer): The size in meters that a cell represents
+        cell_resolution (number): The size in square meters that a cell represents
 
     Returns:
         The volume of runoff liters in of the total area of interest
@@ -29,7 +29,7 @@ def get_volume_of_runoff(runoff, cell_count, cell_resolution):
 
     runoff_m = runoff * inch_to_meter
     meter_cells = runoff_m * cell_count
-    volume_cubic_meters = meter_cells * cell_resolution  # XXX
+    volume_cubic_meters = meter_cells * cell_resolution
 
     liters = volume_cubic_meters * 1000
 
