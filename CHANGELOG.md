@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Fixes a bug in the computation of modified censuses. (https://github.com/WikiWatershed/tr-55/pull/40)
+
 ## 0.2.0
 
 - The output format was changed. Previously, only the overall result of the calculation was given, after this change the overall result plus the sub-results for each (nlcd,soil) pair are given. (https://github.com/WikiWatershed/tr-55/pull/30)
