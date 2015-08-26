@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Same as `0.2.1`, but with a valid `setup.py` version.
+
 ## 0.2.1
 
 - Fixes a bug in the computation of modified censuses. (https://github.com/WikiWatershed/tr-55/pull/40)
