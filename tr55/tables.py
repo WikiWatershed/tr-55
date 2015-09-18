@@ -377,37 +377,26 @@ SAMPLE_YEAR = [
     (0.00, 0.207)
 ]
 
-
-# Land use descriptions may map to the same nlcd code and have the same values
-# but could be handled differently in the model execution (ex, commercial,
-# industrial, transportation). Describes the NLCD class value, the landscape
-# factor (ki) and the Curve Numbers for each hydrologic soil group for that use
-# type.
+# Describes the NLCD class value, the landscape factor (ki) and the Curve
+# Numbers for each hydrologic soil group for that use type.
 # NOTE: Missing NLCD type 12 (plus all Alaska only types (51, 72-74)
 LAND_USE_VALUES = {
-    'water':                {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
-    'li_residential':       {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},  # noqa
-    'hi_residential':       {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},  # noqa
-    'commercial':           {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},  # noqa
-    'industrial':           {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},  # noqa
-    'transportation':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},  # noqa
-    'rock':                 {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},  # noqa
-    'sand':                 {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},  # noqa
-    'clay':                 {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},  # noqa
+    'open_water':           {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
+    #'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
+    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
+    'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},  # noqa
+    'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},  # noqa
+    'developed_high':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},  # noqa
+    'barren_land':          {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},  # noqa
     'deciduous_forest':     {'nlcd': 41, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},  # noqa
     'evergreen_forest':     {'nlcd': 42, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},  # noqa
     'mixed_forest':         {'nlcd': 43, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},  # noqa
+    'shrub':                {'nlcd': 52, 'ki': 1, 'cn': {'a': 35, 'b': 56, 'c': 70, 'd': 77}},  # noqa
     'grassland':            {'nlcd': 71, 'ki': 0.6, 'cn': {'a': 30, 'b': 58, 'c': 71, 'd': 78}},  # noqa
     'pasture':              {'nlcd': 81, 'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},  # noqa
-    'hay':                  {'nlcd': 81, 'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},  # noqa
-    'row_crop':             {'nlcd': 82, 'ki': 0.9, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},  # noqa
-    'urban_grass':          {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
-    'woody_wetland':        {'nlcd': 90, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
-    'herbaceous_wetland':   {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
-    'chaparral':            {'nlcd': 52, 'ki': 1, 'cn': {'a': 35, 'b': 56, 'c': 70, 'd': 77}},  # noqa
-    'tall_grass_prairie':   {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
-    'short_grass_prairie':  {'nlcd': 81, 'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},  # noqa
-    'desert':               {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 86, 'd': 91}},  # noqa
+    'cultivated_crops':     {'nlcd': 82, 'ki': 0.9, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},  # noqa
+    'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
 
     'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},  # noqa
     'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73}},  # noqa
@@ -424,12 +413,11 @@ BMPS = set(['green_roof', 'porous_paving',
             'rain_garden', 'infiltration_trench'])
 
 # The set of "built" land uses
-BUILT_TYPES = set(['li_residential', 'hi_residential', 'cluster_housing',
-                   'commercial', 'industrial', 'transportation',
-                   'urban_grass'])
+BUILT_TYPES = set(['developed_low', 'developed_med', 'cluster_housing',
+                   'developed_high'])
 
-NON_NATURAL = set(['pasture', 'hay', 'row_crop', 'green_roof']) \
-    | set(['no_till']) | BMPS | BUILT_TYPES
+NON_NATURAL = set(['pasture', 'cultivated_crops', 'green_roof',
+                   'developed_open']) | set(['no_till']) | BMPS | BUILT_TYPES
 
 # The set of pollutants that we are concerned with.
 POLLUTANTS = set(['tn', 'tp', 'bod', 'tss'])
