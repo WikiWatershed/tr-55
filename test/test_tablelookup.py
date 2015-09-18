@@ -20,13 +20,13 @@ class TestTablelookups(unittest.TestCase):
         """
         Do some spot-checks on the SampleYear data.
         """
-        self.assertEqual(lookup_pet(0, 'water')[0], 0.0)
-        self.assertEqual(lookup_pet(52, 'hi_residential')[1], 0.0)
+        self.assertEqual(lookup_pet(0, 'open_water')[0], 0.0)
+        self.assertEqual(lookup_pet(52, 'developed_med')[1], 0.0)
         self.assertEqual(lookup_pet(104, 'green_roof')[1], 0.0)
         self.assertEqual(lookup_pet(156, 'cluster_housing')[0], 0.23)
         self.assertEqual(lookup_pet(208, 'grassland')[0], 0.2)
-        self.assertEqual(lookup_pet(260, 'woody_wetland')[1], 0.207)
-        self.assertEqual(lookup_pet(352, 'hay')[1], 0.207 * 0.6)
+        self.assertEqual(lookup_pet(260, 'woody_wetlands')[1], 0.207)
+        self.assertEqual(lookup_pet(352, 'pasture')[1], 0.207 * 0.6)
 
     def test_lookup_bmp_infiltration(self):
         """
@@ -41,11 +41,11 @@ class TestTablelookups(unittest.TestCase):
         """
         Do some spot-checks on the data from Table C.
         """
-        self.assertEqual(lookup_cn('a', 'water'), 100)
-        self.assertEqual(lookup_cn('b', 'li_residential'), 68)
-        self.assertEqual(lookup_cn('c', 'hi_residential'), 90)
-        self.assertEqual(lookup_cn('d', 'commercial'), 95)
-        self.assertEqual(lookup_cn('a', 'rock'), 77)
+        self.assertEqual(lookup_cn('a', 'open_water'), 100)
+        self.assertEqual(lookup_cn('b', 'developed_low'), 68)
+        self.assertEqual(lookup_cn('c', 'developed_med'), 90)
+        self.assertEqual(lookup_cn('d', 'developed_high'), 95)
+        self.assertEqual(lookup_cn('a', 'barren_land'), 77)
         self.assertEqual(lookup_cn('b', 'deciduous_forest'), 55)
         self.assertEqual(lookup_cn('c', 'evergreen_forest'), 70)
         self.assertEqual(lookup_cn('d', 'mixed_forest'), 77)

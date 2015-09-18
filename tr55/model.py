@@ -45,14 +45,12 @@ def runoff_pitt(precip, land_use):
     urb_grass = (c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9
 
     runoff_vals = {
-        'water':           impervious,
-        'li_residential':  0.20 * impervious + 0.80 * urb_grass,
+        'open_water':           impervious,
+        'developed_low':  0.20 * impervious + 0.80 * urb_grass,
         'cluster_housing': 0.20 * impervious + 0.80 * urb_grass,
-        'hi_residential':  0.65 * impervious + 0.35 * urb_grass,
-        'commercial':      impervious,
-        'industrial':      impervious,
-        'transportation':  impervious,
-        'urban_grass':     urb_grass
+        'developed_med':  0.65 * impervious + 0.35 * urb_grass,
+        'developed_high':      impervious,
+        'developed_open':     urb_grass
     }
 
     if land_use not in runoff_vals:
@@ -78,7 +76,7 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     runoff value in inches.
     """
     if land_use == 'cluster_housing':
-        land_use = 'li_residential'
+        land_use = 'developed_low'
     curve_number = lookup_cn(soil_type, land_use)
     if nrcs_cutoff(precip, curve_number):
         return 0.0
@@ -137,7 +135,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         # intensity residential.
         inf = lookup_bmp_infiltration(soil_type, bmp)
         runoff = precip - (evaptrans + inf)
-        hi_res_cell = soil_type + ':hi_residential:'
+        hi_res_cell = soil_type + ':developed_med:'
         hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
         hir_run = hi_res['runoff-vol']
         hir_et = hi_res['et-vol']
@@ -184,10 +182,9 @@ def simulate_cell_year(cell, cell_count):
 
     The `cell_count` parameter is the number of cells of this type.
 
-    If the `precolumbian` parameter is true, then the cell is
-    simulated under Pre-Columbian circumstances (anything other than
-    water, woody wetland, and herbaceous wetland becomes mixed
-    forest).
+    If the `precolumbian` parameter is true, then the cell i simulated under
+    Pre-Columbian circumstances (anything other than the non-natural types
+    listed in tables.py becomes mixed forest).
     """
     split = cell.split(':')
     if (len(split) == 2):

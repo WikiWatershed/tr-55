@@ -22,23 +22,23 @@ with open(csv_file_name, 'wb') as csv_file:
     # values of inputs to the model
     precips = [0.5, 1.0, 2.0, 3.2, 8.0]
 
-    # The land uses in the original mini-app were low intensity
-    # residential, high intensity residential, commercial, grassland, forest,
-    # turf grass, pasture, row crops. The closest matching to the values in
-    # this implementation of TR-55 are the following:
+    # The land uses in the original mini-app used non NLCD types
+    # (residential, high intensity residential, commercial, etc.) These were
+    # converted to the best matches from the NLCD types based on the NLCD
+    # number being used for the calculations in tables.py.
     land_uses = [
-        'li_residential',
-        'hi_residential',
-        'commercial',
-        'grassland',
+        'open_water',
+        'developed_open',
+        'developed_low',
+        'developed_med',
+        'developed_high',
+        'barren_land',
         'deciduous_forest',
-        'urban_grass',
+        'shrub',
+        'grassland',
         'pasture',
-        'row_crop',
-        'chaparral',
-        'tall_grass_prairie',
-        'short_grass_prairie',
-        'desert'
+        'cultivated_crops',
+        'woody_wetlands'
     ]
 
     soil_types = ['a', 'b', 'c', 'd']
