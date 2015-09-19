@@ -1,3 +1,7 @@
+## 1.0.1-1.0.2
+
+- Same as `1.0.0`, but with a valid `setup.py` version.
+
 ## 1.0.0
 
 - Input format was changed. Strings used to run a model now align to NLCD types. A full list is provided in the readme. Other land types that were similar to NLCD types (and used these types to do calculations) were removed.
