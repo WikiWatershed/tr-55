@@ -32,7 +32,7 @@ class TestWaterQuality(unittest.TestCase):
         runoff_liters = 1000
 
         expected = ((runoff_liters * emc) / 1000000) * 2.205
-        load = get_pollutant_load('commercial', pollutant, runoff_liters)
+        load = get_pollutant_load('developed_high', pollutant, runoff_liters)
 
         self.assertEquals(expected, load)
 
@@ -40,5 +40,5 @@ class TestWaterQuality(unittest.TestCase):
         self.assertRaises(Exception, get_pollutant_load, 'asdf', 'tn', 1000)
 
     def test_load_bad_pollutant(self):
-        self.assertRaises(Exception, get_pollutant_load, 'commercial',
+        self.assertRaises(Exception, get_pollutant_load, 'developed_high',
                           'asdf', 1000)

@@ -27,7 +27,7 @@ This function takes four arguments: a census of the area of interest (see the de
 
 The `simulate_cell_year` function simulates the events of an entire year for one specific type of cell.  It takes two arguments:
 
-   1. `cell` is a string consisting of a soil type and land use pair separated by a colon, for example `"a:rock"`.
+   1. `cell` is a string consisting of a soil type and land use pair separated by a colon, for example `"a:barren_land"`.
 
    2. `cell_count` is the number of occurrences of that type of cell in the area of interest.
 
@@ -43,28 +43,28 @@ The `simulate_water_quality` function does a water quality calculation over an e
    {
        "cell_count": 8,
        "distribution": {
-           "c:commercial": {"cell_count": 5},
+           "c:developed_high": {"cell_count": 5},
            "a:deciduous_forest": {
                "cell_count": 3
                "distribution": {
                    "a:deciduous_forest": {"cell_count": 1},
                    "a:no_till": {"cell_count": 1},
-                   "d:rock": {"cell_count", 1}
+                   "d:barren_land": {"cell_count", 1}
                }
            }
        }
    }
    ```
 
-   represents an area of interest that is eight cells in size, with five of those cells of type `"c:commercial"` (*commercial* land use on top of type *C* soil), and one cell each of *deciduous forest*, *no-till farming*, and *rock*.
+   represents an area of interest that is eight cells in size, with five of those cells of type `"c:developed_high"` (*Developed High Intensity* land use on top of type *C* soil), and one cell each of *deciduous forest*, *no-till farming*, and *barren land*.
 
-   The single cells of *deciduous forest*, *no-till*, and the *rock* are all underneath a node of three cells of type *deciduous forest*.  That indicates a land use modification has taken place: in this case, two of three original cells of *deciduous forest* have undergone modifications.
+   The single cells of *deciduous forest*, *no-till*, and the *barren land* are all underneath a node of three cells of type *deciduous forest*.  That indicates a land use modification has taken place: in this case, two of three original cells of *deciduous forest* have undergone modifications.
 
    2. The `cell_res` parameter gives the resolution (size) of each cell.  It is used for converting runoff, evapotranspiration, and infiltration amounts from inches to volumes.
 
    3. `fn` is the function that is used to perform the runoff, evapotranspiration, and infiltration calculation.  It is similar to `simulate_cell_year`, except it only takes `cell` and `cell_count` arguments.
 
-   4. `precolumbian` is an optional boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
+   4. `precolumbian` is an optional boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all developed land (NLCD 21-24) uses are treated as *mixed forest*.
 
 ### `simulate_modifications`
 
@@ -76,7 +76,7 @@ This function is used to simulate the effects of land use modifications.  The ar
    {
        "cell_count": 8,
        "distribution": {
-           "c:commercial": {"cell_count": 5},
+           "c:developed_high": {"cell_count": 5},
            "a:deciduous_forest": {"cell_count": 3}
        },
        "modifications": [
@@ -88,7 +88,7 @@ This function is used to simulate the effects of land use modifications.  The ar
                }
            },
            {
-               "change": "d:rock:",
+               "change": "d:barren_land:",
                "cell_count": 1,
                "distribution": {
                    "a:deciduous_forest": {"cell_count": 1}
@@ -98,9 +98,9 @@ This function is used to simulate the effects of land use modifications.  The ar
    }
    ```
 
-   is the census that corresponds to the `tree` given in the discusson of `simulate_water_quality` above.  There is an area of interest eight cells in size, with five of type `"c:commercial"` and three of type `"a:deciduous_forest"`.
+   is the census that corresponds to the `tree` given in the discussion of `simulate_water_quality` above.  There is an area of interest eight cells in size, with five of type `"c:developed_high"` and three of type `"a:deciduous_forest"`.
 
-   Modifications are given as an array of dictionaries.  Each dictionary contains a `change` key whose value encodes the modification that has taken place.  In the example above, `"::no_till"` indicates that the no-till farming BMP has been applied, while `"a:rock:"` means that that particular area has been reclassified as being mostl rocks sitting on top of A-type soil.
+   Modifications are given as an array of dictionaries.  Each dictionary contains a `change` key whose value encodes the modification that has taken place.  In the example above, `"::no_till"` indicates that the no-till farming BMP has been applied, while `"a:barren_land:"` means that that particular area has been reclassified as being most barren_land sitting on top of A-type soil.
 
    2. The `fn` argument is as described previously, it is responsible for performing the simulation at each cell.
 
@@ -109,6 +109,28 @@ This function is used to simulate the effects of land use modifications.  The ar
    4. `precolumbian` is an optional boolean which determines whether to simulate the cell type as-shown or under Pre-Columbian circumstances.  When a Pre-Columbian simulation is done, all land uses other than *water* and *wetland* are treated as *mixed forest*.
 
 The output is dictionary with two keys, `modified` and `unmodified`.  These respectively contain modified and unmodified trees (the trees are as described in the discussion of `simulate_water_quality`) with runoff, evapotranspiration, infiltration, and pollutant loads included.
+
+
+## Allowed Types
+
+The following land use values are implemented and correspond to the keys listed:
+
+ - 'open_water' - NLCD Type 11, Open Water
+ - 'developed_open' - NLCD Type 21, Developed, Open Space
+ - 'developed_low'- NLCD Type 22, Developed, Low Intensity
+ - 'developed_med' - NLCD Type 23, Developed, Medium Intensity
+ - 'developed_high' - NLCD Type 24, Developed, High Intensity
+ - 'barren_land' - NLCD Type 31, Barren Land (Rock/Sand/Clay)
+ - 'deciduous_forest' - NLCD Type 41, Deciduous Forest
+ - 'evergreen_forest' - NLCD Type 42, Evergreen Forest
+ - 'mixed_forest' - NLCD Type 43, Mixed Forest
+ - 'shrub' - NLCD Type 52, Shrub/Scrub
+ - 'grassland' - NLCD Type 71, Grassland/Herbaceous
+ - 'pasture' - NLCD Type 81, Pasture/Hay
+ - 'cultivated_crops' - NLCD Type 82, Cultivated Crops
+ - 'woody_wetlands' - NLCD Type 90, Woody Wetlands
+ - 'herbaceous_wetlands' - NLCD Type 95, Emergent Herbaceous Wetlands
+
 
 ## Usage Example
 
@@ -126,8 +148,8 @@ from tr55.model import simulate_year
 census = {
     "cell_count": 147,
     "distribution": {
-        "d:hi_residential": {"cell_count": 33},
-        "c:commercial": {"cell_count": 42},
+        "d:developed_med": {"cell_count": 33},
+        "c:developed_high": {"cell_count": 42},
         "a:deciduous_forest": {"cell_count": 72}
     },
     "modifications": [
@@ -135,12 +157,12 @@ census = {
             "change": "::no_till",
             "cell_count": 30,
             "distribution": {
-                "d:hi_residential": {"cell_count": 10},
-                "c:commercial": {"cell_count": 20}
+                "d:developed_med": {"cell_count": 10},
+                "c:developed_high": {"cell_count": 20}
             }
         },
         {
-            "change": "d:rock:",
+            "change": "d:barren_land:",
             "cell_count": 5,
             "distribution": {
                 "a:deciduous_forest": {"cell_count": 5}
@@ -163,7 +185,7 @@ is partially reproduced here:
                                                         'tn': 0.0,
                                                         'tp': 0.0,
                                                         'tss': 0.0},
-                                 'c:commercial': {'bod': 1061.0138827829708,
+                                 'c:developed_high': {'bod': 1061.0138827829708,
                                                   'cell_count': 42,
                                                   'et': 2.272860000000005,
                                                   'inf': 4.430079770137537,
@@ -171,7 +193,7 @@ is partially reproduced here:
                                                   'tn': 7.786472849455671,
                                                   'tp': 1.2321451541995787,
                                                   'tss': 216.39549270630107},
-                                 'd:hi_residential': {'bod': 701.5416264041463,
+                                 'd:developed_med': {'bod': 701.5416264041463,
                                                       'cell_count': 33,
                                                       'et': 6.818579999999993,
                                                       'inf': 8.361629213022574,
@@ -200,6 +222,7 @@ Deployments to PyPi are handled through [Travis-CI](https://travis-ci.org/WikiWa
 ``` bash
 $ git flow release start 0.1.0
 $ vim CHANGELOG.md
+$ vim setup.py
 $ git commit -m "0.1.0"
 $ git flow release publish 0.1.0
 $ git flow release finish 0.1.0
