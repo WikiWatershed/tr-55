@@ -17,7 +17,7 @@ and variables used in this program are as follows:
 
 import copy
 
-from tr55.tablelookup import lookup_pet, lookup_cn, lookup_bmp_infiltration, \
+from tr55.tablelookup import lookup_cn, lookup_bmp_infiltration, \
     lookup_ki, is_bmp, is_built_type, make_precolumbian, get_pollutants
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
@@ -172,34 +172,6 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     }
 
 
-def simulate_cell_year(cell, cell_count):
-    """
-    Simulate a cell-type for an entire year using sample precipitation and
-    evapotranspiration data.
-
-    The `cell` parameter is a string with the soil type and land use
-    separated by a colon.
-
-    The `cell_count` parameter is the number of cells of this type.
-
-    If the `precolumbian` parameter is true, then the cell i simulated under
-    Pre-Columbian circumstances (anything other than the non-natural types
-    listed in tables.py becomes mixed forest).
-    """
-    split = cell.split(':')
-    if (len(split) == 2):
-        split.append('')
-    land_use = split[1]
-    bmp = split[2]
-
-    retval = {}
-    for day in range(365):
-        (precip, evaptrans) = lookup_pet(day, bmp or land_use)
-        result = simulate_cell_day(precip, evaptrans, cell, cell_count)
-        retval = dict_plus(retval, result)
-    return retval
-
-
 def create_unmodified_census(census):
     """
     This creates a cell census, ignoring any modifications.  The
@@ -288,21 +260,26 @@ def simulate_water_quality(tree, cell_res, fn,
 
     # Leaf node.
     elif 'cell_count' in tree and 'distribution' not in tree:
+        # the number of cells covered by this leaf
         n = tree['cell_count']
+
+        # canonicalize the current_cell string
         split = current_cell.split(':')
         if (len(split) == 2):
             split.append('')
         if precolumbian:
             split[1] = make_precolumbian(split[1])
+        current_cell = '%s:%s:%s' % tuple(split)
 
-        result = fn('%s:%s:%s' % tuple(split), n)  # runoff, et, inf
+        # run the model on this leaf
+        result = fn(current_cell, n)  # runoff, et, inf
         tree.update(result)
 
-        # water quality
+        # perform water quality calculation
         if n != 0:
             soil_type, land_use, bmp = split
-            runoff = result['runoff-vol'] / n
-            liters = get_volume_of_runoff(runoff, n, cell_res)
+            runoff_per_cell = result['runoff-vol'] / n
+            liters = get_volume_of_runoff(runoff_per_cell, n, cell_res)
             for pol in get_pollutants():
                 tree[pol] = get_pollutant_load(land_use, pol, liters)
 
@@ -354,22 +331,6 @@ def simulate_modifications(census, fn, cell_res, precolumbian=False):
     }
 
 
-def simulate_year(census, cell_res=10, precolumbian=False):
-    """
-    Simulate an entire year, including effects of modifications.
-
-    `census` contains a distribution of cell-types in the area of interest.
-
-    `cell_res` is as described in `simulate_water_quality`.
-
-    `precolumbian` is as described in `simulate_cell_year`.
-    """
-    def fn(cell, cell_count):
-        return simulate_cell_year(cell, cell_count)
-
-    return simulate_modifications(census, fn, cell_res, precolumbian)
-
-
 def simulate_day(census, precip, cell_res=10, precolumbian=False):
     """
     Simulate a day, including effects of modifications.
@@ -378,7 +339,9 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
 
     `cell_res` is as described in `simulate_water_quality`.
 
-    `precolumbian` is as described in `simulate_cell_year`.
+    `precolumbian` indicates that artificial types should be turned
+    into forest.
+
     """
     et_max = 0.207
 
