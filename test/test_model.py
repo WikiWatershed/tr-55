@@ -917,6 +917,18 @@ DAY_OUTPUT_2 = {
                 'runoff': 0.0,
                 'et': 0.14489999999999997,
                 'inf': 1.8551,
+                'distribution': {
+                    'a:deciduous_forest': {
+                        'cell_count': 1,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.14489999999999997,
+                        'inf': 1.8551,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    }
+                },
                 'bod': 0.0,
                 'tss': 0.0
             },
@@ -1102,7 +1114,7 @@ class TestModel(unittest.TestCase):
 
     def test_create_modified_census_1(self):
         """
-        create_modified_census with a census tree without modifications.
+        create_modified_census from a census w/o modifications.
         """
         census = {
             "cell_count": 5,
@@ -1112,13 +1124,26 @@ class TestModel(unittest.TestCase):
             }
         }
 
-        result = create_modified_census(census)
-        census.pop("modifications", None)
-        self.assertEqual(census, result)
+        expected = {
+            "cell_count": 5,
+            "distribution": {
+                "a:barren_land": {
+                    "cell_count": 3,
+                    "distribution": {"a:barren_land": {"cell_count": 3}}
+                },
+                "a:open_water": {
+                    "cell_count": 2,
+                    "distribution": {"a:open_water": {"cell_count": 2}}
+                }
+            }
+        }
+
+        actual = create_modified_census(census)
+        self.assertEqual(actual, expected)
 
     def test_create_modified_census_2(self):
         """
-        create_modified_census with trivial modifications.
+        create_modified_census from a census w/ trivial modifications.
         """
         census = {
             "cell_count": 3,
@@ -1129,15 +1154,28 @@ class TestModel(unittest.TestCase):
             "modifications": []
         }
 
-        result = create_modified_census(census)
-        census.pop("modifications", None)
-        self.assertEqual(census, result)
+        expected = {
+            "cell_count": 3,
+            "distribution": {
+                "a:barren_land": {
+                    "cell_count": 2,
+                    "distribution": {"a:barren_land": {"cell_count": 2}}
+                },
+                "a:open_water": {
+                    "cell_count": 1,
+                    "distribution": {"a:open_water": {"cell_count": 1}}
+                }
+            }
+        }
+
+        actual = create_modified_census(census)
+        self.assertEqual(actual, expected)
 
     def test_create_modified_census_3(self):
         """
         create_modified_census with non-trivial modifications.
         """
-        census1 = {
+        census = {
             "cell_count": 144,
             "distribution": {
                 "a:barren_land": {"cell_count": 55},
@@ -1154,7 +1192,7 @@ class TestModel(unittest.TestCase):
             ]
         }
 
-        census2 = {
+        expected = {
             "cell_count": 144,
             "distribution": {
                 "a:barren_land": {
@@ -1164,12 +1202,17 @@ class TestModel(unittest.TestCase):
                         "a:barren_land": {"cell_count": 21}
                     }
                 },
-                "a:open_water": {"cell_count": 89}
+                "a:open_water": {
+                    "cell_count": 89,
+                    "distribution": {
+                        "a:open_water": {"cell_count": 89}
+                    }
+                }
             }
         }
 
-        result = create_modified_census(census1)
-        self.assertEqual(census2, result)
+        actual = create_modified_census(census)
+        self.assertEqual(actual, expected)
 
     def test_create_modified_census_4(self):
         """

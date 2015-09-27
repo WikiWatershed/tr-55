@@ -13,7 +13,7 @@ TR-55 tables
 # NOTE: Missing NLCD type 12 (plus all Alaska only types (51, 72-74)
 LAND_USE_VALUES = {
     'open_water':           {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
-    #'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
+#    'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
     'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
     'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},  # noqa
     'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},  # noqa
