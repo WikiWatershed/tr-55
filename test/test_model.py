@@ -1418,10 +1418,9 @@ class TestModel(unittest.TestCase):
         self.assertRaises(ValueError,
                           simulate_day, *(census, precip))
 
-    def test_greenroof_runoff(self):
+    def test_bmp_runoff(self):
         """
-        Make sure that the green roof BMP does not produce negative
-        runoff.
+        Make sure that BMPs do not produce negative runoff.
         """
         census = {
             "cell_count": 1,
@@ -1440,6 +1439,35 @@ class TestModel(unittest.TestCase):
         }
         result = simulate_day(census, 0.984)
         self.assertTrue(result['modified']['runoff'] >= 0)
+
+    def test_bmp_sum(self):
+        """
+        Make sure that runoff, evapotranspiration, and infiltration sum to
+        precipitation.
+        """
+        census = {
+            "cell_count": 1,
+            "distribution": {
+                "d:developed_med": {"cell_count": 1}
+            },
+            "modifications": [
+                {
+                    "change": "::green_roof",
+                    "cell_count": 1,
+                    "distribution": {
+                        "d:developed_med": {"cell_count": 1}
+                    }
+                }
+            ]
+        }
+
+        precip = 0.984
+        result = simulate_day(census, precip)
+        runoff = result['modified']['runoff']
+        et = result['modified']['et']
+        inf = result['modified']['inf']
+        total = runoff + et +inf
+        self.assertAlmostEqual(total, precip)
 
 if __name__ == "__main__":
     unittest.main()
