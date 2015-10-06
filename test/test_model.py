@@ -1418,6 +1418,28 @@ class TestModel(unittest.TestCase):
         self.assertRaises(ValueError,
                           simulate_day, *(census, precip))
 
+    def test_greenroof_runoff(self):
+        """
+        Make sure that the green roof BMP does not produce negative
+        runoff.
+        """
+        census = {
+            "cell_count": 1,
+            "distribution": {
+                "d:developed_med": {"cell_count": 1}
+            },
+            "modifications": [
+                {
+                    "change": "::green_roof",
+                    "cell_count": 1,
+                    "distribution": {
+                        "d:developed_med": {"cell_count": 1}
+                    }
+                }
+            ]
+        }
+        result = simulate_day(census, 0.984)
+        self.assertTrue(result['modified']['runoff'] >= 0)
 
 if __name__ == "__main__":
     unittest.main()

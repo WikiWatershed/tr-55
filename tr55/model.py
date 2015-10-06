@@ -124,7 +124,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # gardens are treated differently.
     if bmp and is_bmp(bmp) and bmp != 'rain_garden':
         inf = lookup_bmp_infiltration(soil_type, bmp)  # infiltration
-        runoff = precip - (evaptrans + inf)  # runoff
+        runoff = max(0.0, precip - (evaptrans + inf))  # runoff
         return {
             'runoff-vol': cell_count * runoff,
             'et-vol': cell_count * evaptrans,
@@ -134,7 +134,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         # Here, return a mixture of 20% ideal rain garden and 80%
         # high-intensity residential.
         inf = lookup_bmp_infiltration(soil_type, bmp)
-        runoff = precip - (evaptrans + inf)
+        runoff = max(0.0, precip - (evaptrans + inf))
         hi_res_cell = soil_type + ':developed_med:'
         hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
         hir_run = hi_res['runoff-vol']
@@ -165,12 +165,12 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         runoff = max(pitt_runoff, nrcs_runoff)
     else:
         runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
-    inf = precip - (evaptrans + runoff)
+    inf = max(0.0, precip - (evaptrans + runoff))
 
     return {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
-        'inf-vol': cell_count * max(inf, 0.0),
+        'inf-vol': cell_count * inf,
     }
 
 
@@ -363,13 +363,15 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
         verify_census(census)
 
     def fn(cell, cell_count):
+        # Compute et for cell type
         split = cell.split(':')
         if (len(split) == 2):
-            split.append('')
-
-        (_, land_use, bmp) = split
+            (land_use, bmp) = split
+        else:
+            (_, land_use, bmp) = split
         et = et_max * lookup_ki(bmp or land_use)
 
+        # Simulate the cell for one day
         return simulate_cell_day(precip, et, cell, cell_count)
 
     return simulate_modifications(census, fn, cell_res, precolumbian)
