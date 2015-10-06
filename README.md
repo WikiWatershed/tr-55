@@ -137,7 +137,7 @@ from __future__ import division
 
 import pprint
 
-from tr55.model import simulate_year
+from tr55.model import simulate_day
 
 census = {
     "cell_count": 147,
@@ -165,42 +165,42 @@ census = {
     ]
 }
 
-pprint.pprint(simulate_year(census))
+pprint.pprint(simulate_day(census, 0.984))
 ```
 is partially reproduced here:
 ```Python
- 'unmodified': {'bod': 1762.555509187117,
-                'cell_count': 147,
-                'distribution': {'a:deciduous_forest': {'bod': 0.0,
-                                                        'cell_count': 72,
-                                                        'et': 26.51670000000007,
-                                                        'inf': 34.91810000000001,
-                                                        'runoff': 0.0,
-                                                        'tn': 0.0,
-                                                        'tp': 0.0,
-                                                        'tss': 0.0},
-                                 'c:developed_high': {'bod': 1061.0138827829708,
-                                                  'cell_count': 42,
-                                                  'et': 2.272860000000005,
-                                                  'inf': 4.430079770137537,
-                                                  'runoff': 36.375400229862464,
-                                                  'tn': 7.786472849455671,
-                                                  'tp': 1.2321451541995787,
-                                                  'tss': 216.39549270630107},
-                                 'd:developed_med': {'bod': 701.5416264041463,
-                                                      'cell_count': 33,
-                                                      'et': 6.818579999999993,
-                                                      'inf': 8.361629213022574,
-                                                      'runoff': 32.167342828759615,
-                                                      'tn': 4.072508593956273,
-                                                      'tp': 0.6837058223430238,
-                                                      'tss': 83.8282790872751}},
-                'et': 15.167861632653095,
-                'inf': 20.24558036990151,
-                'runoff': 17.614211721110824,
-                'tn': 11.858981443411944,
-                'tp': 1.9158509765426026,
-                'tss': 300.2237717935762}
+u'unmodified': {u'bod': 43.11309178874012,
+                 u'cell_count': 147,
+                 u'distribution': {u'a:deciduous_forest': {u'bod': 0.0,
+                                                           u'cell_count': 72,
+                                                           u'et': 0.14489999999999997,
+                                                           u'inf': 0.8391,
+                                                           u'runoff': 0.0,
+                                                           u'tn': 0.0,
+                                                           u'tp': 0.0,
+                                                           u'tss': 0.0},
+                                   u'c:developed_high': {u'bod': 28.342317499361275,
+                                                         u'cell_count': 42,
+                                                         u'et': 0.012322664565942195,
+                                                         u'inf': 0.0,
+                                                         u'runoff': 0.9716773354340579,
+                                                         u'tn': 0.2079960397130545,
+                                                         u'tp': 0.03291365903151632,
+                                                         u'tss': 5.780461367410053},
+                                   u'd:developed_med': {u'bod': 14.770774289378844,
+                                                        u'cell_count': 33,
+                                                        u'et': 0.037259999999999995,
+                                                        u'inf': 0.26946506358880085,
+                                                        u'runoff': 0.6772749364111992,
+                                                        u'tn': 0.08574559651037718,
+                                                        u'tp': 0.014395246129479379,
+                                                        u'tss': 1.764982351527472}},
+                 u'et': 0.08285667967190184,
+                 u'inf': 0.47147991223422064,
+                 u'runoff': 0.4296634080938776,
+                 u'tn': 0.2937416362234317,
+                 u'tp': 0.0473089051609957,
+                 u'tss': 7.545443718937525}
 ```
 
 The output shown is a tree-like dictionary, akin to the one in the discussion of the first parameter of the `simulate_water_quality` function, except with additional keys and values attached to each  node in the tree.  The additional keys, `runoff`, `tss`, and so on, have associated values which are the water volumes and pollutant loads that have been calculated.  The volumes and loads at the leaves of the tree are those returned by the `fn` function (the second parameter of the `simulate_modifications` function), while those of internal nodes are the sums of the amounts found in their child nodes.
