@@ -359,6 +359,9 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
     """
     et_max = 0.207
 
+    if 'modifications' in census:
+        verify_census(census)
+
     def fn(cell, cell_count):
         split = cell.split(':')
         if (len(split) == 2):
@@ -370,3 +373,14 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
         return simulate_cell_day(precip, et, cell, cell_count)
 
     return simulate_modifications(census, fn, cell_res, precolumbian)
+
+
+def verify_census(census):
+    """
+    Assures that there is no soil type/land cover pair
+    in a modification census that isn't in the AoI census.
+    """
+    for modification in census['modifications']:
+        for land_cover in modification['distribution']:
+            if land_cover not in census['distribution']:
+                raise ValueError("Invalid modification census")
