@@ -1390,5 +1390,34 @@ class TestModel(unittest.TestCase):
         expected = DAY_OUTPUT_2
         self.assertEqual(actual, expected)
 
+    def test_day_with_invalid_census(self):
+        """
+        Test the simulate_day function with a census
+        that has a modification census with a cover type
+        that doesn't exist within the AoI census. This is
+        invalid input. Each land cover type in a modification
+        census must be represented in AoI census.
+        """
+        census = {
+            'distribution': {
+                'b:developed_med': {'cell_count': 400},
+            },
+            'cell_count': 400,
+            'modifications': [
+                {
+                    'distribution': {
+                        'b:developed_low': {'cell_count': 40}
+                    },
+                    'cell_count': 40,
+                    'change': ':deciduous_forest:'
+                },
+            ]
+        }
+
+        precip = 3
+        self.assertRaises(ValueError,
+                          simulate_day, *(census, precip))
+
+
 if __name__ == "__main__":
     unittest.main()
