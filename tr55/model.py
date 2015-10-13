@@ -105,6 +105,25 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     The return value is a dictionary of runoff, evapotranspiration, and
     infiltration as volumes of water.
     """
+    def clamp(runoff, et, inf, precip):
+        """
+        This function clamps ensures that runoff + et + inf <= precip.
+
+        NOTE: infiltration is normally independent of the
+        precipitation level, but this function introduces a slight
+        dependency (that is, at very low levels of precipitation, this
+        function can cause infiltration to be smaller than it
+        ordinarily would be.
+        """
+        total = runoff + et + inf
+        if (total > precip):
+            scale = precip / total
+            runoff *= scale
+            et *= scale
+            inf *= scale
+        return (runoff, et, inf)
+
+    precip = max(0.0, precip)
     soil_type, land_use, bmp = cell.lower().split(':')
 
     # If there is no precipitation, then there is no runoff or
@@ -114,8 +133,9 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     if precip == 0.0:
         return {
             'runoff-vol': 0.0,
-            'et-vol': cell_count * evaptrans,
-            'inf-vol': 0.0
+            # 'et-vol': cell_count * evaptrans,
+            'et-vol': 0.0,
+            'inf-vol': 0.0,
         }
 
     # Deal with the Best Management Practices (BMPs).  For most BMPs,
@@ -124,7 +144,8 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # gardens are treated differently.
     if bmp and is_bmp(bmp) and bmp != 'rain_garden':
         inf = lookup_bmp_infiltration(soil_type, bmp)  # infiltration
-        runoff = precip - (evaptrans + inf)  # runoff
+        runoff = max(0.0, precip - (evaptrans + inf))  # runoff
+        (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
         return {
             'runoff-vol': cell_count * runoff,
             'et-vol': cell_count * evaptrans,
@@ -134,16 +155,21 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         # Here, return a mixture of 20% ideal rain garden and 80%
         # high-intensity residential.
         inf = lookup_bmp_infiltration(soil_type, bmp)
-        runoff = precip - (evaptrans + inf)
+        runoff = max(0.0, precip - (evaptrans + inf))
         hi_res_cell = soil_type + ':developed_med:'
         hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
         hir_run = hi_res['runoff-vol']
         hir_et = hi_res['et-vol']
         hir_inf = hi_res['inf-vol']
+        final_runoff = (0.2 * runoff + 0.8 * hir_run)
+        final_et = (0.2 * evaptrans + 0.8 * hir_et)
+        final_inf = (0.2 * inf + 0.8 * hir_inf)
+        final = clamp(final_runoff, final_et, final_inf, precip)
+        (final_runoff, final_et, final_inf) = final
         return {
-            'runoff-vol': cell_count * (0.2 * runoff + 0.8 * hir_run),
-            'et-vol': cell_count * (0.2 * evaptrans + 0.8 * hir_et),
-            'inf-vol': cell_count * (0.2 * inf + 0.8 * hir_inf)
+            'runoff-vol': cell_count * final_runoff,
+            'et-vol': cell_count * final_et,
+            'inf-vol': cell_count * final_inf
         }
 
     # At this point, if the `bmp` string has non-zero length, it is
@@ -165,12 +191,13 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         runoff = max(pitt_runoff, nrcs_runoff)
     else:
         runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
-    inf = precip - (evaptrans + runoff)
+    inf = max(0.0, precip - (evaptrans + runoff))
 
+    (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
     return {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
-        'inf-vol': cell_count * max(inf, 0.0),
+        'inf-vol': cell_count * inf,
     }
 
 
@@ -363,13 +390,15 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
         verify_census(census)
 
     def fn(cell, cell_count):
+        # Compute et for cell type
         split = cell.split(':')
         if (len(split) == 2):
-            split.append('')
-
-        (_, land_use, bmp) = split
+            (land_use, bmp) = split
+        else:
+            (_, land_use, bmp) = split
         et = et_max * lookup_ki(bmp or land_use)
 
+        # Simulate the cell for one day
         return simulate_cell_day(precip, et, cell, cell_count)
 
     return simulate_modifications(census, fn, cell_res, precolumbian)
