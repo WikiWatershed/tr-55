@@ -1469,5 +1469,57 @@ class TestModel(unittest.TestCase):
         total = runoff + et +inf
         self.assertAlmostEqual(total, precip)
 
+    def test_bmps_on_d(self):
+        """
+        Make sure that BMPS all work on soil type D.
+        """
+        census = {
+            "cell_count": 2,
+            "distribution": {
+                "c:developed_med": {"cell_count": 1},
+                "d:developed_med": {"cell_count": 1}
+            },
+            "modifications": [
+                {
+                    "change": "::porous_paving",
+                    "cell_count": 1,
+                    "distribution": {
+                        "c:developed_med": {"cell_count": 1}
+                    }
+                },
+                {
+                    "change": "::porous_paving",
+                    "cell_count": 1,
+                    "distribution": {
+                        "d:developed_med": {"cell_count": 1}
+                    }
+                }
+            ]
+        }
+
+        # Porous Paving
+        precip = 3.3
+        result = simulate_day(census, precip)
+        c_inf = result['modified']['distribution']['c:developed_med']['inf']
+        d_inf = result['modified']['distribution']['d:developed_med']['inf']
+        self.assertAlmostEqual(c_inf / 3, d_inf)
+
+        # Rain Garden
+        census['modifications'][0]['change'] = '::rain_garden'
+        census['modifications'][1]['change'] = '::rain_garden'
+        result = simulate_day(census, precip)
+        c_inf = result['modified']['distribution']['c:developed_med']['inf']
+        d_inf = result['modified']['distribution']['d:developed_med']['inf']
+        self.assertLess(d_inf, c_inf)
+        self.assertGreater(d_inf / c_inf, 0.5)
+
+        # Infiltration Trench
+        census['modifications'][0]['change'] = '::infiltration_trench'
+        census['modifications'][1]['change'] = '::infiltration_trench'
+        result = simulate_day(census, precip)
+        c_inf = result['modified']['distribution']['c:developed_med']['inf']
+        d_inf = result['modified']['distribution']['d:developed_med']['inf']
+        self.assertAlmostEqual(c_inf / 3, d_inf)
+
 if __name__ == "__main__":
     unittest.main()

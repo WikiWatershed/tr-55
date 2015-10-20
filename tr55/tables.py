@@ -30,9 +30,12 @@ LAND_USE_VALUES = {
     'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
 
     'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},  # noqa
-    'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73}},  # noqa
-    'rain_garden':          {'ki': 0.08, 'infiltration': {'a': 1.2, 'b': 0.6, 'c': 0.2}},  # noqa
-    'infiltration_trench':  {'ki': 0.0, 'infiltration': {'a': 2.4, 'b': 1.8, 'c': 1.4}},  # noqa
+    # The infiltration amounts for Porous Paving, Rain Gardens, and
+    # Infiltration Trenches on soil type D are typically one-third of
+    # what they are on soil type C.
+    'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73, 'd': (1.73 / 3)}},  # noqa
+    'rain_garden':          {'ki': 0.08, 'infiltration': {'a': 1.2, 'b': 0.6, 'c': 0.2, 'd': (0.2 / 3)}},  # noqa
+    'infiltration_trench':  {'ki': 0.0, 'infiltration': {'a': 2.4, 'b': 1.8, 'c': 1.4, 'd': (1.4 / 3)}},  # noqa
     'cluster_housing':      {'ki': 0.42},
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}}  # noqa
 }
