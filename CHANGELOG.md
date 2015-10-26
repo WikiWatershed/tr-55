@@ -1,3 +1,10 @@
+## 1.0.3
+
+- Removed unused code paths (`simulate_year`)
+- Updated documentation
+- Update correct D Soil type values for BMPs
+- Update `barren_land` curve numbers to align with published model description
+
 ## 1.0.1-1.0.2
 
 - Same as `1.0.0`, but with a valid `setup.py` version.

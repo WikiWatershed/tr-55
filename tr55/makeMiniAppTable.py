@@ -9,6 +9,15 @@ import sys
 
 from tr55.model import simulate_day
 
+
+def cm_to_inches(cm):
+    return cm / 2.54
+
+
+def inches_to_cm(inches):
+    return inches * 2.54
+
+
 if len(sys.argv) != 2:
     print 'Usage: python -m tr55.makeMiniAppTable csv_file_name'
     sys.exit()
@@ -20,7 +29,7 @@ with open(csv_file_name, 'wb') as csv_file:
     writer.writerow(('P', 'land', 'soil', 'ET', 'I', 'R'))
 
     # values of inputs to the model
-    precips = [0.5, 1.0, 2.0, 3.2, 8.0]
+    precip_cm = [1, 3, 5, 8, 21]
 
     # The land uses in the original mini-app used non NLCD types
     # (residential, high intensity residential, commercial, etc.) These were
@@ -52,7 +61,7 @@ with open(csv_file_name, 'wb') as csv_file:
 
     # For each input value, compute the model outputs for a
     # single day and tile.
-    for precip, land_use, soil_type in product(precips,
+    for precip, land_use, soil_type in product(precip_cm,
                                                land_uses,
                                                soil_types):
         cells = {
@@ -62,11 +71,11 @@ with open(csv_file_name, 'wb') as csv_file:
             }
         }
 
-        model_out = simulate_day(cells, precip)['unmodified']
+        model_out = simulate_day(cells, cm_to_inches(precip))['unmodified']
 
         writer.writerow((precip,
                          land_use,
                          soil_type_map[soil_type],
-                         model_out['et'],
-                         model_out['inf'],
-                         model_out['runoff']))
+                         inches_to_cm(model_out['et']),
+                         inches_to_cm(model_out['inf']),
+                         inches_to_cm(model_out['runoff'])))
