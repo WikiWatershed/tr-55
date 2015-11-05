@@ -175,7 +175,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # At this point, if the `bmp` string has non-zero length, it is
     # equal to either 'no_till' or 'cluster_housing'.
     if bmp and bmp != 'no_till' and bmp != 'cluster_housing':
-        raise Exception('Unexpected BMP: %s' % bmp)
+        raise KeyError('Unexpected BMP: %s' % bmp)
     land_use = bmp or land_use
 
     # When the land use is a built-type and the level of precipitation

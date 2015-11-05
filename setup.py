@@ -13,7 +13,7 @@ tests_require = ['nose >= 1.3.4']
 
 setup(
     name='tr55',
-    version='1.0.4',
+    version='1.0.5',
     description='A Python implementation of TR-55.',
     long_description=long_description,
     url='https://github.com/azavea/tr-55',
