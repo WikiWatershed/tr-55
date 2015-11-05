@@ -17,7 +17,7 @@ and variables used in this program are as follows:
 
 import copy
 
-from tr55.tablelookup import lookup_pet, lookup_cn, lookup_bmp_infiltration, \
+from tr55.tablelookup import lookup_cn, lookup_bmp_infiltration, \
     lookup_ki, is_bmp, is_built_type, make_precolumbian, get_pollutants
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
@@ -33,7 +33,7 @@ def runoff_pitt(precip, land_use):
     c3 = +1.295682223e-1
     c4 = +9.375868043e-1
     c5 = -2.235170859e-2
-    c6 = +0.170228067e0
+    c6 = +0.170228067e+0
     c7 = -3.971810782e-1
     c8 = +3.887275538e-1
     c9 = -2.289321859e-2
@@ -45,14 +45,12 @@ def runoff_pitt(precip, land_use):
     urb_grass = (c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9
 
     runoff_vals = {
-        'water':           impervious,
-        'li_residential':  0.20 * impervious + 0.80 * urb_grass,
+        'open_water':           impervious,
+        'developed_low':  0.20 * impervious + 0.80 * urb_grass,
         'cluster_housing': 0.20 * impervious + 0.80 * urb_grass,
-        'hi_residential':  0.65 * impervious + 0.35 * urb_grass,
-        'commercial':      impervious,
-        'industrial':      impervious,
-        'transportation':  impervious,
-        'urban_grass':     urb_grass
+        'developed_med':  0.65 * impervious + 0.35 * urb_grass,
+        'developed_high':      impervious,
+        'developed_open':     urb_grass
     }
 
     if land_use not in runoff_vals:
@@ -63,7 +61,7 @@ def runoff_pitt(precip, land_use):
 
 def nrcs_cutoff(precip, curve_number):
     """
-    A function to find the cutoff between preciptation/curve number
+    A function to find the cutoff between precipitation/curve number
     pairs that have zero runoff by definition, and those that do not.
     """
     if precip <= -1 * (2 * (curve_number - 100.0) / curve_number):
@@ -78,7 +76,7 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     runoff value in inches.
     """
     if land_use == 'cluster_housing':
-        land_use = 'li_residential'
+        land_use = 'developed_low'
     curve_number = lookup_cn(soil_type, land_use)
     if nrcs_cutoff(precip, curve_number):
         return 0.0
@@ -107,17 +105,37 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     The return value is a dictionary of runoff, evapotranspiration, and
     infiltration as volumes of water.
     """
+    def clamp(runoff, et, inf, precip):
+        """
+        This function clamps ensures that runoff + et + inf <= precip.
+
+        NOTE: infiltration is normally independent of the
+        precipitation level, but this function introduces a slight
+        dependency (that is, at very low levels of precipitation, this
+        function can cause infiltration to be smaller than it
+        ordinarily would be.
+        """
+        total = runoff + et + inf
+        if (total > precip):
+            scale = precip / total
+            runoff *= scale
+            et *= scale
+            inf *= scale
+        return (runoff, et, inf)
+
+    precip = max(0.0, precip)
     soil_type, land_use, bmp = cell.lower().split(':')
 
     # If there is no precipitation, then there is no runoff or
-    # infiltration.  There is evapotranspiration, however (is
+    # infiltration.  There is evapotranspiration, however (it is
     # understood that over a period of time, this can lead to the sum
     # of the three values exceeding the total precipitation).
     if precip == 0.0:
         return {
             'runoff-vol': 0.0,
-            'et-vol': cell_count * evaptrans,
-            'inf-vol': 0.0
+            # 'et-vol': cell_count * evaptrans,
+            'et-vol': 0.0,
+            'inf-vol': 0.0,
         }
 
     # Deal with the Best Management Practices (BMPs).  For most BMPs,
@@ -126,30 +144,38 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # gardens are treated differently.
     if bmp and is_bmp(bmp) and bmp != 'rain_garden':
         inf = lookup_bmp_infiltration(soil_type, bmp)  # infiltration
-        runoff = precip - (evaptrans + inf)  # runoff
+        runoff = max(0.0, precip - (evaptrans + inf))  # runoff
+        (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
         return {
             'runoff-vol': cell_count * runoff,
             'et-vol': cell_count * evaptrans,
             'inf-vol': cell_count * inf
         }
     elif bmp and bmp == 'rain_garden':
-        # Here, return a mixture of 20% ideal rain garden and 80% high
-        # intensity residential.
+        # Here, return a mixture of 20% ideal rain garden and 80%
+        # high-intensity residential.
         inf = lookup_bmp_infiltration(soil_type, bmp)
-        runoff = precip - (evaptrans + inf)
-        hi_res_cell = soil_type + ':hi_residential:'
+        runoff = max(0.0, precip - (evaptrans + inf))
+        hi_res_cell = soil_type + ':developed_med:'
         hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
         hir_run = hi_res['runoff-vol']
         hir_et = hi_res['et-vol']
         hir_inf = hi_res['inf-vol']
+        final_runoff = (0.2 * runoff + 0.8 * hir_run)
+        final_et = (0.2 * evaptrans + 0.8 * hir_et)
+        final_inf = (0.2 * inf + 0.8 * hir_inf)
+        final = clamp(final_runoff, final_et, final_inf, precip)
+        (final_runoff, final_et, final_inf) = final
         return {
-            'runoff-vol': cell_count * (0.2 * runoff + 0.8 * hir_run),
-            'et-vol': cell_count * (0.2 * evaptrans + 0.8 * hir_et),
-            'inf-vol': cell_count * (0.2 * inf + 0.8 * hir_inf)
+            'runoff-vol': cell_count * final_runoff,
+            'et-vol': cell_count * final_et,
+            'inf-vol': cell_count * final_inf
         }
 
     # At this point, if the `bmp` string has non-zero length, it is
     # equal to either 'no_till' or 'cluster_housing'.
+    if bmp and bmp != 'no_till' and bmp != 'cluster_housing':
+        raise Exception('Unexpected BMP: %s' % bmp)
     land_use = bmp or land_use
 
     # When the land use is a built-type and the level of precipitation
@@ -165,42 +191,14 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         runoff = max(pitt_runoff, nrcs_runoff)
     else:
         runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
-    inf = precip - (evaptrans + runoff)
+    inf = max(0.0, precip - (evaptrans + runoff))
 
+    (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
     return {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
-        'inf-vol': cell_count * max(inf, 0.0),
+        'inf-vol': cell_count * inf,
     }
-
-
-def simulate_cell_year(cell, cell_count):
-    """
-    Simulate a cell-type for an entire year using sample precipitation and
-    evapotranspiration data.
-
-    The `cell` parameter is a string with the soil type and land use
-    separated by a colon.
-
-    The `cell_count` parameter is the number of cells of this type.
-
-    If the `precolumbian` parameter is true, then the cell is
-    simulated under Pre-Columbian circumstances (anything other than
-    water, woody wetland, and herbaceous wetland becomes mixed
-    forest).
-    """
-    split = cell.split(':')
-    if (len(split) == 2):
-        split.append('')
-    land_use = split[1]
-    bmp = split[2]
-
-    retval = {}
-    for day in range(365):
-        (precip, evaptrans) = lookup_pet(day, bmp or land_use)
-        result = simulate_cell_day(precip, evaptrans, cell, cell_count)
-        retval = dict_plus(retval, result)
-    return retval
 
 
 def create_unmodified_census(census):
@@ -225,27 +223,40 @@ def create_modified_census(census):
     mod = copy.deepcopy(census)
     mod.pop('modifications', None)
 
-    if 'modifications' in census:
-        for modification in census['modifications']:
-            for (cell, subcensus) in modification['distribution'].items():
-                parent = mod['distribution'][cell]
-                n = parent['cell_count']
-                m = subcensus['cell_count']
+    for (cell, subcensus) in mod['distribution'].items():
+        n = subcensus['cell_count']
 
-                if 'change' in modification:
-                    soil_1, land_1 = cell.split(':')
-                    soil_2, land_2, bmp = modification['change'].split(':')
-                    soil = soil_2 or soil_1
-                    land = land_2 or land_1
-                    changed_cell = '%s:%s:%s' % (soil, land, bmp)
-                else:
-                    raise Exception('Unknown modification type.')
+        changes = {
+            'distribution': {
+                cell: {
+                    'distribution': {
+                        cell: {'cell_count': n}
+                    }
+                }
+            }
+        }
 
-                if 'distribution' not in parent:
-                    parent['distribution'] = {cell: {'cell_count': n}}
+        mod = dict_plus(mod, changes)
 
-                parent['distribution'][cell]['cell_count'] -= m
-                parent['distribution'][changed_cell] = {'cell_count': m}
+    for modification in (census.get('modifications') or []):
+        for (orig_cell, subcensus) in modification['distribution'].items():
+            n = subcensus['cell_count']
+            soil1, land1 = orig_cell.split(':')
+            soil2, land2, bmp = modification['change'].split(':')
+            changed_cell = '%s:%s:%s' % (soil2 or soil1, land2 or land1, bmp)
+
+            changes = {
+                'distribution': {
+                    orig_cell: {
+                        'distribution': {
+                            orig_cell: {'cell_count': -n},
+                            changed_cell: {'cell_count': n}
+                        }
+                    }
+                }
+            }
+
+            mod = dict_plus(mod, changes)
 
     return mod
 
@@ -282,7 +293,7 @@ def simulate_water_quality(tree, cell_res, fn,
                 subtree_ex_dist = subtree.copy()
                 subtree_ex_dist.pop('distribution', None)
                 tally = dict_plus(tally, subtree_ex_dist)
-                tree.update(tally)  # update this node
+            tree.update(tally)  # update this node
 
         # effectively a leaf
         elif n == 0:
@@ -291,21 +302,26 @@ def simulate_water_quality(tree, cell_res, fn,
 
     # Leaf node.
     elif 'cell_count' in tree and 'distribution' not in tree:
+        # the number of cells covered by this leaf
         n = tree['cell_count']
+
+        # canonicalize the current_cell string
         split = current_cell.split(':')
         if (len(split) == 2):
             split.append('')
         if precolumbian:
             split[1] = make_precolumbian(split[1])
+        current_cell = '%s:%s:%s' % tuple(split)
 
-        result = fn('%s:%s:%s' % tuple(split), n)  # runoff, et, inf
+        # run the runoff model on this leaf
+        result = fn(current_cell, n)  # runoff, et, inf
         tree.update(result)
 
-        # water quality
+        # perform water quality calculation
         if n != 0:
             soil_type, land_use, bmp = split
-            runoff = result['runoff-vol'] / n
-            liters = get_volume_of_runoff(runoff, n, cell_res)
+            runoff_per_cell = result['runoff-vol'] / n
+            liters = get_volume_of_runoff(runoff_per_cell, n, cell_res)
             for pol in get_pollutants():
                 tree[pol] = get_pollutant_load(land_use, pol, liters)
 
@@ -335,7 +351,7 @@ def postpass(tree):
 
 def simulate_modifications(census, fn, cell_res, precolumbian=False):
     """
-    Simulate an entire year, including effects of modifications.
+    Simulate effects of modifications.
 
     `census` contains a distribution of cell-types in the area of interest.
 
@@ -357,42 +373,43 @@ def simulate_modifications(census, fn, cell_res, precolumbian=False):
     }
 
 
-def simulate_year(census, cell_res=10, precolumbian=False):
-    """
-    Simulate an entire year, including effects of modifications.
-
-    `census` contains a distribution of cell-types in the area of interest.
-
-    `cell_res` is as described in `simulate_water_quality`.
-
-    `precolumbian` is as described in `simulate_cell_year`.
-    """
-    def fn(cell, cell_count):
-        return simulate_cell_year(cell, cell_count)
-
-    return simulate_modifications(census, fn, cell_res, precolumbian)
-
-
 def simulate_day(census, precip, cell_res=10, precolumbian=False):
     """
-    Simulate a day, including effects of modifications.
+    Simulate a day, including water quality effects of modifications.
 
     `census` contains a distribution of cell-types in the area of interest.
 
     `cell_res` is as described in `simulate_water_quality`.
 
-    `precolumbian` is as described in `simulate_cell_year`.
+    `precolumbian` indicates that artificial types should be turned
+    into forest.
     """
     et_max = 0.207
 
+    if 'modifications' in census:
+        verify_census(census)
+
     def fn(cell, cell_count):
+        # Compute et for cell type
         split = cell.split(':')
         if (len(split) == 2):
-            split.append('')
-
-        (_, land_use, bmp) = split
+            (land_use, bmp) = split
+        else:
+            (_, land_use, bmp) = split
         et = et_max * lookup_ki(bmp or land_use)
 
+        # Simulate the cell for one day
         return simulate_cell_day(precip, et, cell, cell_count)
 
     return simulate_modifications(census, fn, cell_res, precolumbian)
+
+
+def verify_census(census):
+    """
+    Assures that there is no soil type/land cover pair
+    in a modification census that isn't in the AoI census.
+    """
+    for modification in census['modifications']:
+        for land_cover in modification['distribution']:
+            if land_cover not in census['distribution']:
+                raise ValueError("Invalid modification census")

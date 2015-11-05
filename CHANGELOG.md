@@ -1,3 +1,23 @@
+## 1.0.4
+
+- Change exception class of raised Exceptions to more specific KeyError exception.
+
+## 1.0.3
+
+- Removed unused code paths (`simulate_year`)
+- Updated documentation
+- Update correct D Soil type values for BMPs
+- Update `barren_land` curve numbers to align with published model description
+
+## 1.0.1-1.0.2
+
+- Same as `1.0.0`, but with a valid `setup.py` version.
+
+## 1.0.0
+
+- Input format was changed. Strings used to run a model now align to NLCD types. A full list is provided in the readme. Other land types that were similar to NLCD types (and used these types to do calculations) were removed.
+- Output strings were changed to match NLCD types.
+
 ## 0.2.2
 
 - Same as `0.2.1`, but with a valid `setup.py` version.
