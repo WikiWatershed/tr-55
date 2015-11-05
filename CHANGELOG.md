@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Change exception class of raised Exceptions to more specific KeyError exception.
+
 ## 1.0.3
 
 - Removed unused code paths (`simulate_year`)
