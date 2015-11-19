@@ -41,15 +41,15 @@ def runoff_pitt(precip, land_use):
     p3 = pow(precip, 3)
     p2 = pow(precip, 2)
 
-    impervious = (c1 * p3) + (c2 * p2) + (c3 * precip) + c4
-    urb_grass = (c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9
+    impervious = ((c1 * p3) + (c2 * p2) + (c3 * precip) + c4) * precip
+    urb_grass = ((c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9) * precip  # noqa
 
     runoff_vals = {
         'open_water':           impervious,
         'developed_low':  0.20 * impervious + 0.80 * urb_grass,
         'cluster_housing': 0.20 * impervious + 0.80 * urb_grass,
         'developed_med':  0.65 * impervious + 0.35 * urb_grass,
-        'developed_high':      impervious,
+        'developed_high': 0.85 * impervious + 0.15 * urb_grass,
         'developed_open':     urb_grass
     }
 

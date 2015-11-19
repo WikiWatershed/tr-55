@@ -14,7 +14,7 @@ TR-55 tables
 LAND_USE_VALUES = {
     'open_water':           {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
 #    'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},  # noqa
-    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 68, 'b': 79, 'c': 86, 'd': 89}},  # noqa
+    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},  # noqa
     'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},  # noqa
     'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},  # noqa
     'developed_high':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},  # noqa
@@ -26,8 +26,8 @@ LAND_USE_VALUES = {
     'grassland':            {'nlcd': 71, 'ki': 0.6, 'cn': {'a': 30, 'b': 58, 'c': 71, 'd': 78}},  # noqa
     'pasture':              {'nlcd': 81, 'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},  # noqa
     'cultivated_crops':     {'nlcd': 82, 'ki': 0.9, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},  # noqa
-    'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
-    'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 98, 'b': 98, 'c': 98, 'd': 98}},  # noqa
+    'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},  # noqa
+    'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},  # noqa
 
     'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},  # noqa
     # The infiltration amounts for Porous Paving, Rain Gardens, and
