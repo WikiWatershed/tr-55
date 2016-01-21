@@ -17,7 +17,7 @@ and variables used in this program are as follows:
 
 import copy
 
-from tr55.tablelookup import lookup_cn, lookup_bmp_infiltration, \
+from tr55.tablelookup import lookup_cn, lookup_bmp_storage, \
     lookup_ki, is_bmp, is_built_type, make_precolumbian, get_pollutants
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
@@ -107,9 +107,9 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     """
     def clamp(runoff, et, inf, precip):
         """
-        This function clamps ensures that runoff + et + inf <= precip.
+        This function ensures that runoff + et + inf <= precip.
 
-        NOTE: infiltration is normally independent of the
+        NOTE: Infiltration is normally independent of the
         precipitation level, but this function introduces a slight
         dependency (that is, at very low levels of precipitation, this
         function can cause infiltration to be smaller than it
@@ -126,62 +126,27 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     precip = max(0.0, precip)
     soil_type, land_use, bmp = cell.lower().split(':')
 
-    # If there is no precipitation, then there is no runoff or
-    # infiltration.  There is evapotranspiration, however (it is
-    # understood that over a period of time, this can lead to the sum
-    # of the three values exceeding the total precipitation).
+    # If  there  is no  precipitation,  then  there  is no  runoff  or
+    # infiltration;  however,  there  is evapotranspiration.   (It  is
+    # understood that over a period of  time, this can lead to the sum
+    # of the three values exceeding the total precipitation.)
     if precip == 0.0:
         return {
             'runoff-vol': 0.0,
-            # 'et-vol': cell_count * evaptrans,
             'et-vol': 0.0,
             'inf-vol': 0.0,
         }
 
-    # Deal with the Best Management Practices (BMPs).  For most BMPs,
-    # the infiltration is read from the table and the runoff is what
-    # is left over after infiltration and evapotranspiration.  Rain
-    # gardens are treated differently.
-    if bmp and is_bmp(bmp) and bmp != 'rain_garden':
-        inf = lookup_bmp_infiltration(soil_type, bmp)  # infiltration
-        runoff = max(0.0, precip - (evaptrans + inf))  # runoff
-        (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
-        return {
-            'runoff-vol': cell_count * runoff,
-            'et-vol': cell_count * evaptrans,
-            'inf-vol': cell_count * inf
-        }
-    elif bmp and bmp == 'rain_garden':
-        # Here, return a mixture of 20% ideal rain garden and 80%
-        # high-intensity residential.
-        inf = lookup_bmp_infiltration(soil_type, bmp)
-        runoff = max(0.0, precip - (evaptrans + inf))
-        hi_res_cell = soil_type + ':developed_med:'
-        hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
-        hir_run = hi_res['runoff-vol']
-        hir_et = hi_res['et-vol']
-        hir_inf = hi_res['inf-vol']
-        final_runoff = (0.2 * runoff + 0.8 * hir_run)
-        final_et = (0.2 * evaptrans + 0.8 * hir_et)
-        final_inf = (0.2 * inf + 0.8 * hir_inf)
-        final = clamp(final_runoff, final_et, final_inf, precip)
-        (final_runoff, final_et, final_inf) = final
-        return {
-            'runoff-vol': cell_count * final_runoff,
-            'et-vol': cell_count * final_et,
-            'inf-vol': cell_count * final_inf
-        }
+    # If  the BMP  is cluster_housing  or  no_till, then  make it  the
+    # land-use.  This is  done because those two types  of BMPs behave
+    # more like land-uses than they do BMPs.
+    if bmp and not is_bmp(bmp):
+        land_use = bmp or land_use
 
-    # At this point, if the `bmp` string has non-zero length, it is
-    # equal to either 'no_till' or 'cluster_housing'.
-    if bmp and bmp != 'no_till' and bmp != 'cluster_housing':
-        raise KeyError('Unexpected BMP: %s' % bmp)
-    land_use = bmp or land_use
-
-    # When the land use is a built-type and the level of precipitation
+    # When the land-use is a built-type and the level of precipitation
     # is two inches or less, use the Pitt Small Storm Hydrology Model.
-    # When the land use is a built-type but the level of precipitation
-    # is higher, the runoff is the larger of that predicted by the
+    # When the land-use is a built-type but the level of precipitation
+    # is higher,  the runoff is  the larger  of that predicted  by the
     # Pitt model and NRCS model.  Otherwise, return the NRCS amount.
     if is_built_type(land_use) and precip <= 2.0:
         runoff = runoff_pitt(precip, land_use)
@@ -204,7 +169,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
 def create_unmodified_census(census):
     """
     This creates a cell census, ignoring any modifications.  The
-    output is suitable for use with `simulate_water_quality`.
+    output is suitable for use as input to `simulate_water_quality`.
     """
     unmod = copy.deepcopy(census)
     unmod.pop('modifications', None)
@@ -214,7 +179,7 @@ def create_unmodified_census(census):
 def create_modified_census(census):
     """
     This creates a cell census, with modifications, that is suitable
-    for use with `simulate_water_quality`.
+    for use as input to `simulate_water_quality`.
 
     For every type of cell that undergoes modification, the
     modifications are indicated with a sub-distribution under that
