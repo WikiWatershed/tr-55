@@ -18,7 +18,8 @@ and variables used in this program are as follows:
 import copy
 
 from tr55.tablelookup import lookup_cn, lookup_bmp_storage, \
-    lookup_ki, is_bmp, is_built_type, make_precolumbian, get_pollutants
+    lookup_ki, is_bmp, is_built_type, make_precolumbian, \
+    get_pollutants, get_bmps
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
 
@@ -131,11 +132,14 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # understood that over a period of  time, this can lead to the sum
     # of the three values exceeding the total precipitation.)
     if precip == 0.0:
-        return {
+        retval = {
             'runoff-vol': 0.0,
             'et-vol': 0.0,
             'inf-vol': 0.0,
         }
+        if is_bmp(bmp):
+            retval[bmp] = cell_count
+        return retval
 
     # If  the BMP  is cluster_housing  or  no_till, then  make it  the
     # land-use.  This is  done because those two types  of BMPs behave
@@ -159,11 +163,14 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     inf = max(0.0, precip - (evaptrans + runoff))
 
     (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
-    return {
+    retval = {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
         'inf-vol': cell_count * inf,
     }
+    if is_bmp(bmp):
+        retval[bmp] = cell_count
+    return retval
 
 
 def create_unmodified_census(census):
@@ -227,7 +234,7 @@ def create_modified_census(census):
 
 
 def simulate_water_quality(tree, cell_res, fn,
-                           current_cell=None, precolumbian=False):
+                           pct=1.0, current_cell=None, precolumbian=False):
     """
     Perform a water quality simulation by doing simulations on each of
     the cell types (leaves), then adding them together by summing the
@@ -235,6 +242,8 @@ def simulate_water_quality(tree, cell_res, fn,
 
     `tree` is the (sub)tree of cell distributions that is currently
     under consideration.
+
+    `pct` is the percentage of calculated water volume to retain.
 
     `cell_res` is the size of each cell (used for turning inches of
     water into volumes of water).
@@ -254,7 +263,7 @@ def simulate_water_quality(tree, cell_res, fn,
             tally = {}
             for cell, subtree in tree['distribution'].items():
                 simulate_water_quality(subtree, cell_res, fn,
-                                       cell, precolumbian)
+                                       pct, cell, precolumbian)
                 subtree_ex_dist = subtree.copy()
                 subtree_ex_dist.pop('distribution', None)
                 tally = dict_plus(tally, subtree_ex_dist)
@@ -280,6 +289,7 @@ def simulate_water_quality(tree, cell_res, fn,
 
         # run the runoff model on this leaf
         result = fn(current_cell, n)  # runoff, et, inf
+        result['runoff-vol'] *= pct
         tree.update(result)
 
         # perform water quality calculation
@@ -314,7 +324,22 @@ def postpass(tree):
             postpass(subtree)
 
 
-def simulate_modifications(census, fn, cell_res, precolumbian=False):
+def compute_bmp_effect(census):
+    """
+    Compute the overall percentage of pre-BMP water to retain after
+    considering BMPs.
+    """
+    inch_to_meter = 0.0254
+    cubic_meters = census['runoff-vol'] * inch_to_meter
+
+    reduction = 0.0
+    for bmp in get_bmps():
+        bmp_cell_count = census.get(bmp, 0)
+        reduction += lookup_bmp_storage(bmp) * bmp_cell_count
+    return max(0.0, cubic_meters - reduction) / cubic_meters
+
+
+def simulate_modifications(census, fn, cell_res, pc=False):
     """
     Simulate effects of modifications.
 
@@ -325,11 +350,13 @@ def simulate_modifications(census, fn, cell_res, precolumbian=False):
     `cell_res` is as described in `simulate_water_quality`.
     """
     mod = create_modified_census(census)
-    simulate_water_quality(mod, cell_res, fn, precolumbian=precolumbian)
+    simulate_water_quality(mod, cell_res, fn, precolumbian=pc)
+    pct = compute_bmp_effect(mod)
+    simulate_water_quality(mod, cell_res, fn, pct=pct, precolumbian=pc)
     postpass(mod)
 
     unmod = create_unmodified_census(census)
-    simulate_water_quality(unmod, cell_res, fn, precolumbian=precolumbian)
+    simulate_water_quality(unmod, cell_res, fn, precolumbian=pc)
     postpass(unmod)
 
     return {

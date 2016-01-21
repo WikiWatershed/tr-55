@@ -102,3 +102,7 @@ def get_pollutants():
     Return the list of pollutants.
     """
     return POLLUTANTS
+
+
+def get_bmps():
+    return ['green_roof', 'infiltration_trench', 'porous_paving', 'rain_garden']
