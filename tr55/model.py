@@ -132,14 +132,11 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # understood that over a period of  time, this can lead to the sum
     # of the three values exceeding the total precipitation.)
     if precip == 0.0:
-        retval = {
+        return {
             'runoff-vol': 0.0,
             'et-vol': 0.0,
             'inf-vol': 0.0,
         }
-        if is_bmp(bmp):
-            retval[bmp] = cell_count
-        return retval
 
     # If  the BMP  is cluster_housing  or  no_till, then  make it  the
     # land-use.  This is  done because those two types  of BMPs behave
@@ -163,14 +160,11 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     inf = max(0.0, precip - (evaptrans + runoff))
 
     (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
-    retval = {
+    return {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
         'inf-vol': cell_count * inf,
     }
-    if is_bmp(bmp):
-        retval[bmp] = cell_count
-    return retval
 
 
 def create_unmodified_census(census):
@@ -324,18 +318,20 @@ def postpass(tree):
             postpass(subtree)
 
 
-def compute_bmp_effect(census):
+def compute_bmp_effect(census, m2_per_pixel):
     """
     Compute the overall percentage of pre-BMP water to retain after
     considering BMPs.
     """
-    inch_to_meter = 0.0254
-    cubic_meters = census['runoff-vol'] * inch_to_meter
+    meters_per_inch = 0.0254
+    cubic_meters = census['runoff-vol'] * meters_per_inch * m2_per_pixel
+    bmp_dict = census.get('BMPs', {})
+    bmp_keys = set(bmp_dict.keys())
 
     reduction = 0.0
-    for bmp in get_bmps():
-        bmp_cell_count = census.get(bmp, 0)
-        reduction += lookup_bmp_storage(bmp) * bmp_cell_count
+    for bmp in set.intersection(set(get_bmps()), bmp_keys):
+        bmp_area = bmp_dict[bmp]
+        reduction += lookup_bmp_storage(bmp) * bmp_area
     return max(0.0, cubic_meters - reduction) / cubic_meters
 
 
@@ -351,7 +347,7 @@ def simulate_modifications(census, fn, cell_res, pc=False):
     """
     mod = create_modified_census(census)
     simulate_water_quality(mod, cell_res, fn, precolumbian=pc)
-    pct = compute_bmp_effect(mod)
+    pct = compute_bmp_effect(mod, cell_res)
     simulate_water_quality(mod, cell_res, fn, pct=pct, precolumbian=pc)
     postpass(mod)
 
