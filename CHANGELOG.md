@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Allow infiltration to be increased during BMP modifications
+
 ## 1.1.0
 
 - Allow rain garden, veg basin, porous pavement and green roof BMP types to reduce runoff
