@@ -9,21 +9,21 @@ Table Lookup test set.
 
 import unittest
 
-from tr55.tablelookup import lookup_bmp_infiltration, lookup_cn
+from tr55.tablelookup import lookup_bmp_storage, lookup_cn
 
 
 class TestTablelookups(unittest.TestCase):
     """
     Table Lookup test set
     """
-    def test_lookup_bmp_infiltration(self):
+    def test_lookup_bmp_storage(self):
         """
         Do some spot-checks on the data from Table B.
         """
-        self.assertEqual(lookup_bmp_infiltration('d', 'green_roof'), 1.6)
-        self.assertEqual(lookup_bmp_infiltration('c', 'porous_paving'), 1.73)
-        self.assertEqual(lookup_bmp_infiltration('b', 'rain_garden'), 0.6)
-        self.assertEqual(lookup_bmp_infiltration('a', 'infiltration_trench'), 2.4)  # noqa
+        self.assertEqual(lookup_bmp_storage('green_roof'), 0.396)
+        self.assertEqual(lookup_bmp_storage('infiltration_trench'), 0.610)  # noqa
+        self.assertEqual(lookup_bmp_storage('porous_paving'), 0.267)
+        self.assertEqual(lookup_bmp_storage('rain_garden'), 0.396)
 
     def test_lookup_cn(self):
         """

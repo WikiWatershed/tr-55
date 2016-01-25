@@ -218,12 +218,13 @@ DAY_OUTPUT_1 = {
 }
 
 CENSUS_2 = {
-    'cell_count': 4,
+    'cell_count': 40,
+    'BMPs': {'rain_garden': 33},
     'distribution': {
-        'd:developed_med': {'cell_count': 1},
-        'c:developed_high': {'cell_count': 1},
-        'a:deciduous_forest': {'cell_count': 1},
-        'b:pasture': {'cell_count': 1}
+        'd:developed_med': {'cell_count': 10},
+        'c:developed_high': {'cell_count': 10},
+        'a:deciduous_forest': {'cell_count': 10},
+        'b:pasture': {'cell_count': 10}
     },
     'modifications': [
         {
@@ -239,187 +240,188 @@ CENSUS_2 = {
             'distribution': {
                 'd:developed_med': {'cell_count': 1}
             }
-        },
-        {
-            'change': '::rain_garden',
-            'cell_count': 1,
-            'distribution': {
-                'c:developed_high': {'cell_count': 1}
-            }
         }
     ]
 }
 
 DAY_OUTPUT_2 = {
-    "modified": {
-        "bod": 1.6502192351913143,
-        "cell_count": 4,
-        "distribution": {
-            "a:deciduous_forest": {
-                "bod": 0,
-                "cell_count": 1,
-                "distribution": {
-                    "a:deciduous_forest": {
-                        "bod": 0,
-                        "cell_count": 1,
-                        "et": 0.14489999999999997,
-                        "inf": 1.8551,
-                        "runoff": 0,
-                        "tn": 0,
-                        "tp": 0,
-                        "tss": 0
-                    }
-                },
-                "et": 0.14489999999999997,
-                "inf": 1.8551,
-                "runoff": 0,
-                "tn": 0,
-                "tp": 0,
-                "tss": 0
+    'unmodified': {
+        'BMPs': {
+            'rain_garden': 33
+        },
+        'inf': 1.1166794893660754,
+        'cell_count': 40,
+        'tp': 0.024279302519227997,
+        'tn': 0.151799090357274,
+        'et': 0.07969499999999999,
+        'runoff': 0.8036255106339244,
+        'distribution': {
+            'a:deciduous_forest': {
+                'cell_count': 10,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.14489999999999997,
+                'inf': 1.8550999999999997,
+                'bod': 0.0,
+                'tss': 0.0
             },
-            "b:pasture": {
-                "bod": 0.1793851691515932,
-                "cell_count": 1,
-                "distribution": {
-                    "b:pasture": {
-                        "cell_count": 0,
-                        "et": 0,
-                        "inf": 0,
-                        "runoff": 0
-                    },
-                    "b:pasture:no_till": {
-                        "bod": 0.1793851691515932,
-                        "cell_count": 1,
-                        "et": 0.1863,
-                        "inf": 1.4934093771285855,
-                        "runoff": 0.32029062287141463,
-                        "tn": 0.004125858890486643,
-                        "tp": 0.0005381555074547796,
-                        "tss": 0.0896925845757966
-                    }
-                },
-                "et": 0.1863,
-                "inf": 1.4934093771285855,
-                "runoff": 0.32029062287141463,
-                "tn": 0.004125858890486643,
-                "tp": 0.0005381555074547796,
-                "tss": 0.0896925845757966
+            'b:pasture': {
+                'cell_count': 10,
+                'tp': 0.0012287098889476472,
+                'tn': 0.00942010914859863,
+                'runoff': 0.0731283523456977,
+                'et': 0.1242,
+                'inf': 1.8026716476543023,
+                'bod': 0.40956996298254905,
+                'tss': 0.20478498149127453
             },
-            "c:developed_high": {
-                "bod": 1.0292097358545353,
-                "cell_count": 1,
-                "distribution": {
-                    "c:developed_high": {
-                        "cell_count": 0,
-                        "et": 0,
-                        "inf": 0,
-                        "runoff": 0
-                    },
-                    "c:developed_high:rain_garden": {
-                        "bod": 1.0292097358545353,
-                        "cell_count": 1,
-                        "et": 0.01656,
-                        "inf": 0.5014683687832001,
-                        "runoff": 1.4819716312167999,
-                        "tn": 0.007553071448609896,
-                        "tp": 0.001195211306153654,
-                        "tss": 0.20990898564323546
-                    }
-                },
-                "et": 0.01656,
-                "inf": 0.5014683687832001,
-                "runoff": 1.4819716312167999,
-                "tn": 0.007553071448609896,
-                "tp": 0.001195211306153654,
-                "tss": 0.20990898564323546
+            'c:developed_high': {
+                'cell_count': 10,
+                'tp': 0.013990927082331196,
+                'tn': 0.0884148864230652,
+                'runoff': 1.7347691511690002,
+                'et': 0.012419999999999999,
+                'inf': 0.2528108488309999,
+                'bod': 12.047742765340752,
+                'tss': 2.457156568834417
             },
-            "d:developed_med": {
-                "bod": 0.441624330185186,
-                "cell_count": 1,
-                "distribution": {
-                    "d:developed_med": {
-                        "cell_count": 0,
-                        "et": 0,
-                        "inf": 0,
-                        "runoff": 0
-                    },
-                    "d:developed_med:cluster_housing": {
-                        "bod": 0.441624330185186,
-                        "cell_count": 1,
-                        "et": 0.08693999999999999,
-                        "inf": 1.2448258383119999,
-                        "runoff": 0.6682341616880002,
-                        "tn": 0.002563666662515698,
-                        "tp": 0.000430396592977088,
-                        "tss": 0.052770364878060354
-                    }
-                },
-                "et": 0.08693999999999999,
-                "inf": 1.2448258383119999,
-                "runoff": 0.6682341616880002,
-                "tn": 0.002563666662515698,
-                "tp": 0.000430396592977088,
-                "tss": 0.052770364878060354
+            'd:developed_med': {
+                'cell_count': 10,
+                'tp': 0.009059665547949153,
+                'tn': 0.053964094785610164,
+                'runoff': 1.406604539021,
+                'et': 0.037259999999999995,
+                'inf': 0.5561354609789999,
+                'bod': 9.2960046492,
+                'tss': 1.1107937758789828
             }
         },
-        "et": 0.108675,
-        "inf": 1.2737008960559462,
-        "runoff": 0.6176241039440536,
-        "tn": 0.014242597001612237,
-        "tp": 0.0021637634065855213,
-        "tss": 0.3523719350970924
+        'bod': 21.753317377523302,
+        'tss': 3.772735326204674
     },
-    "unmodified": {
-        "bod": 2.17533173775233,
-        "cell_count": 4,
-        "distribution": {
-            "a:deciduous_forest": {
-                "bod": 0,
-                "cell_count": 1,
-                "et": 0.14489999999999997,
-                "inf": 1.8551,
-                "runoff": 0,
-                "tn": 0,
-                "tp": 0,
-                "tss": 0
+    'modified': {
+        'BMPs': {
+            'rain_garden': 33
+        },
+        'inf': 1.1261651920362576,
+        'cell_count': 40,
+        'tp': 0.0,
+        'tn': 0.0,
+        'et': 0.0824895,
+        'runoff': 0.0,
+        'distribution': {
+            'a:deciduous_forest': {
+                'inf': 1.8550999999999997,
+                'cell_count': 10,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.14489999999999997,
+                'distribution': {
+                    'a:deciduous_forest': {
+                        'cell_count': 10,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.14489999999999997,
+                        'inf': 1.8550999999999997,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    }
+                },
+                'bod': 0.0,
+                'tss': 0.0
             },
-            "b:pasture": {
-                "bod": 0.04095699629825491,
-                "cell_count": 1,
-                "et": 0.12419999999999999,
-                "inf": 1.8026716476543023,
-                "runoff": 0.0731283523456977,
-                "tn": 0.0009420109148598631,
-                "tp": 0.00012287098889476473,
-                "tss": 0.020478498149127455
+            'b:pasture': {
+                'inf': 1.771745420601731,
+                'cell_count': 10,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.13040999999999997,
+                'distribution': {
+                    'b:pasture:no_till': {
+                        'cell_count': 1,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.1863,
+                        'inf': 1.4934093771285855,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    },
+                    'b:pasture': {
+                        'cell_count': 9,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.12419999999999999,
+                        'inf': 1.8026716476543025,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    }
+                },
+                'bod': 0.0,
+                'tss': 0.0
             },
-            "c:developed_high": {
-                "bod": 1.204774276534075,
-                "cell_count": 1,
-                "et": 0.012419999999999999,
-                "inf": 0.2528108488309999,
-                "runoff": 1.734769151169,
-                "tn": 0.008841488642306519,
-                "tp": 0.0013990927082331193,
-                "tss": 0.2457156568834416
+            'c:developed_high': {
+                'inf': 0.2528108488309999,
+                'cell_count': 10,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.012419999999999999,
+                'distribution': {
+                    'c:developed_high': {
+                        'cell_count': 10,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.012419999999999999,
+                        'inf': 0.2528108488309999,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    }
+                },
+                'bod': 0.0,
+                'tss': 0.0
             },
-            "d:developed_med": {
-                "bod": 0.9296004649199999,
-                "cell_count": 1,
-                "et": 0.037259999999999995,
-                "inf": 0.5561354609789999,
-                "runoff": 1.406604539021,
-                "tn": 0.005396409478561016,
-                "tp": 0.0009059665547949152,
-                "tss": 0.1110793775878983
+            'd:developed_med': {
+                'inf': 0.6250044987122999,
+                'cell_count': 10,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.042228,
+                'distribution': {
+                    'd:developed_med': {
+                        'cell_count': 9,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.037259999999999995,
+                        'inf': 0.5561354609789999,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    },
+                    'd:developed_med:cluster_housing': {
+                        'cell_count': 1,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.08693999999999999,
+                        'inf': 1.2448258383119999,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    }
+                },
+                'bod': 0.0,
+                'tss': 0.0
             }
         },
-        "et": 0.07969499999999999,
-        "inf": 1.1166794893660754,
-        "runoff": 0.8036255106339244,
-        "tn": 0.015179909035727399,
-        "tp": 0.002427930251922799,
-        "tss": 0.37727353262046737
+        'bod': 0.0,
+        'tss': 0.0
     }
 }
 
@@ -838,7 +840,7 @@ class TestModel(unittest.TestCase):
             },
             "modifications": [
                 {
-                    "change": "::green_roof",
+                    "change": ":developed_high:",
                     "cell_count": 1,
                     "distribution": {
                         "d:developed_med": {"cell_count": 1}
@@ -854,58 +856,6 @@ class TestModel(unittest.TestCase):
         inf = result['modified']['inf']
         total = runoff + et + inf
         self.assertAlmostEqual(total, precip)
-
-    def test_bmps_on_d(self):
-        """
-        Make sure that BMPS all work on soil type D.
-        """
-        census = {
-            "cell_count": 2,
-            "distribution": {
-                "c:developed_med": {"cell_count": 1},
-                "d:developed_med": {"cell_count": 1}
-            },
-            "modifications": [
-                {
-                    "change": "::porous_paving",
-                    "cell_count": 1,
-                    "distribution": {
-                        "c:developed_med": {"cell_count": 1}
-                    }
-                },
-                {
-                    "change": "::porous_paving",
-                    "cell_count": 1,
-                    "distribution": {
-                        "d:developed_med": {"cell_count": 1}
-                    }
-                }
-            ]
-        }
-
-        # Porous Paving
-        precip = 3.3
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertAlmostEqual(c_inf / 3, d_inf)
-
-        # Rain Garden
-        census['modifications'][0]['change'] = '::rain_garden'
-        census['modifications'][1]['change'] = '::rain_garden'
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertLess(d_inf, c_inf)
-        self.assertGreater(d_inf / c_inf, 0.5)
-
-        # Infiltration Trench
-        census['modifications'][0]['change'] = '::infiltration_trench'
-        census['modifications'][1]['change'] = '::infiltration_trench'
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertAlmostEqual(c_inf / 3, d_inf)
 
 if __name__ == "__main__":
     unittest.main()
