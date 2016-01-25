@@ -29,15 +29,14 @@ LAND_USE_VALUES = {
     'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},  # noqa
     'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},  # noqa
 
-    'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},  # noqa
-    # The infiltration amounts for Porous Paving, Rain Gardens, and
-    # Infiltration Trenches on soil type D are typically one-third of
-    # what they are on soil type C.
-    'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73, 'd': (1.73 / 3)}},  # noqa
-    'rain_garden':          {'ki': 0.08, 'infiltration': {'a': 1.2, 'b': 0.6, 'c': 0.2, 'd': (0.2 / 3)}},  # noqa
-    'infiltration_trench':  {'ki': 0.0, 'infiltration': {'a': 2.4, 'b': 1.8, 'c': 1.4, 'd': (1.4 / 3)}},  # noqa
     'cluster_housing':      {'ki': 0.42},
-    'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}}  # noqa
+    'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},  # noqa
+
+    # BMP storage capacities
+    'green_roof':           {'ki': 0.4,  'storage': 0.396},
+    'infiltration_trench':  {'ki': 0.0,  'storage': 0.610},
+    'porous_paving':        {'ki': 0.0,  'storage': 0.267},
+    'rain_garden':          {'ki': 0.08, 'storage': 0.396},
 }
 
 # The set of best management practices that we know about.  The

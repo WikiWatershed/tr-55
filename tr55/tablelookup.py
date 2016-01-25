@@ -23,18 +23,14 @@ def lookup_ki(land_use):
         return LAND_USE_VALUES[land_use]['ki']
 
 
-def lookup_bmp_infiltration(soil_type, bmp):
+def lookup_bmp_storage(bmp):
     """
     Lookup the amount of infiltration caused by a particular BMP.
     """
-    if bmp not in LAND_USE_VALUES:
+    if not is_bmp(bmp):
         raise KeyError('%s not a BMP' % bmp)
-    elif 'infiltration' not in LAND_USE_VALUES[bmp]:
-        raise KeyError('No infiltration value for BMP %s' % bmp)
-    elif soil_type not in LAND_USE_VALUES[bmp]['infiltration']:
-        raise KeyError('BMP %s incompatible with soil %s' % (bmp, soil_type))
     else:
-        return LAND_USE_VALUES[bmp]['infiltration'][soil_type]
+        return LAND_USE_VALUES[bmp]['storage']
 
 
 def lookup_cn(soil_type, land_use):
@@ -106,3 +102,7 @@ def get_pollutants():
     Return the list of pollutants.
     """
     return POLLUTANTS
+
+
+def get_bmps():
+    return ['green_roof', 'infiltration_trench', 'porous_paving', 'rain_garden']

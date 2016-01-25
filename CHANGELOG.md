@@ -1,3 +1,8 @@
+## 1.1.0
+
+- Allow rain garden, veg basin, porous pavement and green roof BMP types to reduce runoff
+  over entire AoI according to an available volume for water storage per unit BMP Area
+
 ## 1.0.6
 
 - Updated Curve Numbers for NLCD classes 21, 90 & 95 from input from Stroud Water Research
