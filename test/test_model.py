@@ -258,13 +258,13 @@ DAY_OUTPUT_2 = {
         'distribution': {
             'a:deciduous_forest': {
                 'cell_count': 10,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.14489999999999997,
                 'inf': 1.8550999999999997,
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             },
             'b:pasture': {
                 'cell_count': 10,
@@ -304,124 +304,124 @@ DAY_OUTPUT_2 = {
         'BMPs': {
             'rain_garden': 33
         },
-        'inf': 1.1261651920362576,
+        'inf': 1.9175105,
         'cell_count': 40,
-        'tp': 0.0,
-        'tn': 0.0,
+        'tp': 0,
+        'tn': 0,
         'et': 0.0824895,
-        'runoff': 0.0,
+        'runoff': 0,
         'distribution': {
             'a:deciduous_forest': {
                 'inf': 1.8550999999999997,
                 'cell_count': 10,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.14489999999999997,
                 'distribution': {
                     'a:deciduous_forest': {
                         'cell_count': 10,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.14489999999999997,
                         'inf': 1.8550999999999997,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             },
             'b:pasture': {
-                'inf': 1.771745420601731,
+                'inf': 1.86959,
                 'cell_count': 10,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.13040999999999997,
                 'distribution': {
                     'b:pasture:no_till': {
                         'cell_count': 1,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.1863,
-                        'inf': 1.4934093771285855,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.8137,
+                        'bod': 0,
+                        'tss': 0
                     },
                     'b:pasture': {
                         'cell_count': 9,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.12419999999999999,
-                        'inf': 1.8026716476543025,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.8758000000000001,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             },
             'c:developed_high': {
-                'inf': 0.2528108488309999,
+                'inf': 1.9875800000000001,
                 'cell_count': 10,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.012419999999999999,
                 'distribution': {
                     'c:developed_high': {
                         'cell_count': 10,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.012419999999999999,
-                        'inf': 0.2528108488309999,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.9875800000000001,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             },
             'd:developed_med': {
-                'inf': 0.6250044987122999,
+                'inf': 1.9577719999999998,
                 'cell_count': 10,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.042228,
                 'distribution': {
                     'd:developed_med': {
                         'cell_count': 9,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.037259999999999995,
-                        'inf': 0.5561354609789999,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.9627399999999997,
+                        'bod': 0,
+                        'tss': 0
                     },
                     'd:developed_med:cluster_housing': {
                         'cell_count': 1,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.08693999999999999,
-                        'inf': 1.2448258383119999,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.9130600000000002,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             }
         },
-        'bod': 0.0,
-        'tss': 0.0
+        'bod': 0,
+        'tss': 0
     }
 }
 

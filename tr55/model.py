@@ -283,7 +283,9 @@ def simulate_water_quality(tree, cell_res, fn,
 
         # run the runoff model on this leaf
         result = fn(current_cell, n)  # runoff, et, inf
-        result['runoff-vol'] *= pct
+        runoff_adjustment = result['runoff-vol'] - (result['runoff-vol'] * pct)
+        result['runoff-vol'] -= runoff_adjustment
+        result['inf-vol'] += runoff_adjustment
         tree.update(result)
 
         # perform water quality calculation
