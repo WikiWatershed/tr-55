@@ -12,7 +12,7 @@ import unittest
 from tr55.model import runoff_nrcs, \
     simulate_cell_day, simulate_water_quality, \
     create_unmodified_census, create_modified_census, \
-    simulate_day
+    simulate_day, compute_bmp_effect
 from tr55.tablelookup import lookup_ki
 
 # These data are taken directly from Table 2-1 of the revised (1986)
@@ -856,6 +856,20 @@ class TestModel(unittest.TestCase):
         inf = result['modified']['inf']
         total = runoff + et + inf
         self.assertAlmostEqual(total, precip)
+
+    def test_compute_bmp_no_runoff(self):
+        """
+        Test that no runoff will not produce errors when computing BMP effects
+        """
+        census = {
+            'runoff-vol': 0,
+            'BMPs': {
+                'green_roof': 1942
+            }
+        }
+
+        # No exception should be raised, no bmp effect given
+        self.assertEqual(0, compute_bmp_effect(census, 42))
 
 if __name__ == "__main__":
     unittest.main()
