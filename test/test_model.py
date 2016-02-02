@@ -8,7 +8,6 @@ Model test set
 """
 
 import unittest
-from math import sqrt
 
 from tr55.model import runoff_nrcs, \
     simulate_cell_day, simulate_water_quality, \
@@ -26,576 +25,6 @@ CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.
 CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
 CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
-
-# INPUT and OUTPUT are data that were emailed to Azavea in a spreadsheet for
-# testing the TR-55 model implementation. The types were converted to NLCD
-# strings based on the NLCD type number used by tables.py to calculate
-# model results.
-INPUT = [
-    (0.5, 'a:open_water'),
-    (1, 'a:open_water'),
-    (2, 'a:open_water'),
-    (3.2, 'a:open_water'),
-    (8, 'a:open_water'),
-    (0.5, 'a:barren_land'),
-    (1, 'a:barren_land'),
-    (2, 'a:barren_land'),
-    (3.2, 'a:barren_land'),
-    (8, 'a:barren_land'),
-    (0.5, 'a:developed_open'),
-    (1, 'a:developed_open'),
-    (2, 'a:developed_open'),
-    (3.2, 'a:developed_open'),
-    (8, 'a:developed_open'),
-    (0.5, 'a:developed_low'),
-    (1, 'a:developed_low'),
-    (2, 'a:developed_low'),
-    (3.2, 'a:developed_low'),
-    (8, 'a:developed_low'),
-    (0.5, 'a:developed_med'),
-    (1, 'a:developed_med'),
-    (2, 'a:developed_med'),
-    (3.2, 'a:developed_med'),
-    (8, 'a:developed_med'),
-    (0.5, 'a:developed_high'),
-    (1, 'a:developed_high'),
-    (2, 'a:developed_high'),
-    (3.2, 'a:developed_high'),
-    (8, 'a:developed_high'),
-    (0.5, 'a:deciduous_forest'),
-    (0.5, 'a:evergreen_forest'),
-    (0.5, 'a:mixed_forest'),
-    (1, 'a:deciduous_forest'),
-    (1, 'a:evergreen_forest'),
-    (1, 'a:mixed_forest'),
-    (2, 'a:deciduous_forest'),
-    (2, 'a:evergreen_forest'),
-    (2, 'a:mixed_forest'),
-    (3.2, 'a:deciduous_forest'),
-    (3.2, 'a:evergreen_forest'),
-    (3.2, 'a:mixed_forest'),
-    (8, 'a:deciduous_forest'),
-    (8, 'a:evergreen_forest'),
-    (8, 'a:mixed_forest'),
-    (0.5, 'a:grassland'),
-    (1, 'a:grassland'),
-    (2, 'a:grassland'),
-    (3.2, 'a:grassland'),
-    (8, 'a:grassland'),
-    (0.5, 'a:pasture'),
-    (1, 'a:pasture'),
-    (2, 'a:pasture'),
-    (3.2, 'a:pasture'),
-    (8, 'a:pasture'),
-    (0.5, 'a:cultivated_crops'),
-    (1, 'a:cultivated_crops'),
-    (2, 'a:cultivated_crops'),
-    (3.2, 'a:cultivated_crops'),
-    (8, 'a:cultivated_crops'),
-    (0.5, 'a:woody_wetlands'),
-    (0.5, 'a:herbaceous_wetlands'),
-    (1, 'a:woody_wetlands'),
-    (1, 'a:herbaceous_wetlands'),
-    (2, 'a:woody_wetlands'),
-    (2, 'a:herbaceous_wetlands'),
-    (3.2, 'a:woody_wetlands'),
-    (3.2, 'a:herbaceous_wetlands'),
-    (8, 'a:woody_wetlands'),
-    (8, 'a:herbaceous_wetlands'),
-    (0.5, 'b:open_water'),
-    (1, 'b:open_water'),
-    (2, 'b:open_water'),
-    (3.2, 'b:open_water'),
-    (8, 'b:open_water'),
-    (0.5, 'b:barren_land'),
-    (1, 'b:barren_land'),
-    (2, 'b:barren_land'),
-    (3.2, 'b:barren_land'),
-    (8, 'b:barren_land'),
-    (0.5, 'b:developed_open'),
-    (1, 'b:developed_open'),
-    (2, 'b:developed_open'),
-    (3.2, 'b:developed_open'),
-    (8, 'b:developed_open'),
-    (0.5, 'b:developed_low'),
-    (1, 'b:developed_low'),
-    (2, 'b:developed_low'),
-    (3.2, 'b:developed_low'),
-    (8, 'b:developed_low'),
-    (0.5, 'b:developed_med'),
-    (1, 'b:developed_med'),
-    (2, 'b:developed_med'),
-    (3.2, 'b:developed_med'),
-    (8, 'b:developed_med'),
-    (0.5, 'b:developed_high'),
-    (1, 'b:developed_high'),
-    (2, 'b:developed_high'),
-    (3.2, 'b:developed_high'),
-    (8, 'b:developed_high'),
-    (0.5, 'b:deciduous_forest'),
-    (0.5, 'b:evergreen_forest'),
-    (0.5, 'b:mixed_forest'),
-    (1, 'b:deciduous_forest'),
-    (1, 'b:evergreen_forest'),
-    (1, 'b:mixed_forest'),
-    (2, 'b:deciduous_forest'),
-    (2, 'b:evergreen_forest'),
-    (2, 'b:mixed_forest'),
-    (3.2, 'b:deciduous_forest'),
-    (3.2, 'b:evergreen_forest'),
-    (3.2, 'b:mixed_forest'),
-    (8, 'b:deciduous_forest'),
-    (8, 'b:evergreen_forest'),
-    (8, 'b:mixed_forest'),
-    (0.5, 'b:grassland'),
-    (1, 'b:grassland'),
-    (2, 'b:grassland'),
-    (3.2, 'b:grassland'),
-    (8, 'b:grassland'),
-    (0.5, 'b:pasture'),
-    (1, 'b:pasture'),
-    (2, 'b:pasture'),
-    (3.2, 'b:pasture'),
-    (8, 'b:pasture'),
-    (0.5, 'b:cultivated_crops'),
-    (1, 'b:cultivated_crops'),
-    (2, 'b:cultivated_crops'),
-    (3.2, 'b:cultivated_crops'),
-    (8, 'b:cultivated_crops'),
-    (0.5, 'b:woody_wetlands'),
-    (0.5, 'b:herbaceous_wetlands'),
-    (1, 'b:woody_wetlands'),
-    (1, 'b:herbaceous_wetlands'),
-    (2, 'b:woody_wetlands'),
-    (2, 'b:herbaceous_wetlands'),
-    (3.2, 'b:woody_wetlands'),
-    (3.2, 'b:herbaceous_wetlands'),
-    (8, 'b:woody_wetlands'),
-    (8, 'b:herbaceous_wetlands'),
-    (0.5, 'c:open_water'),
-    (1, 'c:open_water'),
-    (2, 'c:open_water'),
-    (3.2, 'c:open_water'),
-    (8, 'c:open_water'),
-    (0.5, 'c:barren_land'),
-    (1, 'c:barren_land'),
-    (2, 'c:barren_land'),
-    (3.2, 'c:barren_land'),
-    (8, 'c:barren_land'),
-    (0.5, 'c:developed_open'),
-    (1, 'c:developed_open'),
-    (2, 'c:developed_open'),
-    (3.2, 'c:developed_open'),
-    (8, 'c:developed_open'),
-    (0.5, 'c:developed_low'),
-    (1, 'c:developed_low'),
-    (2, 'c:developed_low'),
-    (3.2, 'c:developed_low'),
-    (8, 'c:developed_low'),
-    (0.5, 'c:developed_med'),
-    (1, 'c:developed_med'),
-    (2, 'c:developed_med'),
-    (3.2, 'c:developed_med'),
-    (8, 'c:developed_med'),
-    (0.5, 'c:developed_high'),
-    (1, 'c:developed_high'),
-    (2, 'c:developed_high'),
-    (3.2, 'c:developed_high'),
-    (8, 'c:developed_high'),
-    (0.5, 'c:deciduous_forest'),
-    (0.5, 'c:evergreen_forest'),
-    (0.5, 'c:mixed_forest'),
-    (1, 'c:deciduous_forest'),
-    (1, 'c:evergreen_forest'),
-    (1, 'c:mixed_forest'),
-    (2, 'c:deciduous_forest'),
-    (2, 'c:evergreen_forest'),
-    (2, 'c:mixed_forest'),
-    (3.2, 'c:deciduous_forest'),
-    (3.2, 'c:evergreen_forest'),
-    (3.2, 'c:mixed_forest'),
-    (8, 'c:deciduous_forest'),
-    (8, 'c:evergreen_forest'),
-    (8, 'c:mixed_forest'),
-    (0.5, 'c:grassland'),
-    (1, 'c:grassland'),
-    (2, 'c:grassland'),
-    (3.2, 'c:grassland'),
-    (8, 'c:grassland'),
-    (0.5, 'c:pasture'),
-    (1, 'c:pasture'),
-    (2, 'c:pasture'),
-    (3.2, 'c:pasture'),
-    (8, 'c:pasture'),
-    (0.5, 'c:cultivated_crops'),
-    (1, 'c:cultivated_crops'),
-    (2, 'c:cultivated_crops'),
-    (3.2, 'c:cultivated_crops'),
-    (8, 'c:cultivated_crops'),
-    (0.5, 'c:woody_wetlands'),
-    (0.5, 'c:herbaceous_wetlands'),
-    (1, 'c:woody_wetlands'),
-    (1, 'c:herbaceous_wetlands'),
-    (2, 'c:woody_wetlands'),
-    (2, 'c:herbaceous_wetlands'),
-    (3.2, 'c:woody_wetlands'),
-    (3.2, 'c:herbaceous_wetlands'),
-    (8, 'c:woody_wetlands'),
-    (8, 'c:herbaceous_wetlands'),
-    (0.5, 'd:open_water'),
-    (1, 'd:open_water'),
-    (2, 'd:open_water'),
-    (3.2, 'd:open_water'),
-    (8, 'd:open_water'),
-    (0.5, 'd:barren_land'),
-    (1, 'd:barren_land'),
-    (2, 'd:barren_land'),
-    (3.2, 'd:barren_land'),
-    (8, 'd:barren_land'),
-    (0.5, 'd:developed_open'),
-    (1, 'd:developed_open'),
-    (2, 'd:developed_open'),
-    (3.2, 'd:developed_open'),
-    (8, 'd:developed_open'),
-    (0.5, 'd:developed_low'),
-    (1, 'd:developed_low'),
-    (2, 'd:developed_low'),
-    (3.2, 'd:developed_low'),
-    (8, 'd:developed_low'),
-    (0.5, 'd:developed_med'),
-    (1, 'd:developed_med'),
-    (2, 'd:developed_med'),
-    (3.2, 'd:developed_med'),
-    (8, 'd:developed_med'),
-    (0.5, 'd:developed_high'),
-    (1, 'd:developed_high'),
-    (2, 'd:developed_high'),
-    (3.2, 'd:developed_high'),
-    (8, 'd:developed_high'),
-    (0.5, 'd:deciduous_forest'),
-    (0.5, 'd:evergreen_forest'),
-    (0.5, 'd:mixed_forest'),
-    (1, 'd:deciduous_forest'),
-    (1, 'd:evergreen_forest'),
-    (1, 'd:mixed_forest'),
-    (2, 'd:deciduous_forest'),
-    (2, 'd:evergreen_forest'),
-    (2, 'd:mixed_forest'),
-    (3.2, 'd:deciduous_forest'),
-    (3.2, 'd:evergreen_forest'),
-    (3.2, 'd:mixed_forest'),
-    (8, 'd:deciduous_forest'),
-    (8, 'd:evergreen_forest'),
-    (8, 'd:mixed_forest'),
-    (0.5, 'd:grassland'),
-    (1, 'd:grassland'),
-    (2, 'd:grassland'),
-    (3.2, 'd:grassland'),
-    (8, 'd:grassland'),
-    (0.5, 'd:pasture'),
-    (1, 'd:pasture'),
-    (2, 'd:pasture'),
-    (3.2, 'd:pasture'),
-    (8, 'd:pasture'),
-    (0.5, 'd:cultivated_crops'),
-    (1, 'd:cultivated_crops'),
-    (2, 'd:cultivated_crops'),
-    (3.2, 'd:cultivated_crops'),
-    (8, 'd:cultivated_crops'),
-    (0.5, 'd:woody_wetlands'),
-    (0.5, 'd:herbaceous_wetlands'),
-    (1, 'd:woody_wetlands'),
-    (1, 'd:herbaceous_wetlands'),
-    (2, 'd:woody_wetlands'),
-    (2, 'd:herbaceous_wetlands'),
-    (3.2, 'd:woody_wetlands'),
-    (3.2, 'd:herbaceous_wetlands'),
-    (8, 'd:woody_wetlands'),
-    (8, 'd:herbaceous_wetlands')
-]
-
-OUTPUT = [
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (2, 0, 0),
-    (3.2, 0, 0),
-    (8, 0, 0),
-    (0, 0, 0.5),
-    (0, 0, 1),
-    (0.4, 0, 1.6),
-    (1.2, 0, 2),
-    (5.3, 0, 2.7),
-    (0, 0.1, 0.3),
-    (0.1, 0.1, 0.7),
-    (0.2, 0.1, 1.7),
-    (0.7, 0.1, 2.3),
-    (4.2, 0.1, 3.6),
-    (0.1, 0.1, 0.3),
-    (0.3, 0.1, 0.6),
-    (0, 0.1, 1.9),
-    (0.2, 0.1, 3),
-    (2.4, 0.1, 5.6),
-    (0.3, 0, 0.1),
-    (0.7, 0, 0.3),
-    (0.4, 0, 1.5),
-    (1.2, 0, 2),
-    (5.3, 0, 2.7),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (1, 0, 1),
-    (2.1, 0, 1.1),
-    (6.7, 0, 1.3),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0, 0.1, 0.9),
-    (0, 0.1, 0.9),
-    (0, 0.1, 1.9),
-    (0, 0.1, 1.9),
-    (0, 0.1, 1.9),
-    (0, 0.1, 3.1),
-    (0, 0.1, 3.1),
-    (0, 0.1, 3.1),
-    (0.4, 0.1, 7.4),
-    (0.4, 0.1, 7.4),
-    (0.4, 0.1, 7.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0, 0.1, 1.9),
-    (0, 0.1, 3.1),
-    (0.4, 0.1, 7.5),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0, 0.1, 1.9),
-    (0, 0.1, 3.1),
-    (1.2, 0.1, 6.7),
-    (0, 0.2, 0.3),
-    (0, 0.2, 0.8),
-    (0.2, 0.2, 1.6),
-    (0.7, 0.2, 2.3),
-    (4.1, 0.2, 3.7),
-    (0.3, 0.2, 0),
-    (0.3, 0.2, 0),
-    (0.8, 0.2, 0),
-    (0.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (3, 0.2, 0),
-    (3, 0.2, 0),
-    (7.8, 0.2, 0),
-    (7.8, 0.2, 0),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (2, 0, 0),
-    (3.2, 0, 0),
-    (8, 0, 0),
-    (0, 0, 0.5),
-    (0.2, 0, 0.8),
-    (0.8, 0, 1.2),
-    (1.8, 0, 1.4),
-    (6.3, 0, 1.7),
-    (0, 0.1, 0.3),
-    (0.1, 0.1, 0.7),
-    (0.5, 0.1, 1.3),
-    (1.3, 0.1, 1.7),
-    (5.5, 0.1, 2.3),
-    (0.1, 0.1, 0.3),
-    (0.3, 0.1, 0.6),
-    (0.2, 0.1, 1.7),
-    (0.7, 0.1, 2.4),
-    (4.2, 0.1, 3.7),
-    (0.3, 0, 0.1),
-    (0.7, 0, 0.3),
-    (0.8, 0, 1.2),
-    (1.8, 0, 1.4),
-    (6.2, 0, 1.7),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (1.2, 0, 0.8),
-    (2.4, 0, 0.8),
-    (7, 0, 0.9),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0, 0.1, 0.9),
-    (0, 0.1, 0.9),
-    (0, 0.1, 1.8),
-    (0, 0.1, 1.8),
-    (0, 0.1, 1.8),
-    (0.3, 0.1, 2.8),
-    (0.3, 0.1, 2.8),
-    (0.3, 0.1, 2.8),
-    (2.8, 0.1, 5.1),
-    (2.8, 0.1, 5.1),
-    (2.8, 0.1, 5.1),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0, 0.1, 1.9),
-    (0.3, 0.1, 2.8),
-    (2.8, 0.1, 5.1),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0.1, 0.1, 1.8),
-    (0.4, 0.1, 2.6),
-    (3.4, 0.1, 4.4),
-    (0, 0.2, 0.3),
-    (0.1, 0.2, 0.8),
-    (0.5, 0.2, 1.3),
-    (1.3, 0.2, 1.7),
-    (5.4, 0.2, 2.4),
-    (0.3, 0.2, 0),
-    (0.3, 0.2, 0),
-    (0.8, 0.2, 0),
-    (0.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (3, 0.2, 0),
-    (3, 0.2, 0),
-    (7.8, 0.2, 0),
-    (7.8, 0.2, 0),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (2, 0, 0),
-    (3.2, 0, 0),
-    (8, 0, 0),
-    (0.1, 0, 0.4),
-    (0.4, 0, 0.6),
-    (1.2, 0, 0.8),
-    (2.3, 0, 0.9),
-    (6.9, 0, 1.1),
-    (0, 0.1, 0.3),
-    (0.1, 0.1, 0.7),
-    (0.8, 0.1, 1),
-    (1.8, 0.1, 1.2),
-    (6.3, 0.1, 1.5),
-    (0.1, 0.1, 0.3),
-    (0.3, 0.1, 0.6),
-    (0.5, 0.1, 1.4),
-    (1.3, 0.1, 1.8),
-    (5.5, 0.1, 2.4),
-    (0.3, 0, 0.1),
-    (0.7, 0, 0.3),
-    (1.1, 0, 0.9),
-    (2.2, 0, 1),
-    (6.8, 0, 1.2),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (1.4, 0, 0.6),
-    (2.5, 0, 0.6),
-    (7.3, 0, 0.7),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.8),
-    (0, 0.1, 0.8),
-    (0, 0.1, 0.8),
-    (0.2, 0.1, 1.6),
-    (0.2, 0.1, 1.6),
-    (0.2, 0.1, 1.6),
-    (0.8, 0.1, 2.2),
-    (0.8, 0.1, 2.2),
-    (0.8, 0.1, 2.2),
-    (4.5, 0.1, 3.4),
-    (4.5, 0.1, 3.4),
-    (4.5, 0.1, 3.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0.2, 0.1, 1.6),
-    (0.8, 0.1, 2.2),
-    (4.5, 0.1, 3.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.9),
-    (0.3, 0.1, 1.5),
-    (1, 0.1, 2),
-    (4.9, 0.1, 2.9),
-    (0, 0.2, 0.3),
-    (0.2, 0.2, 0.6),
-    (0.8, 0.2, 1),
-    (1.8, 0.2, 1.3),
-    (6.2, 0.2, 1.6),
-    (0.3, 0.2, 0),
-    (0.3, 0.2, 0),
-    (0.8, 0.2, 0),
-    (0.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (3, 0.2, 0),
-    (3, 0.2, 0),
-    (7.8, 0.2, 0),
-    (7.8, 0.2, 0),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (2, 0, 0),
-    (3.2, 0, 0),
-    (8, 0, 0),
-    (0.1, 0, 0.4),
-    (0.5, 0, 0.5),
-    (1.4, 0, 0.6),
-    (2.5, 0, 0.7),
-    (7.3, 0, 0.7),
-    (0, 0.1, 0.3),
-    (0.1, 0.1, 0.7),
-    (1, 0.1, 0.8),
-    (2.1, 0.1, 1),
-    (6.7, 0.1, 1.2),
-    (0.1, 0.1, 0.3),
-    (0.3, 0.1, 0.6),
-    (0.7, 0.1, 1.2),
-    (1.7, 0.1, 1.4),
-    (6.1, 0.1, 1.8),
-    (0.3, 0, 0.1),
-    (0.7, 0, 0.3),
-    (1.2, 0, 0.7),
-    (2.4, 0, 0.8),
-    (7, 0, 0.9),
-    (0.5, 0, 0),
-    (1, 0, 0),
-    (1.5, 0, 0.5),
-    (2.6, 0, 0.5),
-    (7.4, 0, 0.6),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.8),
-    (0, 0.1, 0.8),
-    (0, 0.1, 0.8),
-    (0.4, 0.1, 1.4),
-    (0.4, 0.1, 1.4),
-    (0.4, 0.1, 1.4),
-    (1.2, 0.1, 1.8),
-    (1.2, 0.1, 1.8),
-    (1.2, 0.1, 1.8),
-    (5.3, 0.1, 2.6),
-    (5.3, 0.1, 2.6),
-    (5.3, 0.1, 2.6),
-    (0, 0.1, 0.4),
-    (0, 0.1, 0.8),
-    (0.4, 0.1, 1.4),
-    (1.2, 0.1, 1.9),
-    (5.3, 0.1, 2.6),
-    (0, 0.1, 0.4),
-    (0.1, 0.1, 0.8),
-    (0.6, 0.1, 1.3),
-    (1.4, 0.1, 1.7),
-    (5.6, 0.1, 2.2),
-    (0, 0.2, 0.3),
-    (0.3, 0.2, 0.5),
-    (1, 0.2, 0.8),
-    (2.1, 0.2, 0.9),
-    (6.7, 0.2, 1.1),
-    (0.3, 0.2, 0),
-    (0.3, 0.2, 0),
-    (0.8, 0.2, 0),
-    (0.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (1.8, 0.2, 0),
-    (3, 0.2, 0),
-    (3, 0.2, 0),
-    (7.8, 0.2, 0),
-    (7.8, 0.2, 0)
-]
 
 CENSUS_1 = {
     'cell_count': 147,
@@ -636,165 +65,166 @@ CENSUS_1 = {
 }
 
 DAY_OUTPUT_1 = {
-    'unmodified': {
-        'inf': 1.4762466686413165,
-        'cell_count': 147,
-        'tp': 0.048497869127119175,
-        'tn': 0.3010544583784289,
-        'runoff': 0.4408688415627653,
-        'et': 0.08288448979591835,
-        'distribution': {
-            'c:developed_high': {
-                'cell_count': 42,
-                'tp': 0.03354942097300307,
-                'tn': 0.21201370198217218,
-                'runoff': 0.9904463051399999,
-                'et': 0.01242,
-                'inf': 0.9971336948599999,
-                'bod': 28.889779171197087,
-                'tss': 5.892117058383664
+    "modified": {
+        "bod": 67.66870431502203,
+        "cell_count": 147,
+        "distribution": {
+            "a:deciduous_forest": {
+                "bod": 5.1614500050486845,
+                "cell_count": 72,
+                "distribution": {
+                    "a:deciduous_forest": {
+                        "bod": 0,
+                        "cell_count": 67,
+                        "et": 0.14489999999999997,
+                        "inf": 1.8551,
+                        "runoff": 0,
+                        "tn": 0,
+                        "tp": 0,
+                        "tss": 0
+                    },
+                    "d:barren_land:": {
+                        "bod": 5.1614500050486845,
+                        "cell_count": 5,
+                        "et": 0,
+                        "inf": 0.6036783267219616,
+                        "runoff": 1.3963216732780384,
+                        "tn": 0.0003910189397764155,
+                        "tp": 0.000039101893977641545,
+                        "tss": 0.03910189397764155
+                    }
+                },
+                "et": 0.13483749999999997,
+                "inf": 1.7681957171334695,
+                "runoff": 0.09696678286653043,
+                "tn": 0.0003910189397764155,
+                "tp": 0.000039101893977641545,
+                "tss": 0.03910189397764155
             },
-            'a:deciduous_forest': {
-                'cell_count': 72,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
-                'et': 0.14489999999999997,
-                'inf': 1.8550999999999997,
-                'bod': 0.0,
-                'tss': 0.0
+            "c:developed_high": {
+                "bod": 35.51554384871639,
+                "cell_count": 42,
+                "distribution": {
+                    "c:developed_high": {
+                        "bod": 26.505034083749653,
+                        "cell_count": 22,
+                        "et": 0.012419999999999999,
+                        "inf": 0.2528108488309999,
+                        "runoff": 1.734769151169,
+                        "tn": 0.1945127501307434,
+                        "tp": 0.030780039581128623,
+                        "tss": 5.405744451435715
+                    },
+                    "c:developed_high:no_till": {
+                        "bod": 9.010509764966741,
+                        "cell_count": 20,
+                        "et": 0.1863,
+                        "inf": 1.1649828634779853,
+                        "runoff": 0.6487171365220146,
+                        "tn": 0.06612551521064301,
+                        "tp": 0.010463817791574277,
+                        "tss": 1.8377079996452328
+                    }
+                },
+                "et": 0.09522,
+                "inf": 0.6871784748533739,
+                "runoff": 1.217601525146626,
+                "tn": 0.2606382653413864,
+                "tp": 0.0412438573727029,
+                "tss": 7.243452451080948
             },
-            'd:developed_med': {
-                'cell_count': 33,
-                'tp': 0.014948448154116101,
-                'tn': 0.08904075639625678,
-                'runoff': 0.7033022695105,
-                'et': 0.037259999999999995,
-                'inf': 1.2594377304895001,
-                'bod': 15.33840767118,
-                'tss': 1.832809730200322
+            "d:developed_med": {
+                "bod": 26.991710461256947,
+                "cell_count": 33,
+                "distribution": {
+                    "d:developed_med": {
+                        "bod": 21.380810693159994,
+                        "cell_count": 23,
+                        "et": 0.037259999999999995,
+                        "inf": 0.5561354609789999,
+                        "runoff": 1.4066045390209998,
+                        "tn": 0.12411741800690337,
+                        "tp": 0.020837230760283047,
+                        "tss": 2.5548256845216613
+                    },
+                    "d:developed_med:no_till": {
+                        "bod": 5.610899768096954,
+                        "cell_count": 10,
+                        "et": 0.1863,
+                        "inf": 0.9646990173599737,
+                        "runoff": 0.8490009826400262,
+                        "tn": 0.03257174865378317,
+                        "tp": 0.005468249773992795,
+                        "tss": 0.6704549722895514
+                    }
+                },
+                "et": 0.08242363636363635,
+                "inf": 0.6799425992762647,
+                "runoff": 1.2376337643600988,
+                "tn": 0.15668916666068655,
+                "tp": 0.02630548053427584,
+                "tss": 3.2252806568112127
             }
         },
-        'bod': 44.228186842377085,
-        'tss': 7.724926788583986
+        "et": 0.11175183673469387,
+        "inf": 1.215031927575294,
+        "runoff": 0.6732162356900119,
+        "tn": 0.41771845094184934,
+        "tp": 0.06758843980095638,
+        "tss": 10.507835001869802
     },
-    'modified': {
-        'inf': 1.4364676745914813,
-        'cell_count': 147,
-        'tp': 0.04396329106364022,
-        'tn':  0.27220178808403017,
-        'runoff': 0.4517804886738248,
-        'et': 0.11175183673469387,
-        'distribution': {
-            'c:developed_high': {
-                'inf': 1.077061870392374,
-                'cell_count': 42,
-                'tp': 0.02803732401552826,
-                'tn': 0.1771803114870189,
-                'runoff': 0.827718129607626,
-                'et': 0.09522,
-                'distribution': {
-                    'c:developed_high': {
-                        'cell_count': 22,
-                        'tp': 0.017573506223953986,
-                        'tn': 0.11105479627637589,
-                        'runoff': 0.99044630514,
-                        'et': 0.012419999999999999,
-                        'inf': 0.99713369486,
-                        'bod': 15.132741470627044,
-                        'tss': 3.086347030581919
-                    },
-                    'c:developed_high:no_till': {
-                        'cell_count': 20,
-                        'tp': 0.010463817791574277,
-                        'tn': 0.06612551521064301,
-                        'runoff': 0.6487171365220146,
-                        'et': 0.1863,
-                        'inf': 1.1649828634779853,
-                        'bod': 9.010509764966741,
-                        'tss': 1.8377079996452328
-                    }
-                },
-                'bod': 24.143251235593787,
-                'tss': 4.9240550302271515
+    "unmodified": {
+        "bod": 81.27733495679115,
+        "cell_count": 147,
+        "distribution": {
+            "a:deciduous_forest": {
+                "bod": 0,
+                "cell_count": 72,
+                "et": 0.14489999999999997,
+                "inf": 1.8550999999999997,
+                "runoff": 0,
+                "tn": 0,
+                "tp": 0,
+                "tss": 0
             },
-            'a:deciduous_forest': {
-                'inf': 1.7681957171334695,
-                'cell_count': 72,
-                'tp': 3.9101893977641545e-05,
-                'tn': 0.0003910189397764155,
-                'runoff': 0.09696678286653043,
-                'et': 0.13483749999999997,
-                'distribution': {
-                    'a:deciduous_forest': {
-                        'cell_count': 67,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
-                        'et': 0.14489999999999997,
-                        'inf': 1.8551,
-                        'bod': 0.0,
-                        'tss': 0.0
-                    },
-                    'd:barren_land:': {
-                        'cell_count': 5,
-                        'tp': 3.9101893977641545e-05,
-                        'tn': 0.0003910189397764155,
-                        'runoff': 1.3963216732780384,
-                        'et': 0.0,
-                        'inf': 0.6036783267219616,
-                        'bod': 5.1614500050486845,
-                        'tss': 0.03910189397764155
-                    }
-                },
-                'bod': 5.1614500050486845,
-                'tss': 0.03910189397764155
+            "c:developed_high": {
+                "bod": 50.60051961443115,
+                "cell_count": 42,
+                "et": 0.01242,
+                "inf": 0.2528108488309999,
+                "runoff": 1.734769151169,
+                "tn": 0.37134252297687376,
+                "tp": 0.058761893745791015,
+                "tss": 10.320057589104549
             },
-            'd:developed_med': {
-                'inf': 1.1701229689350983,
-                'cell_count': 33,
-                'tp': 0.015886865154134316,
-                'tn': 0.09463045765723485,
-                'runoff': 0.7474533947012655,
-                'et': 0.08242363636363635,
-                'distribution': {
-                    'd:developed_med:no_till': {
-                        'cell_count': 10,
-                        'tp': 0.005468249773992795,
-                        'tn': 0.03257174865378317,
-                        'runoff': 0.8490009826400262,
-                        'et': 0.1863,
-                        'inf': 0.9646990173599737,
-                        'bod': 5.610899768096954,
-                        'tss': 0.6704549722895514
-                    },
-                    'd:developed_med': {
-                        'cell_count': 23,
-                        'tp': 0.010418615380141523,
-                        'tn': 0.06205870900345169,
-                        'runoff': 0.7033022695104999,
-                        'et': 0.037259999999999995,
-                        'inf': 1.2594377304895001,
-                        'bod': 10.690405346579997,
-                        'tss': 1.2774128422608306
-                    }
-                },
-                'bod': 16.30130511467695,
-                'tss': 1.947867814550382
+            "d:developed_med": {
+                "bod": 30.67681534236,
+                "cell_count": 33,
+                "et": 0.037259999999999995,
+                "inf": 0.5561354609789999,
+                "runoff": 1.406604539021,
+                "tn": 0.17808151279251355,
+                "tp": 0.029896896308232203,
+                "tss": 3.665619460400644
             }
         },
-        'bod': 45.60600635531942,
-        'tss': 6.9110247387551755
+        "et": 0.08288448979591835,
+        "inf": 1.1056988153959795,
+        "runoff": 0.8114166948081021,
+        "tn": 0.5494240357693874,
+        "tp": 0.08865879005402322,
+        "tss": 13.985677049505192
     }
 }
 
 CENSUS_2 = {
-    'cell_count': 4,
+    'cell_count': 40,
+    'BMPs': {'rain_garden': 33},
     'distribution': {
-        'd:developed_med': {'cell_count': 1},
-        'c:developed_high': {'cell_count': 1},
-        'a:deciduous_forest': {'cell_count': 1},
-        'b:pasture': {'cell_count': 1}
+        'd:developed_med': {'cell_count': 10},
+        'c:developed_high': {'cell_count': 10},
+        'a:deciduous_forest': {'cell_count': 10},
+        'b:pasture': {'cell_count': 10}
     },
     'modifications': [
         {
@@ -810,187 +240,188 @@ CENSUS_2 = {
             'distribution': {
                 'd:developed_med': {'cell_count': 1}
             }
-        },
-        {
-            'change': '::rain_garden',
-            'cell_count': 1,
-            'distribution': {
-                'c:developed_high': {'cell_count': 1}
-            }
         }
     ]
 }
 
 DAY_OUTPUT_2 = {
     'unmodified': {
-        'inf': 1.4785857682509507,
-        'cell_count': 4,
-        'tp': 0.0013746500037446765,
-        'tn': 0.008688160939430185,
-        'runoff': 0.4417192317490494,
+        'BMPs': {
+            'rain_garden': 33
+        },
+        'inf': 1.1166794893660754,
+        'cell_count': 40,
+        'tp': 0.024279302519227997,
+        'tn': 0.151799090357274,
         'et': 0.07969499999999999,
+        'runoff': 0.8036255106339244,
         'distribution': {
-            'c:developed_high': {
-                'cell_count': 1,
-                'tp': 0.0007987957374524541,
-                'tn': 0.005047945285289814,
-                'runoff': 0.99044630514,
-                'et': 0.012419999999999999,
-                'inf': 0.99713369486,
-                'bod': 0.687851885028502,
-                'tss': 0.14028850139008725
-            },
             'a:deciduous_forest': {
-                'cell_count': 1,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'cell_count': 10,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.14489999999999997,
-                'inf': 1.8551,
-                'bod': 0.0,
-                'tss': 0.0
+                'inf': 1.8550999999999997,
+                'bod': 0,
+                'tss': 0
             },
             'b:pasture': {
-                'cell_count': 1,
-                'tp': 0.00012287098889476473,
-                'tn': 0.0009420109148598631,
+                'cell_count': 10,
+                'tp': 0.0012287098889476472,
+                'tn': 0.00942010914859863,
                 'runoff': 0.0731283523456977,
-                'et': 0.12419999999999999,
+                'et': 0.1242,
                 'inf': 1.8026716476543023,
-                'bod': 0.04095699629825491,
-                'tss': 0.020478498149127455
+                'bod': 0.40956996298254905,
+                'tss': 0.20478498149127453
+            },
+            'c:developed_high': {
+                'cell_count': 10,
+                'tp': 0.013990927082331196,
+                'tn': 0.0884148864230652,
+                'runoff': 1.7347691511690002,
+                'et': 0.012419999999999999,
+                'inf': 0.2528108488309999,
+                'bod': 12.047742765340752,
+                'tss': 2.457156568834417
             },
             'd:developed_med': {
-                'cell_count': 1,
-                'tp': 0.0004529832773974576,
-                'tn': 0.002698204739280508,
-                'runoff': 0.7033022695105,
+                'cell_count': 10,
+                'tp': 0.009059665547949153,
+                'tn': 0.053964094785610164,
+                'runoff': 1.406604539021,
                 'et': 0.037259999999999995,
-                'inf': 1.2594377304895001,
-                'bod': 0.46480023245999996,
-                'tss': 0.05553968879394915
+                'inf': 0.5561354609789999,
+                'bod': 9.2960046492,
+                'tss': 1.1107937758789828
             }
         },
-        'bod': 1.1936091137867568,
-        'tss': 0.21630668833316385
+        'bod': 21.753317377523302,
+        'tss': 3.772735326204674
     },
     'modified': {
-        'inf': 1.4978906201690463,
-        'cell_count': 4,
-        'tp': 0.0014947940356953506,
-        'tn': 0.010093182575177441,
-        'runoff': 0.3934343798309537,
-        'et': 0.108675,
+        'BMPs': {
+            'rain_garden': 33
+        },
+        'inf': 1.9175105,
+        'cell_count': 40,
+        'tp': 0,
+        'tn': 0,
+        'et': 0.0824895,
+        'runoff': 0,
         'distribution': {
-            'c:developed_high': {
-                'inf': 1.0641101843915999,
-                'cell_count': 1,
-                'tp': 0.0007414402317520271,
-                'tn': 0.004685490353432948,
-                'runoff': 0.9193298156084,
-                'et': 0.01656,
-                'distribution': {
-                    'c:developed_high': {
-                        'cell_count': 0,
-                        'runoff': 0,
-                        'et': 0,
-                        'inf': 0
-                    },
-                    'c:developed_high:rain_garden': {
-                        'cell_count': 1,
-                        'tp': 0.0007414402317520271,
-                        'tn': 0.004685490353432948,
-                        'runoff': 0.9193298156084,
-                        'et': 0.01656,
-                        'inf': 1.0641101843915999,
-                        'bod': 0.6384624217864677,
-                        'tss': 0.13021544070144975
-                    }
-                },
-                'bod': 0.6384624217864677,
-                'tss': 0.13021544070144975
-            },
             'a:deciduous_forest': {
-                'cell_count': 1,
-                'tp': 0.0,
-                'tn': 0.0,
-                'runoff': 0.0,
+                'inf': 1.8550999999999997,
+                'cell_count': 10,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
                 'et': 0.14489999999999997,
-                'inf': 1.8551,
                 'distribution': {
                     'a:deciduous_forest': {
-                        'cell_count': 1,
-                        'tp': 0.0,
-                        'tn': 0.0,
-                        'runoff': 0.0,
+                        'cell_count': 10,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.14489999999999997,
-                        'inf': 1.8551,
-                        'bod': 0.0,
-                        'tss': 0.0
+                        'inf': 1.8550999999999997,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.0,
-                'tss': 0.0
+                'bod': 0,
+                'tss': 0
             },
             'b:pasture': {
-                'inf': 1.4934093771285855,
-                'cell_count': 1,
-                'tp': 0.0005381555074547796,
-                'tn': 0.004125858890486643,
-                'runoff': 0.32029062287141463,
-                'et': 0.1863,
+                'inf': 1.86959,
+                'cell_count': 10,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
+                'et': 0.13040999999999997,
                 'distribution': {
                     'b:pasture:no_till': {
                         'cell_count': 1,
-                        'tp': 0.0005381555074547796,
-                        'tn': 0.004125858890486643,
-                        'runoff': 0.32029062287141463,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
                         'et': 0.1863,
-                        'inf': 1.4934093771285855,
-                        'bod': 0.1793851691515932,
-                        'tss': 0.0896925845757966
+                        'inf': 1.8137,
+                        'bod': 0,
+                        'tss': 0
                     },
                     'b:pasture': {
-                        'cell_count': 0,
+                        'cell_count': 9,
+                        'tp': 0,
+                        'tn': 0,
                         'runoff': 0,
-                        'et': 0,
-                        'inf': 0
+                        'et': 0.12419999999999999,
+                        'inf': 1.8758000000000001,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.1793851691515932,
-                'tss': 0.0896925845757966
+                'bod': 0,
+                'tss': 0
+            },
+            'c:developed_high': {
+                'inf': 1.9875800000000001,
+                'cell_count': 10,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
+                'et': 0.012419999999999999,
+                'distribution': {
+                    'c:developed_high': {
+                        'cell_count': 10,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
+                        'et': 0.012419999999999999,
+                        'inf': 1.9875800000000001,
+                        'bod': 0,
+                        'tss': 0
+                    }
+                },
+                'bod': 0,
+                'tss': 0
             },
             'd:developed_med': {
-                'inf': 1.5789429191559998,
-                'cell_count': 1,
-                'tp': 0.000215198296488544,
-                'tn': 0.001281833331257849,
-                'runoff': 0.3341170808440001,
-                'et': 0.08693999999999999,
+                'inf': 1.9577719999999998,
+                'cell_count': 10,
+                'tp': 0,
+                'tn': 0,
+                'runoff': 0,
+                'et': 0.042228,
                 'distribution': {
+                    'd:developed_med': {
+                        'cell_count': 9,
+                        'tp': 0,
+                        'tn': 0,
+                        'runoff': 0,
+                        'et': 0.037259999999999995,
+                        'inf': 1.9627399999999997,
+                        'bod': 0,
+                        'tss': 0
+                    },
                     'd:developed_med:cluster_housing': {
                         'cell_count': 1,
-                        'tp': 0.000215198296488544,
-                        'tn': 0.001281833331257849,
-                        'runoff': 0.3341170808440001,
-                        'et': 0.08693999999999999,
-                        'inf': 1.5789429191559998,
-                        'bod': 0.220812165092593,
-                        'tss': 0.026385182439030177
-                    },
-                    'd:developed_med': {
-                        'cell_count': 0,
+                        'tp': 0,
+                        'tn': 0,
                         'runoff': 0,
-                        'et': 0,
-                        'inf': 0
+                        'et': 0.08693999999999999,
+                        'inf': 1.9130600000000002,
+                        'bod': 0,
+                        'tss': 0
                     }
                 },
-                'bod': 0.220812165092593,
-                'tss': 0.026385182439030177
+                'bod': 0,
+                'tss': 0
             }
         },
-        'bod': 1.0386597560306539,
-        'tss': 0.24629320771627652
+        'bod': 0,
+        'tss': 0
     }
 }
 
@@ -1034,52 +465,7 @@ class TestModel(unittest.TestCase):
                    for precip in PS]
         self.assertEqual(runoffs, CN90)
 
-    def test_simulate_day_1(self):
-        """
-        Test the tile simulation using sample input/output.
-        """
-        # The number 0.04 is not very meaningful, this test just
-        # attempts to give some idea about the mean error of the three
-        # quantities -- relative to precipitation -- as compared to
-        # the sample output that was emailed to us.
-        def similar(incoming, expected):
-            precip, tile_string = incoming
-            results = simulate(precip, tile_string + ':')
-            results = (results['runoff-vol'],
-                       results['et-vol'],
-                       results['inf-vol'])
-            lam = lambda x, y: abs(x - y) / precip
-            me = average(map(lam, results, expected))
-            # Precipitation levels <= 2 inches are known to be
-            # problematic.  It is unclear why the 'barren_land' type is
-            # giving trouble on soil types C and D.
-            if precip > 2 and tile_string != 'c:barren_land' \
-               and tile_string != 'd:barren_land':
-                self.assertTrue(me < 0.04, tile_string + ' ' + str(me))
-        map(similar, INPUT, OUTPUT)
-
-    def test_simulate_day_2(self):
-        """
-        Another test of the tile simulation using sample input/output.
-        """
-        # Test the RMSE of the runoff levels produced by the tile
-        # simulation against values sample input/output.  The number
-        # 0.13 is not very meaningful, this test just attempts to put
-        # a bound on the deviation between the current output and the
-        # sample output that was mailed to us.
-        results = [simulate(precip, tile_string + ':')['runoff-vol'] / precip
-                   for precip, tile_string in INPUT
-                   if precip > 2 and tile_string != 'c:barren_land' and
-                   tile_string != 'd:barren_land']
-        expected = [OUTPUT[i][0] / INPUT[i][0]
-                    for i in range(len(INPUT))
-                    if INPUT[i][0] > 2 and INPUT[i][1] != 'c:barren_land' and
-                    INPUT[i][1] != 'd:barren_land']
-        lam = lambda x, y: pow((x - y), 2)
-        rmse = sqrt(average(map(lam, results, expected)))
-        self.assertTrue(rmse < 0.13)
-
-    def test_simulate_day_3(self):
+    def test_simulate_day(self):
         """
         Daily simulation.
         """
@@ -1454,7 +840,7 @@ class TestModel(unittest.TestCase):
             },
             "modifications": [
                 {
-                    "change": "::green_roof",
+                    "change": ":developed_high:",
                     "cell_count": 1,
                     "distribution": {
                         "d:developed_med": {"cell_count": 1}
@@ -1468,60 +854,8 @@ class TestModel(unittest.TestCase):
         runoff = result['modified']['runoff']
         et = result['modified']['et']
         inf = result['modified']['inf']
-        total = runoff + et +inf
+        total = runoff + et + inf
         self.assertAlmostEqual(total, precip)
-
-    def test_bmps_on_d(self):
-        """
-        Make sure that BMPS all work on soil type D.
-        """
-        census = {
-            "cell_count": 2,
-            "distribution": {
-                "c:developed_med": {"cell_count": 1},
-                "d:developed_med": {"cell_count": 1}
-            },
-            "modifications": [
-                {
-                    "change": "::porous_paving",
-                    "cell_count": 1,
-                    "distribution": {
-                        "c:developed_med": {"cell_count": 1}
-                    }
-                },
-                {
-                    "change": "::porous_paving",
-                    "cell_count": 1,
-                    "distribution": {
-                        "d:developed_med": {"cell_count": 1}
-                    }
-                }
-            ]
-        }
-
-        # Porous Paving
-        precip = 3.3
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertAlmostEqual(c_inf / 3, d_inf)
-
-        # Rain Garden
-        census['modifications'][0]['change'] = '::rain_garden'
-        census['modifications'][1]['change'] = '::rain_garden'
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertLess(d_inf, c_inf)
-        self.assertGreater(d_inf / c_inf, 0.5)
-
-        # Infiltration Trench
-        census['modifications'][0]['change'] = '::infiltration_trench'
-        census['modifications'][1]['change'] = '::infiltration_trench'
-        result = simulate_day(census, precip)
-        c_inf = result['modified']['distribution']['c:developed_med']['inf']
-        d_inf = result['modified']['distribution']['d:developed_med']['inf']
-        self.assertAlmostEqual(c_inf / 3, d_inf)
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,8 +17,9 @@ and variables used in this program are as follows:
 
 import copy
 
-from tr55.tablelookup import lookup_cn, lookup_bmp_infiltration, \
-    lookup_ki, is_bmp, is_built_type, make_precolumbian, get_pollutants
+from tr55.tablelookup import lookup_cn, lookup_bmp_storage, \
+    lookup_ki, is_bmp, is_built_type, make_precolumbian, \
+    get_pollutants, get_bmps
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
 
@@ -41,8 +42,9 @@ def runoff_pitt(precip, land_use):
     p3 = pow(precip, 3)
     p2 = pow(precip, 2)
 
-    impervious = ((c1 * p3) + (c2 * p2) + (c3 * precip) + c4)*precip
-    urb_grass = ((c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9)*precip
+
+    impervious = ((c1 * p3) + (c2 * p2) + (c3 * precip) + c4) * precip
+    urb_grass = ((c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9) * precip  # noqa
 
     runoff_vals = {
         # 'open_water':           impervious, # Not a built land type.
@@ -107,9 +109,9 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     """
     def clamp(runoff, et, inf, precip):
         """
-        This function clamps ensures that runoff + et + inf <= precip.
+        This function ensures that runoff + et + inf <= precip.
 
-        NOTE: infiltration is normally independent of the
+        NOTE: Infiltration is normally independent of the
         precipitation level, but this function introduces a slight
         dependency (that is, at very low levels of precipitation, this
         function can cause infiltration to be smaller than it
@@ -126,62 +128,27 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     precip = max(0.0, precip)
     soil_type, land_use, bmp = cell.lower().split(':')
 
-    # If there is no precipitation, then there is no runoff or
-    # infiltration.  There is evapotranspiration, however (it is
-    # understood that over a period of time, this can lead to the sum
-    # of the three values exceeding the total precipitation).
+    # If  there  is no  precipitation,  then  there  is no  runoff  or
+    # infiltration;  however,  there  is evapotranspiration.   (It  is
+    # understood that over a period of  time, this can lead to the sum
+    # of the three values exceeding the total precipitation.)
     if precip == 0.0:
         return {
             'runoff-vol': 0.0,
-            # 'et-vol': cell_count * evaptrans,
             'et-vol': 0.0,
             'inf-vol': 0.0,
         }
 
-    # Deal with the Best Management Practices (BMPs).  For most BMPs,
-    # the infiltration is read from the table and the runoff is what
-    # is left over after infiltration and evapotranspiration.  Rain
-    # gardens are treated differently.
-    if bmp and is_bmp(bmp) and bmp != 'rain_garden':
-        inf = lookup_bmp_infiltration(soil_type, bmp)  # infiltration
-        runoff = max(0.0, precip - (evaptrans + inf))  # runoff
-        (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
-        return {
-            'runoff-vol': cell_count * runoff,
-            'et-vol': cell_count * evaptrans,
-            'inf-vol': cell_count * inf
-        }
-    elif bmp and bmp == 'rain_garden':
-        # Here, return a mixture of 20% ideal rain garden and 80%
-        # high-intensity residential.
-        inf = lookup_bmp_infiltration(soil_type, bmp)
-        runoff = max(0.0, precip - (evaptrans + inf))
-        hi_res_cell = soil_type + ':developed_med:'
-        hi_res = simulate_cell_day(precip, evaptrans, hi_res_cell, 1)
-        hir_run = hi_res['runoff-vol']
-        hir_et = hi_res['et-vol']
-        hir_inf = hi_res['inf-vol']
-        final_runoff = (0.2 * runoff + 0.8 * hir_run)
-        final_et = (0.2 * evaptrans + 0.8 * hir_et)
-        final_inf = (0.2 * inf + 0.8 * hir_inf)
-        final = clamp(final_runoff, final_et, final_inf, precip)
-        (final_runoff, final_et, final_inf) = final
-        return {
-            'runoff-vol': cell_count * final_runoff,
-            'et-vol': cell_count * final_et,
-            'inf-vol': cell_count * final_inf
-        }
+    # If  the BMP  is cluster_housing  or  no_till, then  make it  the
+    # land-use.  This is  done because those two types  of BMPs behave
+    # more like land-uses than they do BMPs.
+    if bmp and not is_bmp(bmp):
+        land_use = bmp or land_use
 
-    # At this point, if the `bmp` string has non-zero length, it is
-    # equal to either 'no_till' or 'cluster_housing'.
-    if bmp and bmp != 'no_till' and bmp != 'cluster_housing':
-        raise KeyError('Unexpected BMP: %s' % bmp)
-    land_use = bmp or land_use
-
-    # When the land use is a built-type and the level of precipitation
+    # When the land-use is a built-type and the level of precipitation
     # is two inches or less, use the Pitt Small Storm Hydrology Model.
-    # When the land use is a built-type but the level of precipitation
-    # is higher, the runoff is the larger of that predicted by the
+    # When the land-use is a built-type but the level of precipitation
+    # is higher,  the runoff is  the larger  of that predicted  by the
     # Pitt model and NRCS model.  Otherwise, return the NRCS amount.
     if is_built_type(land_use) and precip <= 2.0:
         runoff = runoff_pitt(precip, land_use)
@@ -204,7 +171,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
 def create_unmodified_census(census):
     """
     This creates a cell census, ignoring any modifications.  The
-    output is suitable for use with `simulate_water_quality`.
+    output is suitable for use as input to `simulate_water_quality`.
     """
     unmod = copy.deepcopy(census)
     unmod.pop('modifications', None)
@@ -214,7 +181,7 @@ def create_unmodified_census(census):
 def create_modified_census(census):
     """
     This creates a cell census, with modifications, that is suitable
-    for use with `simulate_water_quality`.
+    for use as input to `simulate_water_quality`.
 
     For every type of cell that undergoes modification, the
     modifications are indicated with a sub-distribution under that
@@ -262,7 +229,7 @@ def create_modified_census(census):
 
 
 def simulate_water_quality(tree, cell_res, fn,
-                           current_cell=None, precolumbian=False):
+                           pct=1.0, current_cell=None, precolumbian=False):
     """
     Perform a water quality simulation by doing simulations on each of
     the cell types (leaves), then adding them together by summing the
@@ -270,6 +237,8 @@ def simulate_water_quality(tree, cell_res, fn,
 
     `tree` is the (sub)tree of cell distributions that is currently
     under consideration.
+
+    `pct` is the percentage of calculated water volume to retain.
 
     `cell_res` is the size of each cell (used for turning inches of
     water into volumes of water).
@@ -289,7 +258,7 @@ def simulate_water_quality(tree, cell_res, fn,
             tally = {}
             for cell, subtree in tree['distribution'].items():
                 simulate_water_quality(subtree, cell_res, fn,
-                                       cell, precolumbian)
+                                       pct, cell, precolumbian)
                 subtree_ex_dist = subtree.copy()
                 subtree_ex_dist.pop('distribution', None)
                 tally = dict_plus(tally, subtree_ex_dist)
@@ -315,6 +284,9 @@ def simulate_water_quality(tree, cell_res, fn,
 
         # run the runoff model on this leaf
         result = fn(current_cell, n)  # runoff, et, inf
+        runoff_adjustment = result['runoff-vol'] - (result['runoff-vol'] * pct)
+        result['runoff-vol'] -= runoff_adjustment
+        result['inf-vol'] += runoff_adjustment
         tree.update(result)
 
         # perform water quality calculation
@@ -349,7 +321,24 @@ def postpass(tree):
             postpass(subtree)
 
 
-def simulate_modifications(census, fn, cell_res, precolumbian=False):
+def compute_bmp_effect(census, m2_per_pixel):
+    """
+    Compute the overall percentage of pre-BMP water to retain after
+    considering BMPs.
+    """
+    meters_per_inch = 0.0254
+    cubic_meters = census['runoff-vol'] * meters_per_inch * m2_per_pixel
+    bmp_dict = census.get('BMPs', {})
+    bmp_keys = set(bmp_dict.keys())
+
+    reduction = 0.0
+    for bmp in set.intersection(set(get_bmps()), bmp_keys):
+        bmp_area = bmp_dict[bmp]
+        reduction += lookup_bmp_storage(bmp) * bmp_area
+    return max(0.0, cubic_meters - reduction) / cubic_meters
+
+
+def simulate_modifications(census, fn, cell_res, pc=False):
     """
     Simulate effects of modifications.
 
@@ -360,11 +349,13 @@ def simulate_modifications(census, fn, cell_res, precolumbian=False):
     `cell_res` is as described in `simulate_water_quality`.
     """
     mod = create_modified_census(census)
-    simulate_water_quality(mod, cell_res, fn, precolumbian=precolumbian)
+    simulate_water_quality(mod, cell_res, fn, precolumbian=pc)
+    pct = compute_bmp_effect(mod, cell_res)
+    simulate_water_quality(mod, cell_res, fn, pct=pct, precolumbian=pc)
     postpass(mod)
 
     unmod = create_unmodified_census(census)
-    simulate_water_quality(unmod, cell_res, fn, precolumbian=precolumbian)
+    simulate_water_quality(unmod, cell_res, fn, precolumbian=pc)
     postpass(unmod)
 
     return {

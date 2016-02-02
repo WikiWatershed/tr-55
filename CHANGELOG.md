@@ -1,3 +1,22 @@
+## 1.1.1
+
+- Allow infiltration to be increased during BMP modifications
+
+## 1.1.0
+
+- Allow rain garden, veg basin, porous pavement and green roof BMP types to reduce runoff
+  over entire AoI according to an available volume for water storage per unit BMP Area
+
+## 1.0.6
+
+- Updated Curve Numbers for NLCD classes 21, 90 & 95 from input from Stroud Water Research
+- Fixed Pitts impervious and urban grass calculations to align with published amounts
+- Reduced imperviousness of `developed_high` NLCD type
+
+## 1.0.4-1.0.5
+
+- Update Exception types
+
 ## 1.0.3
 
 - Removed unused code paths (`simulate_year`)

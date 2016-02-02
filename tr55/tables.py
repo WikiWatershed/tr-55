@@ -14,6 +14,8 @@ TR-55 tables
 # For the BMP's the numbers are not Curve Numbers, they are quantities of rainfall (in inches)
 #  that will be converted to infiltration by that BMP for that soil type.
 LAND_USE_VALUES = {
+
+		# NRCS Curve Numbers for NLCD land classes
     'open_water':           {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
         # Ki Source:
@@ -36,7 +38,7 @@ LAND_USE_VALUES = {
         # Curve Number Source:  Commercial and Business, 85% impervious (TR-55, 1986, Table 2-2a)
         # Ki Source:
     'barren_land':          {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 91, 'd': 94}},
-        # FCurve Numbers:  allow, Bare soil; Newly graded areas (TR-55, 1986, Table 2-2a and 2-2b)
+        # Curve Number Source:  Fallow, Bare soil; Newly graded areas (TR-55, 1986, Table 2-2a and 2-2b)
         # Ki Source:
     'deciduous_forest':     {'nlcd': 41, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
         # Curve Number Source:  Woods, Good condition;
@@ -73,26 +75,22 @@ LAND_USE_VALUES = {
         # Curve Number Source: UNKNOWN
         # Ki Source:
 
-    'green_roof':           {'ki': 0.4, 'infiltration': {'a': 1.6, 'b': 1.6, 'c': 1.6, 'd': 1.6}},
-        # Infiltration Source:  UNKNOWN
-        # Ki Source:
-    # The infiltration amounts for Porous Paving, Rain Gardens, and
-    # Infiltration Trenches on soil type D are typically one-third of
-    # what they are on soil type C.
-    'porous_paving':        {'ki': 0.0, 'infiltration': {'a': 7.73, 'b': 4.13, 'c': 1.73, 'd': (1.73 / 3)}},
-        # Infiltration Source:  UNKNOWN
-        # Ki Source:
-    'rain_garden':          {'ki': 0.08, 'infiltration': {'a': 1.2, 'b': 0.6, 'c': 0.2, 'd': (0.2 / 3)}},
-        # Infiltration Source:  UNKNOWN
-        # Ki Source:
-    'infiltration_trench':  {'ki': 0.0, 'infiltration': {'a': 2.4, 'b': 1.8, 'c': 1.4, 'd': (1.4 / 3)}},
-        # Infiltration Source:  UNKNOWN
-        # Ki Source:
+    # NRCS Curve Numbers for BMP's acting as land cover changes
     'cluster_housing':      {'ki': 0.42},
         # Ki Source:
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}}
         # Curve Number Source:  UNKNOWN
         # Ki Source:
+
+    # Storage Capacities for Infiltration BMP's
+    'green_roof':           {'ki': 0.4,  'storage': 0.396},
+        # Source:
+    'infiltration_trench':  {'ki': 0.0,  'storage': 0.610},
+        # Source:
+    'porous_paving':        {'ki': 0.0,  'storage': 0.267},
+        # Source:
+    'rain_garden':          {'ki': 0.08, 'storage': 0.396},
+        # Source:
 }
 
 # The set of best management practices that we know about.  The
