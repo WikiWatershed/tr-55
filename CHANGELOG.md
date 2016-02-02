@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Fix bug which threw an exception when runoff volume was 0 and BMPs were applied (essentially a precipitation value of 0).
+
 ## 1.1.1
 
 - Allow infiltration to be increased during BMP modifications
