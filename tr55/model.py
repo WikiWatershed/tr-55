@@ -335,7 +335,9 @@ def compute_bmp_effect(census, m2_per_pixel):
     for bmp in set.intersection(set(get_bmps()), bmp_keys):
         bmp_area = bmp_dict[bmp]
         reduction += lookup_bmp_storage(bmp) * bmp_area
-    return max(0.0, cubic_meters - reduction) / cubic_meters
+
+    return 0 if not cubic_meters else \
+        max(0.0, cubic_meters - reduction) / cubic_meters
 
 
 def simulate_modifications(census, fn, cell_res, pc=False):
