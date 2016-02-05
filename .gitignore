@@ -3,3 +3,4 @@ env/
 .idea/*
 tr55/wintab32dll.txt
 tr55/Results_*.csv
+*.bak
