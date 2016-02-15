@@ -20,7 +20,7 @@ class TestTablelookups(unittest.TestCase):
         """
         Do some spot-checks on the data from Table B.
         """
-        self.assertEqual(lookup_bmp_storage('green_roof'), 0.396)
+        self.assertEqual(lookup_bmp_storage('green_roof'), 0.020)
         self.assertEqual(lookup_bmp_storage('infiltration_trench'), 0.610)  # noqa
         self.assertEqual(lookup_bmp_storage('porous_paving'), 0.267)
         self.assertEqual(lookup_bmp_storage('rain_garden'), 0.396)
