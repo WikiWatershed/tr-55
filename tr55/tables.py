@@ -33,7 +33,7 @@ LAND_USE_VALUES = {
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},  # noqa
 
     # BMP storage capacities
-    'green_roof':           {'ki': 0.4,  'storage': 0.396},
+    'green_roof':           {'ki': 0.4,  'storage': 0.020},
     'infiltration_trench':  {'ki': 0.0,  'storage': 0.610},
     'porous_paving':        {'ki': 0.0,  'storage': 0.267},
     'rain_garden':          {'ki': 0.08, 'storage': 0.396},
