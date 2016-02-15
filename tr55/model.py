@@ -378,6 +378,9 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
     into forest.
     """
     et_max = 0.207
+        # From the EPA WaterSense data finder for the Philadelphia airport (19153)
+        # Converted to daily number
+        # http://www3.epa.gov/watersense/new_homes/wb_data_finder.html
 
     if 'modifications' in census:
         verify_census(census)

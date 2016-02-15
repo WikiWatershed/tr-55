@@ -10,7 +10,7 @@ TR-55 tables
 
 # For the different land uses, this describes the NLCD class value, the landscape factor (ki) and the Curve
 # Numbers for each hydrologic soil group for that use type.
-# NOTE: Missing NLCD type 12 (plus all Alaska only types (51, 72-74)
+# NOTE: Missing NLCD type 12 (plus all Alaska only types (51, 72-74))
 # For the BMP's the numbers are not Curve Numbers, they are quantities of rainfall (in inches)
 #  that will be converted to infiltration by that BMP for that soil type.
 LAND_USE_VALUES = {
@@ -22,20 +22,20 @@ LAND_USE_VALUES = {
 #    'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
         # Ki Source:
-    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},
-        # Curve Number Source:  Open space (lawns, parks, golf courses, cemeteries, etc.)
-            # Good condition (grass cover > 75%) (TR-55, 1986, Table 2-2a)
-        # Ki Source:
-    'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 51, 'b': 68, 'c': 79, 'd': 84}},
-        # Curve Number Source:  Residential districts with 1 acre average lot size, 20% impervious cover
+    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 59, 'b': 75, 'c': 83, 'd': 87}},
+        # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 20% impervious.
             # (TR-55, 1986, Table 2-2a)
         # Ki Source:
-    'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 77, 'b': 85, 'c': 90, 'd': 92}},
-        # Curve Number Source:  Residential districts with 1/8 acre average lot size, 65% impervious cover
+    'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 68, 'b': 80, 'c': 86, 'd': 89}},
+        # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 38% impervious.
             # (TR-55, 1986, Table 2-2a)
         # Ki Source:
-    'developed_high':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 89, 'b': 92, 'c': 94, 'd': 95}},
-        # Curve Number Source:  Commercial and Business, 85% impervious (TR-55, 1986, Table 2-2a)
+    'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 81, 'b': 88, 'c': 91, 'd': 93}},
+        # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 65% impervious.
+            # (TR-55, 1986, Table 2-2a)
+        # Ki Source:
+    'developed_high':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 91, 'b': 94, 'c': 95, 'd': 96}},
+        # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 85% impervious.
         # Ki Source:
     'barren_land':          {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 91, 'd': 94}},
         # Curve Number Source:  Fallow, Bare soil; Newly graded areas (TR-55, 1986, Table 2-2a and 2-2b)
@@ -82,15 +82,19 @@ LAND_USE_VALUES = {
         # Curve Number Source:  UNKNOWN
         # Ki Source:
 
-    # Storage Capacities for Infiltration BMP's
-    'green_roof':           {'ki': 0.4,  'storage': 0.396},
-        # Source:
+    # Storage Capacities for Infiltration BMP's, in m3/m2
+    'green_roof':           {'ki': 0.4,  'storage': 0.020},
+        # Assume a simple extensive vegetated roof cover
+        # Source:  PA stormwater manual 6.5.1
     'infiltration_trench':  {'ki': 0.0,  'storage': 0.610},
-        # Source:
+        # A large open area with no infiltration underneath and 2' of ponding depth
+        # Source:  New Jersey stormwater manual
     'porous_paving':        {'ki': 0.0,  'storage': 0.267},
-        # Source:
+        # Assume pervious bituminous asphalt used as the paving surface
+        # Sources:  PA stormwater manual 6.4.1, StormTech (http://www.stormtech.com/download_files/pdf/techsheet1.pdf),
+        # http://www.construction.basf.us/features/view/pervious-pavements
     'rain_garden':          {'ki': 0.08, 'storage': 0.396},
-        # Source:
+        # Source:  PA stormwater manual 6.4.5
 }
 
 # The set of best management practices that we know about.  The
