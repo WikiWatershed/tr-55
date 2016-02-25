@@ -78,7 +78,7 @@ LAND_USE_VALUES = {
     # NRCS Curve Numbers for BMP's acting as land cover changes
     'cluster_housing':      {'ki': 0.42},
         # Ki Source:
-    'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}}
+    'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},
         # Curve Number Source:  UNKNOWN
         # Ki Source:
 
