@@ -25,6 +25,7 @@ CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.
 CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
 CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
+CN95 = [0.560, 0.740, 0.920, 1.110, 1.290, 1.480, 1.960, 2.450, 2.940, 3.430, 3.920, 4.420, 5.410, 6.410, 7.400, 8.400, 9.400, 10.39, 11.39, 12.39, 13.39, 14.39]  # noqa
 
 CENSUS_1 = {
     'cell_count': 147,
@@ -460,10 +461,15 @@ class TestModel(unittest.TestCase):
                    for precip in PS]
         self.assertEqual(runoffs, CN80)
 
-        # This pair has CN=90
-        runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_med'), 2)
+        # This pair has CN=90 - SRGD Updated curve numbers on 2/25/16 - this is no longer true
+        # runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_med'), 2)
+        #            for precip in PS]
+        # self.assertEqual(runoffs, CN90)
+
+        # This pair has CN=95
+        runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_high'), 2)
                    for precip in PS]
-        self.assertEqual(runoffs, CN90)
+        self.assertEqual(runoffs, CN95)
 
     def test_simulate_day(self):
         """
