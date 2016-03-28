@@ -30,9 +30,9 @@ class TestTablelookups(unittest.TestCase):
         Do some spot-checks on the data from Table C.
         """
         self.assertEqual(lookup_cn('a', 'open_water'), 100)
-        self.assertEqual(lookup_cn('b', 'developed_low'), 68)
-        self.assertEqual(lookup_cn('c', 'developed_med'), 90)
-        self.assertEqual(lookup_cn('d', 'developed_high'), 95)
+        self.assertEqual(lookup_cn('b', 'developed_low'), 80)
+        self.assertEqual(lookup_cn('c', 'developed_med'), 91)
+        self.assertEqual(lookup_cn('d', 'developed_high'), 96)
         self.assertEqual(lookup_cn('a', 'barren_land'), 77)
         self.assertEqual(lookup_cn('b', 'deciduous_forest'), 55)
         self.assertEqual(lookup_cn('c', 'evergreen_forest'), 70)
