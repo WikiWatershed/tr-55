@@ -9,7 +9,7 @@ Model test set
 
 import unittest
 
-from tr55.model import runoff_nrcs, \
+from tr55.model import runoff_nrcs, runoff_pitt, \
     simulate_cell_day, simulate_water_quality, \
     create_unmodified_census, create_modified_census, \
     simulate_day, compute_bmp_effect
@@ -26,6 +26,11 @@ CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.
 CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
 CN95 = [0.560, 0.740, 0.920, 1.110, 1.290, 1.480, 1.960, 2.450, 2.940, 3.430, 3.920, 4.420, 5.410, 6.410, 7.400, 8.400, 9.400, 10.39, 11.39, 12.39, 13.39, 14.39]  # noqa
+# These are runoffs calculated by Sara Damiano.
+PS_PITT = [0.01, 0.08, 0.12, 0.2, 0.39, 0.59, 0.79, 0.98, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 3.5, 3.9, 4.9]
+PITT_RES_A = [0.0008,0.0089,0.0172,0.0320,0.0718,0.1211,0.1689,0.2143,0.2699,0.3685,0.4717,0.5718,0.6753,0.7806,0.8626,0.9692,1.2363]
+PITT_COMM_C = [0.0020,0.0225,0.0484,0.0979,0.2265,0.3751,0.5275,0.6728,0.8508,1.1836,1.5448,1.8767,2.2189,2.5615,2.8206,3.1969,4.1109]
+PITT_OPEN_B = [0.0004,0.0038,0.0072,0.0129,0.0459,0.0862,0.1293,0.1663,0.2171,0.2998,0.6254,0.7554,0.8862,1.0182,1.1196,1.2502,1.5824]
 
 CENSUS_1 = {
     'cell_count': 147,
@@ -470,6 +475,27 @@ class TestModel(unittest.TestCase):
         runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_high'), 2)
                    for precip in PS]
         self.assertEqual(runoffs, CN95)
+
+    def test_pitt(self):
+        """
+        Test the implementation of the SSH/Pitt runoff model.
+        """
+        runoff_modeled = [round(runoff_pitt(precip, 0.0, 'c', 'developed_high'), 2)
+                   for precip in PS_PITT]
+        runnoff_test_suite = [round(runoff,2)
+                   for runoff in PITT_COMM_C]
+        self.assertEqual(runnoff_test_suite, runoff_modeled)
+        runoff_modeled = [round(runoff_pitt(precip, 0.0, 'b', 'developed_open'), 2)
+                   for precip in PS_PITT]
+        runnoff_test_suite = [round(runoff,2)
+                   for runoff in PITT_OPEN_B]
+        self.assertEqual(runoff_modeled, runnoff_test_suite)
+        runoff_modeled = [round(runoff_pitt(precip, 0.0, 'a', 'developed_low'), 2)
+                   for precip in PS_PITT]
+        runnoff_test_suite = [round(runoff,2)
+                   for runoff in PITT_RES_A]
+        self.assertEqual(runoff_modeled, runnoff_test_suite)
+
 
     def test_simulate_day(self):
         """

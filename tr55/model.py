@@ -16,49 +16,31 @@ and variables used in this program are as follows:
 """
 
 import copy
+import numpy as np
 
 from tr55.tablelookup import lookup_cn, lookup_bmp_storage, \
     lookup_ki, is_bmp, is_built_type, make_precolumbian, \
-    get_pollutants, get_bmps
+    get_pollutants, get_bmps, lookup_pitt_runoff
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
 
 
-def runoff_pitt(precip, land_use):
+def runoff_pitt(precip, evaptrans, soil_type, land_use):
     """
     The Pitt Small Storm Hydrology method.  The output is a runoff
     value in inches.
+    This uses numpy to make a linear interpolation between tabular values to
+    calculate the exact runoff for a given value
     """
-    c1 = +3.638858398e-2
-    c2 = -1.243464039e-1
-    c3 = +1.295682223e-1
-    c4 = +9.375868043e-1
-    c5 = -2.235170859e-2
-    c6 = +0.170228067e+0
-    c7 = -3.971810782e-1
-    c8 = +3.887275538e-1
-    c9 = -2.289321859e-2
-    p4 = pow(precip, 4)
-    p3 = pow(precip, 3)
-    p2 = pow(precip, 2)
+    if land_use == 'cluster_housing':
+        land_use = 'developed_low'  # Do not have better numbers for this!
 
+    runoff_ratios = lookup_pitt_runoff(soil_type, land_use)
 
-    impervious = ((c1 * p3) + (c2 * p2) + (c3 * precip) + c4) * precip
-    urb_grass = ((c5 * p4) + (c6 * p3) + (c7 * p2) + (c8 * precip) + c9) * precip  # noqa
+    runoff_ratio = np.interp(precip,runoff_ratios['precip'],runoff_ratios['Rv'])
+    runoff = precip*runoff_ratio
 
-    runoff_vals = {
-        # 'open_water':           impervious, # Not a built land type.
-        'developed_open':                             urb_grass,
-        'developed_low':   0.20 * impervious + 0.80 * urb_grass,
-        'cluster_housing': 0.20 * impervious + 0.80 * urb_grass,
-        'developed_med':   0.65 * impervious + 0.35 * urb_grass,
-        'developed_high':  0.85 * impervious + 0.15 * urb_grass
-    }
-
-    if land_use not in runoff_vals:
-        raise Exception('Land use %s not a built-type.' % land_use)
-    else:
-        return min(runoff_vals[land_use], precip)
+    return min(runoff, precip - evaptrans)
 
 
 def nrcs_cutoff(precip, curve_number):
@@ -150,10 +132,8 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     # When the land-use is a built-type but the level of precipitation
     # is higher,  the runoff is  the larger  of that predicted  by the
     # Pitt model and NRCS model.  Otherwise, return the NRCS amount.
-    if is_built_type(land_use) and precip <= 2.0:
-        runoff = runoff_pitt(precip, land_use)
-    elif is_built_type(land_use):
-        pitt_runoff = runoff_pitt(2.0, land_use)
+    if is_built_type(land_use):
+        pitt_runoff = runoff_pitt(precip, evaptrans, soil_type, land_use)
         nrcs_runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
         runoff = max(pitt_runoff, nrcs_runoff)
     else:

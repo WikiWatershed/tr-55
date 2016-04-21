@@ -69,10 +69,10 @@ LAND_USE_VALUES = {
         # Curve Number Source:  Row crops, straight rows, good condition (TR-55, 1986, Table 2-2b)
         # Ki Source:
     'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
-        # Curve Number Source: UNKNOWN
+        # Curve Number Source: Uses lowest curve numbers possible to maximize infiltration
         # Ki Source:
     'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
-        # Curve Number Source: UNKNOWN
+        # Curve Number Source: Uses lowest curve numbers possible to maximize infiltration
         # Ki Source:
 
     # NRCS Curve Numbers for BMP's acting as land cover changes
@@ -96,6 +96,67 @@ LAND_USE_VALUES = {
     'rain_garden':          {'ki': 0.08, 'storage': 0.396},
         # Source:  PA stormwater manual 6.4.5
 }
+
+# Runoff tables for Pitt's Small Storm Hydrology (SSH) model
+
+    # The raw runoff coefficients are those measured by the USGS in Wisconsin
+    # (Bannerman 1983, 1992 and 1993; Horwatich, 2004; Steuer 1996 and 1997; USEPA 1993; Walker 1994; Waschbusch 1999)
+    # This data is also provided as the Rv (runoff coefficient) file for all regions *but* the SouthEast in version 10.x of WinSlamm    #
+    # http://wi.water.usgs.gov/slamm/index.html
+    # http://wi.water.usgs.gov/slamm/slamm_parameter_descriptions.htm
+    # http://winslamm.com/Select_documentation.html    #
+    #
+    # The Standard Land Uses, including the percents of land in area type and their level of connectedness,
+    #  are collected from multiple published papers analyzing different sites using WinSLAMM
+    # Pitt has compiled all of the site summaries here:
+    # http://winslamm.com/docs/Standard%20Land%20Use%20and%20Parameter%20file%20descriptions%20final%20April%2018%202011.pdf
+    # The above pdf also lists the original sources of the raw data.    #
+    #
+    # The final runoff volumens and runoff ratios for each standard land use were calculated as the sum of the multiples of the raw runoff coefficients
+    # for each area type and the percent of land in that area type in each standard land use.
+    #
+    # For this work, this is the mapping used between the NLCD class and the SSH's Standard Land Use:
+    #    NLCD class 21 (Developed, Open) = "Open Space"
+    #    NLCD class 22 (Developed, Low) = "Residential"
+    #    NLCD class 23 (Developed, Medium) = "Institutional"
+    #    NLCD class 24 (Developed, High) = "Commercial"
+
+SSH_RAINFALL_STEPS = [0.01, 0.08, 0.12, 0.2, 0.39, 0.59, 0.79, 0.98, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 3.5, 3.9, 4.9]
+SSH_RUNOFF_RATIOS = {
+    'developed_open' :
+         {'runoff_ratio':
+              {'a': [0.0393,0.0472,0.0598,0.0645,0.1045,0.1272,0.1372,0.1432,0.1493,0.1558,0.1609,0.1637,0.1662,0.1686,0.1711,0.1726,0.1757],
+               'b': [0.0393,0.0472,0.0598,0.0645,0.1177,0.1462,0.1636,0.1697,0.1809,0.1874,0.3127,0.3148,0.3165,0.3182,0.3199,0.3206,0.3229],
+               'c': [0.0393,0.0472,0.0598,0.0645,0.1193,0.1528,0.1769,0.1904,0.2008,0.2423,0.3127,0.3148,0.3165,0.3182,0.3199,0.3624,0.4066],
+               'd': [0.0393,0.0472,0.0598,0.0645,0.1193,0.1528,0.1769,0.1904,0.2008,0.2423,0.3127,0.3148,0.3165,0.3182,0.3199,0.3624,0.4066],
+               }
+         },
+    'developed_low' :
+         {'runoff_ratio':
+              {'a' : [0.0785,0.1115,0.1437,0.1601,0.1841,0.2053,0.2138,0.2187,0.2249,0.2303,0.2359,0.2382,0.2412,0.2439,0.2465,0.2485,0.2523],
+               'b' : [0.0785,0.1115,0.1437,0.1601,0.1960,0.2224,0.2377,0.2426,0.2534,0.2589,0.3731,0.3748,0.3770,0.3791,0.3809,0.3822,0.3853],
+               'c' : [0.0785,0.1115,0.1437,0.1601,0.1974,0.2284,0.2496,0.2614,0.2714,0.3085,0.3731,0.3748,0.3770,0.3791,0.3809,0.4200,0.4609],
+               'd' : [0.0785,0.1115,0.1437,0.1601,0.1974,0.2284,0.2496,0.2614,0.2714,0.3085,0.3731,0.3748,0.3770,0.3791,0.3809,0.4200,0.4609],
+               }
+         },
+    'developed_med' :
+         {'runoff_ratio':
+              {'a' : [0.1322,0.1929,0.2631,0.3107,0.3698,0.4032,0.4235,0.4368,0.4521,0.4688,0.4816,0.4886,0.4953,0.5006,0.5047,0.5074,0.5138],
+               'b' : [0.1322,0.1929,0.2631,0.3150,0.3838,0.4226,0.4474,0.4616,0.4797,0.4980,0.5715,0.5803,0.5887,0.5944,0.6002,0.6045,0.6146],
+               'c' : [0.1322,0.1929,0.2631,0.3150,0.3846,0.4258,0.4539,0.4717,0.4895,0.5249,0.5715,0.5803,0.5887,0.5944,0.6002,0.6248,0.6553],
+               'd' : [0.1322,0.1929,0.2631,0.3150,0.3846,0.4258,0.4539,0.4717,0.4895,0.5249,0.5715,0.5803,0.5887,0.5944,0.6002,0.6248,0.6553],
+               }
+         },
+    'developed_high' :
+         {'runoff_ratio':
+              {'a': [0.1966,0.2815,0.4034,0.4796,0.5549,0.6037,0.6311,0.6471,0.6675,0.6891,0.7063,0.7154,0.7257,0.7335,0.7389,0.7435,0.7533],
+               'b': [0.1966,0.2815,0.4034,0.4895,0.5803,0.6343,0.6647,0.6818,0.7045,0.7274,0.7724,0.7820,0.7925,0.8005,0.8059,0.8104,0.8203],
+               'c': [0.1966,0.2815,0.4034,0.4895,0.5807,0.6358,0.6677,0.6865,0.7090,0.7398,0.7724,0.7820,0.7925,0.8005,0.8059,0.8197,0.8390],
+               'd': [0.1966,0.2815,0.4034,0.4895,0.5807,0.6358,0.6677,0.6865,0.7090,0.7398,0.7724,0.7820,0.7925,0.8005,0.8059,0.8197,0.8390],
+               }
+         },
+}
+
 
 # The set of best management practices that we know about.  The
 # cluster_housing and no_till types are excluded because they do not
