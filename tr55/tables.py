@@ -13,74 +13,88 @@ TR-55 tables
 # NOTE: Missing NLCD type 12 (plus all Alaska only types (51, 72-74))
 # For the BMP's the numbers are not Curve Numbers, they are quantities of rainfall (in inches)
 #  that will be converted to infiltration by that BMP for that soil type.
+
+# The Food and Agriculture Organization of the United Nations (FAO) document on evapotranspiration is:
+# Allen, R.G.; Pereira, L.S.; Raes, D.; Smith, M. Evapotranspiration and Crop Water Requirements;
+# Irrigation and Drainage Paper No. 56; FAO: Rome, 1998.
+# Available:  http://www.fao.org/docrep/x0490e/x0490e00.htm#Contents
+
 LAND_USE_VALUES = {
 
 		# NRCS Curve Numbers for NLCD land classes
-    'open_water':           {'nlcd': 11, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
+    'open_water':           {'nlcd': 11, 'ki': 0.6525, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
-        # Ki Source:
+        # Ki Source: FAO for Open Water, > 5 m depth, clear of turbidity, temperate climate.
 #    'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
-        # Ki Source:
-    'developed_open':       {'nlcd': 21, 'ki': 0.7, 'cn': {'a': 59, 'b': 75, 'c': 83, 'd': 87}},
+        # Ki Source: Assumes no ET.
+    'developed_open':       {'nlcd': 21, 'ki': 0.95, 'cn': {'a': 59, 'b': 75, 'c': 83, 'd': 87}},
         # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 20% impervious.
             # (TR-55, 1986, Table 2-2a)
-        # Ki Source:
+        # Ki Source: FAO for growing season for cool season turfgrass (dense stands of bluegrass, ryegrass, and fescue).
     'developed_low':        {'nlcd': 22, 'ki': 0.42, 'cn': {'a': 68, 'b': 80, 'c': 86, 'd': 89}},
         # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 38% impervious.
             # (TR-55, 1986, Table 2-2a)
-        # Ki Source:
+        # Ki Source: UNKNOWN
     'developed_med':        {'nlcd': 23, 'ki': 0.18, 'cn': {'a': 81, 'b': 88, 'c': 91, 'd': 93}},
         # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 65% impervious.
             # (TR-55, 1986, Table 2-2a)
-        # Ki Source:
+        # Ki Source: UNKNOWN
     'developed_high':       {'nlcd': 24, 'ki': 0.06, 'cn': {'a': 91, 'b': 94, 'c': 95, 'd': 96}},
         # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 85% impervious.
-        # Ki Source:
-    'barren_land':          {'nlcd': 31, 'ki': 0.0, 'cn': {'a': 77, 'b': 86, 'c': 91, 'd': 94}},
+        # Ki Source: UNKNOWN
+    'barren_land':          {'nlcd': 31, 'ki': 0.30, 'cn': {'a': 77, 'b': 86, 'c': 91, 'd': 94}},
         # Curve Number Source:  Fallow, Bare soil; Newly graded areas (TR-55, 1986, Table 2-2a and 2-2b)
-        # Ki Source:
-    'deciduous_forest':     {'nlcd': 41, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+        # Ki Source: Sridhar, Venkataramana, "Evapotranspiration Estimation and Scaling Effects Over The Nebraska Sandhills"
+        # (2007). Great Plains Research: A Journal of Natural and Social Sciences. Paper 870.
+        # http://digitalcommons.unl.edu/greatplainsresearch/870
+    'deciduous_forest':     {'nlcd': 41, 'ki': 1.0, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
         # Curve Number Source:  Woods, Good condition;
             # Woods are protected from grazing and litter and brush adequately cover the soil.
             # (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'evergreen_forest':     {'nlcd': 42, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+        # Ki Source: Sridhar, Venkataramana, "Evapotranspiration Estimation and Scaling Effects Over The Nebraska Sandhills"
+        # (2007). Great Plains Research: A Journal of Natural and Social Sciences. Paper 870.
+        # http://digitalcommons.unl.edu/greatplainsresearch/870
+    'evergreen_forest':     {'nlcd': 42, 'ki': 1.00, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
         # Curve Number Source:  Woods, Good condition;
             # Woods are protected from grazing and litter and brush adequately cover the soil.
             # (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'mixed_forest':         {'nlcd': 43, 'ki': 0.7, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
+        # Ki Source: FAO for conifer trees during growing season in well-watered conditions for large forests.
+    'mixed_forest':         {'nlcd': 43, 'ki': 1.0, 'cn': {'a': 30, 'b': 55, 'c': 70, 'd': 77}},
         # Curve Number Source:  Woods, Good condition;
             # Woods are protected from grazing and litter and brush adequately cover the soil.
             # (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'shrub':                {'nlcd': 52, 'ki': 1, 'cn': {'a': 35, 'b': 56, 'c': 70, 'd': 77}},
+        # Ki Source: Sridhar, Venkataramana, "Evapotranspiration Estimation and Scaling Effects Over The Nebraska Sandhills"
+        # (2007). Great Plains Research: A Journal of Natural and Social Sciences. Paper 870.
+        # http://digitalcommons.unl.edu/greatplainsresearch/870
+    'shrub':                {'nlcd': 52, 'ki': 0.90, 'cn': {'a': 35, 'b': 56, 'c': 70, 'd': 77}},
         # Curve Number Source:  Brush, fair; 50-75% ground cover (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'grassland':            {'nlcd': 71, 'ki': 0.6, 'cn': {'a': 30, 'b': 58, 'c': 71, 'd': 78}},
+        # Ki Source: Descheemaeker, K., Raes, D., Allen, R., Nyssen, J., Poesen, J., Muys, B., Haile, M. and Deckers, J.
+        # 2011. Two rapid appraisals of FAO-56 crop coefficients for semiarid natural vegetation of the
+        # northern Ethiopian highlands. Journal of Arid Environments 75(4):353-359.
+    'grassland':            {'nlcd': 71, 'ki': 1.08, 'cn': {'a': 30, 'b': 58, 'c': 71, 'd': 78}},
         # Curve Number Source:  Meadow - continuous grass, protected from grazing and generally mowed for hay.
             # (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'pasture':              {'nlcd': 81, 'ki': 0.6, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},
+        # Ki Source: Average of all values in FAO document for Forages/Hay.
+    'pasture':              {'nlcd': 81, 'ki': 0.95, 'cn': {'a': 39, 'b': 61, 'c': 74, 'd': 80}},
         # Curve Number Source:  Pasture, good; >75% ground cover and not heavily grazed. (TR-55, 1986, Table 2-2c)
-        # Ki Source:
-    'cultivated_crops':     {'nlcd': 82, 'ki': 0.9, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},
+        # Ki Source: FAO for Grazing pasture with rotated grazing.
+    'cultivated_crops':     {'nlcd': 82, 'ki': 1.15, 'cn': {'a': 67, 'b': 78, 'c': 85, 'd': 89}},
         # Curve Number Source:  Row crops, straight rows, good condition (TR-55, 1986, Table 2-2b)
-        # Ki Source:
-    'woody_wetlands':       {'nlcd': 90, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
+        # Ki Source: FAO average for all cereal crows during the growing season.
+    'woody_wetlands':       {'nlcd': 90, 'ki': 1.20, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
         # Curve Number Source: Uses lowest curve numbers possible to maximize infiltration
-        # Ki Source:
-    'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
+        # Ki Source: FAO for either Cattail/Bulrush wetland or Reed Swamp wetland during growing season.
+    'herbaceous_wetlands':  {'nlcd': 95, 'ki': 1.20, 'cn': {'a': 30, 'b': 30, 'c': 30, 'd': 30}},
         # Curve Number Source: Uses lowest curve numbers possible to maximize infiltration
-        # Ki Source:
+        # Ki Source: FAO for either Cattail/Bulrush wetland or Reed Swamp wetland during growing season.
 
     # NRCS Curve Numbers for BMP's acting as land cover changes
     'cluster_housing':      {'ki': 0.42},
-        # Ki Source:
+        # Ki Source: UNKNOWN
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},
         # Curve Number Source:  UNKNOWN
-        # Ki Source:
+        # Ki Source:  UNKNOWN
 
     # Storage Capacities for Infiltration BMP's, in m3/m2
     'green_roof':           {'ki': 0.4,  'storage': 0.020},
