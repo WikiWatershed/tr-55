@@ -120,4 +120,4 @@ def get_pollutants():
 
 
 def get_bmps():
-    return ['green_roof', 'infiltration_trench', 'porous_paving', 'rain_garden']
+    return ['green_roof', 'infiltration_basin', 'porous_paving', 'rain_garden']

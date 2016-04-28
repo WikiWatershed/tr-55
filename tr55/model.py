@@ -127,11 +127,9 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     if bmp and not is_bmp(bmp):
         land_use = bmp or land_use
 
-    # When the land-use is a built-type and the level of precipitation
-    # is two inches or less, use the Pitt Small Storm Hydrology Model.
-    # When the land-use is a built-type but the level of precipitation
-    # is higher,  the runoff is  the larger  of that predicted  by the
-    # Pitt model and NRCS model.  Otherwise, return the NRCS amount.
+    # When the land-use is a built-type use the Pitt Small Storm Hydrology
+    # Model until the runoff predicted by the NRCS model is greater than that
+    # predicted by the NRCS model.
     if is_built_type(land_use):
         pitt_runoff = runoff_pitt(precip, evaptrans, soil_type, land_use)
         nrcs_runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)

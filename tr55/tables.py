@@ -97,17 +97,26 @@ LAND_USE_VALUES = {
         # Ki Source:  UNKNOWN
 
     # Storage Capacities for Infiltration BMP's, in m3/m2
-    'green_roof':           {'ki': 0.4,  'storage': 0.020},
+    'green_roof':           {'ki': 0.4,  'storage': 0.020,  'max_drainage_ratio': 1},
         # Assume a simple extensive vegetated roof cover
+        # Assume 2" of growth media at 15% porosity and 2" of granular discharge media at 25% porosity
+        # Maximum runoff reduction is equal only to the water that falls directly on the roof
+        # (no contributing area).
         # Source:  PA stormwater manual 6.5.1
-    'infiltration_trench':  {'ki': 0.0,  'storage': 0.610},
-        # A large open area with no infiltration underneath and 2' of ponding depth
+    'infiltration_basin':  {'ki': 0.0,  'storage': 0.610,  'max_drainage_ratio': 1},
+        # A large open area with no infiltration underneath and 2' of ponding depth (100% porosity)
         # Source:  New Jersey stormwater manual
-    'porous_paving':        {'ki': 0.0,  'storage': 0.267},
+    'porous_paving':        {'ki': 0.0,  'storage': 0.267,  'max_drainage_ratio': 1},
         # Assume pervious bituminous asphalt used as the paving surface
-        # Sources:  PA stormwater manual 6.4.1, StormTech (http://www.stormtech.com/download_files/pdf/techsheet1.pdf),
+        # 2.5" of pervious paving service at 16% porosity, 1" of bedding layer/choker course at 50% porosity,
+        # and 24" of infiltration bed/resevoir layer at 40% porosity
+        # Sources:  PA stormwater manual 6.4.1,
+        # StormTech (http://www.stormtech.com/download_files/pdf/techsheet1.pdf),
         # http://www.construction.basf.us/features/view/pervious-pavements
-    'rain_garden':          {'ki': 0.08, 'storage': 0.396},
+    'rain_garden':          {'ki': 0.08, 'storage': 0.396,  'max_drainage_ratio': 5},
+        # Assumes 6" of ponding depth at 100% porosity, 24" planting mix at 20% porosity
+        # and 12" gravel underbed at 40% porosity.
+        # Maximum loading ratio is 5:1
         # Source:  PA stormwater manual 6.4.5
 }
 
@@ -176,7 +185,7 @@ SSH_RUNOFF_RATIOS = {
 # cluster_housing and no_till types are excluded because they do not
 # actively retain water.
 BMPS = set(['green_roof', 'porous_paving',
-            'rain_garden', 'infiltration_trench'])
+            'rain_garden', 'infiltration_basin'])
 
 # The set of "built" land uses
 # These are the land uses to which the Pitt model will be applied at less than 2" of rain.
