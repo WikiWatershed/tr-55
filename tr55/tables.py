@@ -91,33 +91,43 @@ LAND_USE_VALUES = {
 
     # NRCS Curve Numbers for BMP's acting as land cover changes
     'cluster_housing':      {'ki': 0.42},
+        # Curve Number Source: At this time, code uses curve numbers for developed_low/residential
         # Ki Source: UNKNOWN
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},
         # Curve Number Source:  UNKNOWN
         # Ki Source:  UNKNOWN
 
-    # Storage Capacities for Infiltration BMP's, in m3/m2
+    # Storage Capacities and Maximum Loading Ratios for Infiltration BMP's
+    # storage is in m3/m2, max_drainage_ratio is the ratio of drawn BMP area to
+    # the maximum possible area that should contribute to it.
+    # NOTE that these contributing areas ratios are based only on the suggested
+    # drainage areas for a well-designed BMP's and have nothing to do with the
+    # user's actual placement of the BMP on the UI map.
     'green_roof':           {'ki': 0.4,  'storage': 0.020,  'max_drainage_ratio': 1},
-        # Assume a simple extensive vegetated roof cover
-        # Assume 2" of growth media at 15% porosity and 2" of granular discharge media at 25% porosity
-        # Maximum runoff reduction is equal only to the water that falls directly on the roof
-        # (no contributing area).
+        # Assume a simple extensive vegetated roof cover with 2" of growth media
+        # at 15% porosity and 2" of granular discharge media at 25% porosity
+        # Assume drainage area is equal only to the water that falls directly on the roof
+        # (no extra contributing area).
         # Source:  PA stormwater manual 6.5.1
-    'infiltration_basin':  {'ki': 0.0,  'storage': 0.610,  'max_drainage_ratio': 1},
-        # A large open area with no infiltration underneath and 2' of ponding depth (100% porosity)
-        # Source:  New Jersey stormwater manual
-    'porous_paving':        {'ki': 0.0,  'storage': 0.267,  'max_drainage_ratio': 1},
-        # Assume pervious bituminous asphalt used as the paving surface
-        # 2.5" of pervious paving service at 16% porosity, 1" of bedding layer/choker course at 50% porosity,
-        # and 24" of infiltration bed/resevoir layer at 40% porosity
+    'infiltration_basin':  {'ki': 0.0,  'storage': 0.610,  'max_drainage_ratio': 8},
+        # Assume a large open area with no infiltration underneath and 2' of ponding depth (100% porosity)
+        # Assume drainage area is largely pervious surface (lawns) allowing a maximum loading ratio of 8:1
+        # Source:  New Jersey stormwater manual,  PA stormwater manual appendix C
+    'porous_paving':        {'ki': 0.0,  'storage': 0.267,  'max_drainage_ratio': 2},
+        # Assume porous bituminous asphalt used as the paving surface
+        # 2.5" of porous paving service at 16% porosity, 1" of bedding layer/choker course at 50% porosity,
+        # and 24" of infiltration bed/reservoir layer at 40% porosity
+        # Assume some allowable additional drainage area (2:1) from roofs or adjacect pavement
+        # Note that inflow from any pervious areas is not recommended due to potential clogging
         # Sources:  PA stormwater manual 6.4.1,
         # StormTech (http://www.stormtech.com/download_files/pdf/techsheet1.pdf),
-        # http://www.construction.basf.us/features/view/pervious-pavements
+        # http://www.construction.basf.us/features/view/pervious-pavements,
+        # http: // stormwater.pca.state.mn.us / index.php / Design_criteria_for_permeable_pavement
     'rain_garden':          {'ki': 0.08, 'storage': 0.396,  'max_drainage_ratio': 5},
         # Assumes 6" of ponding depth at 100% porosity, 24" planting mix at 20% porosity
         # and 12" gravel underbed at 40% porosity.
-        # Maximum loading ratio is 5:1
-        # Source:  PA stormwater manual 6.4.5
+        # Assume drainage area is largely impervious (parking lots) allowing a maximum loading ratio of 5:1
+        # Source:  PA stormwater manual 6.4.5, PA stormwater manual appendix C
 }
 
 # Runoff tables for Pitt's Small Storm Hydrology (SSH) model

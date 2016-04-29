@@ -33,6 +33,16 @@ def lookup_bmp_storage(bmp):
         return LAND_USE_VALUES[bmp]['storage']
 
 
+def lookup_bmp_drainage(bmp):
+    """
+    Lookup the amount of infiltration caused by a particular BMP.
+    """
+    if not is_bmp(bmp):
+        raise KeyError('%s not a BMP' % bmp)
+    else:
+        return LAND_USE_VALUES[bmp]['max_drainage_ratio']
+
+
 def lookup_cn(soil_type, land_use):
     """
     Lookup the runoff curve number for a particular soil type and land use.
@@ -120,4 +130,4 @@ def get_pollutants():
 
 
 def get_bmps():
-    return ['green_roof', 'infiltration_basin', 'porous_paving', 'rain_garden']
+    return list(BMPS)

@@ -31,6 +31,8 @@ def runoff_pitt(precip, evaptrans, soil_type, land_use):
     value in inches.
     This uses numpy to make a linear interpolation between tabular values to
     calculate the exact runoff for a given value
+
+    `precip` is the amount of precipitation in inches.
     """
     if land_use == 'cluster_housing':
         land_use = 'developed_low'  # Do not have better numbers for this!
@@ -58,6 +60,8 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
     """
     The runoff equation from the TR-55 document.  The output is a
     runoff value in inches.
+
+    `precip` is the amount of precipitation in inches.
     """
     if land_use == 'cluster_housing':
         land_use = 'developed_low'
@@ -301,8 +305,7 @@ def postpass(tree):
 
 def compute_bmp_effect(census, m2_per_pixel):
     """
-    Compute the overall percentage of pre-BMP water to retain after
-    considering BMPs.
+    Compute the overall amount of water retained by BMP's
     """
     meters_per_inch = 0.0254
     cubic_meters = census['runoff-vol'] * meters_per_inch * m2_per_pixel
@@ -357,8 +360,10 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
     """
     et_max = 0.207
         # From the EPA WaterSense data finder for the Philadelphia airport (19153)
-        # Converted to daily number
+        # Converted to daily number in inches per day.
         # http://www3.epa.gov/watersense/new_homes/wb_data_finder.html
+        # TODO: include Potential Max ET as a data layer from CGIAR
+        # http://csi.cgiar.org/aridity/Global_Aridity_PET_Methodolgy.asp
 
     if 'modifications' in census:
         verify_census(census)

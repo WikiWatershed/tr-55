@@ -32,6 +32,8 @@ PITT_RES_A = [0.0008,0.0089,0.0172,0.0320,0.0718,0.1211,0.1689,0.2143,0.2699,0.3
 PITT_COMM_C = [0.0020,0.0225,0.0484,0.0979,0.2265,0.3751,0.5275,0.6728,0.8508,1.1836,1.5448,1.8767,2.2189,2.5615,2.8206,3.1969,4.1109]
 PITT_OPEN_B = [0.0004,0.0038,0.0072,0.0129,0.0459,0.0862,0.1293,0.1663,0.2171,0.2998,0.6254,0.7554,0.8862,1.0182,1.1196,1.2502,1.5824]
 
+# A census containing several land covers and several land cover modifications.
+# This includes BMP's that act as land cover changes.
 CENSUS_1 = {
     'cell_count': 147,
     'distribution': {
@@ -225,7 +227,10 @@ DAY_OUTPUT_1 = {
 
 CENSUS_2 = {
     'cell_count': 40,
-    'BMPs': {'rain_garden': 33},
+    'BMPs': {
+        'rain_garden': 33,
+        'green_roof': 16
+    },
     'distribution': {
         'd:developed_med': {'cell_count': 10},
         'c:developed_high': {'cell_count': 10},
@@ -253,7 +258,8 @@ CENSUS_2 = {
 DAY_OUTPUT_2 = {
     'unmodified': {
         'BMPs': {
-            'rain_garden': 33
+            'rain_garden': 33,
+            'green_roof': 16
         },
         'inf': 1.1166794893660754,
         'cell_count': 40,
@@ -308,7 +314,8 @@ DAY_OUTPUT_2 = {
     },
     'modified': {
         'BMPs': {
-            'rain_garden': 33
+            'rain_garden': 33,
+            'green_roof': 16
         },
         'inf': 1.9175105,
         'cell_count': 40,
@@ -497,9 +504,9 @@ class TestModel(unittest.TestCase):
         self.assertEqual(runoff_modeled, runnoff_test_suite)
 
 
-    def test_simulate_day(self):
+    def test_simulate_cell_day(self):
         """
-        Daily simulation.
+        Test the simulate_cell_day function.
         """
         result1 = simulate_cell_day(42, 93, 'a:barren_land:', 1)
         result2 = simulate_cell_day(42, 93, 'a:barren_land:', 2)
@@ -686,7 +693,7 @@ class TestModel(unittest.TestCase):
 
     def test_simulate_water_quality_1(self):
         """
-        Test the water quality simulation.
+        Test the water quality simulation with unmodified census.
         """
         census = {
             "cell_count": 5,
@@ -792,7 +799,7 @@ class TestModel(unittest.TestCase):
 
     def test_day_1(self):
         """
-        Test the simulate_day function.
+        Test the simulate_day function with only land cover modifications.
         """
         self.maxDiff = None
 
@@ -860,25 +867,15 @@ class TestModel(unittest.TestCase):
         result = simulate_day(census, 0.984)
         self.assertTrue(result['modified']['runoff'] >= 0)
 
-    def test_bmp_sum(self):
+    def test_water_balance(self):
         """
-        Make sure that runoff, evapotranspiration, and infiltration sum to
-        precipitation.
+        Make sure that R, ET, and I sum to precip with no modifications.
         """
         census = {
             "cell_count": 1,
             "distribution": {
                 "d:developed_med": {"cell_count": 1}
             },
-            "modifications": [
-                {
-                    "change": ":developed_high:",
-                    "cell_count": 1,
-                    "distribution": {
-                        "d:developed_med": {"cell_count": 1}
-                    }
-                }
-            ]
         }
 
         precip = 0.984
@@ -888,6 +885,33 @@ class TestModel(unittest.TestCase):
         inf = result['modified']['inf']
         total = runoff + et + inf
         self.assertAlmostEqual(total, precip)
+
+    def test_water_balance_1(self):
+        """
+        Make sure that R, ET, and I sum to precip with only land cover modifications.
+        """
+
+        precip = 2.362
+        result = simulate_day(CENSUS_1, precip)
+        runoff = result['modified']['runoff']
+        et = result['modified']['et']
+        inf = result['modified']['inf']
+        total = runoff + et + inf
+        self.assertAlmostEqual(total, precip)
+
+    def test_water_balance_2(self):
+        """
+        Make sure that R, ET, and I sum to precip with with lots of BMPs.
+        """
+
+        precip = 4.429
+        result = simulate_day(CENSUS_2, precip)
+        runoff = result['modified']['runoff']
+        et = result['modified']['et']
+        inf = result['modified']['inf']
+        total = runoff + et + inf
+        self.assertAlmostEqual(total, precip)
+
 
     def test_compute_bmp_no_runoff(self):
         """
