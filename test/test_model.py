@@ -73,162 +73,162 @@ CENSUS_1 = {
 }
 
 DAY_OUTPUT_1 = {
-    "modified": {
-        "bod": 67.66870431502203,
-        "cell_count": 147,
-        "distribution": {
-            "a:deciduous_forest": {
-                "bod": 5.1614500050486845,
-                "cell_count": 72,
-                "distribution": {
-                    "a:deciduous_forest": {
-                        "bod": 0,
-                        "cell_count": 67,
-                        "et": 0.14489999999999997,
-                        "inf": 1.8551,
-                        "runoff": 0,
-                        "tn": 0,
-                        "tp": 0,
-                        "tss": 0
-                    },
-                    "d:barren_land:": {
-                        "bod": 5.1614500050486845,
-                        "cell_count": 5,
-                        "et": 0,
-                        "inf": 0.6036783267219616,
-                        "runoff": 1.3963216732780384,
-                        "tn": 0.0003910189397764155,
-                        "tp": 0.000039101893977641545,
-                        "tss": 0.03910189397764155
-                    }
-                },
-                "et": 0.13483749999999997,
-                "inf": 1.7681957171334695,
-                "runoff": 0.09696678286653043,
-                "tn": 0.0003910189397764155,
-                "tp": 0.000039101893977641545,
-                "tss": 0.03910189397764155
-            },
-            "c:developed_high": {
-                "bod": 35.51554384871639,
-                "cell_count": 42,
-                "distribution": {
-                    "c:developed_high": {
-                        "bod": 26.505034083749653,
-                        "cell_count": 22,
-                        "et": 0.012419999999999999,
-                        "inf": 0.2528108488309999,
-                        "runoff": 1.734769151169,
-                        "tn": 0.1945127501307434,
-                        "tp": 0.030780039581128623,
-                        "tss": 5.405744451435715
-                    },
-                    "c:developed_high:no_till": {
-                        "bod": 9.010509764966741,
-                        "cell_count": 20,
-                        "et": 0.1863,
-                        "inf": 1.1649828634779853,
-                        "runoff": 0.6487171365220146,
-                        "tn": 0.06612551521064301,
-                        "tp": 0.010463817791574277,
-                        "tss": 1.8377079996452328
-                    }
-                },
-                "et": 0.09522,
-                "inf": 0.6871784748533739,
-                "runoff": 1.217601525146626,
-                "tn": 0.2606382653413864,
-                "tp": 0.0412438573727029,
-                "tss": 7.243452451080948
-            },
-            "d:developed_med": {
-                "bod": 26.991710461256947,
-                "cell_count": 33,
-                "distribution": {
-                    "d:developed_med": {
-                        "bod": 21.380810693159994,
-                        "cell_count": 23,
-                        "et": 0.037259999999999995,
-                        "inf": 0.5561354609789999,
-                        "runoff": 1.4066045390209998,
-                        "tn": 0.12411741800690337,
-                        "tp": 0.020837230760283047,
-                        "tss": 2.5548256845216613
-                    },
-                    "d:developed_med:no_till": {
-                        "bod": 5.610899768096954,
-                        "cell_count": 10,
-                        "et": 0.1863,
-                        "inf": 0.9646990173599737,
-                        "runoff": 0.8490009826400262,
-                        "tn": 0.03257174865378317,
-                        "tp": 0.005468249773992795,
-                        "tss": 0.6704549722895514
-                    }
-                },
-                "et": 0.08242363636363635,
-                "inf": 0.6799425992762647,
-                "runoff": 1.2376337643600988,
-                "tn": 0.15668916666068655,
-                "tp": 0.02630548053427584,
-                "tss": 3.2252806568112127
-            }
-        },
-        "et": 0.11175183673469387,
-        "inf": 1.215031927575294,
-        "runoff": 0.6732162356900119,
-        "tn": 0.41771845094184934,
-        "tp": 0.06758843980095638,
-        "tss": 10.507835001869802
-    },
     "unmodified": {
-        "bod": 81.27733495679115,
         "cell_count": 147,
         "distribution": {
-            "a:deciduous_forest": {
-                "bod": 0,
-                "cell_count": 72,
-                "et": 0.14489999999999997,
-                "inf": 1.8550999999999997,
-                "runoff": 0,
-                "tn": 0,
-                "tp": 0,
-                "tss": 0
-            },
             "c:developed_high": {
-                "bod": 50.60051961443115,
                 "cell_count": 42,
                 "et": 0.01242,
-                "inf": 0.2528108488309999,
-                "runoff": 1.734769151169,
-                "tn": 0.37134252297687376,
-                "tp": 0.058761893745791015,
-                "tss": 10.320057589104549
+                "inf": 0.4427799999999999,
+                "runoff": 1.5447999999999997,
+                "tn": 0.3306779631791999,
+                "tp": 0.05232706230527999,
+                "bod": 45.05941476287999,
+                "tss": 9.1899403173648
+            },
+            "a:deciduous_forest": {
+                "bod": 0.0,
+                "cell_count": 72,
+                "et": 0.207,
+                "inf": 1.7930000000000001,  # should be 0.03726, but float point rounding issues
+                "runoff": 0.0,
+                "tn": 0.0,
+                "tp": 0.0,
+                "tss": 0.0
             },
             "d:developed_med": {
-                "bod": 30.67681534236,
                 "cell_count": 33,
-                "et": 0.037259999999999995,
-                "inf": 0.5561354609789999,
-                "runoff": 1.406604539021,
-                "tn": 0.17808151279251355,
-                "tp": 0.029896896308232203,
-                "tss": 3.665619460400644
+                "et": 0.037259999999999995,  # should be 0.03726, but float point rounding issues
+                "inf": 0.6482460872656175,
+                "runoff": 1.3144939127343824,
+                "tn": 0.16641995531964812,
+                "tp": 0.027939116586510267,
+                "bod": 28.667963106158364,
+                "tss": 3.425578642346042
             }
         },
-        "et": 0.08288448979591835,
-        "inf": 1.1056988153959795,
-        "runoff": 0.8114166948081021,
-        "tn": 0.5494240357693874,
-        "tp": 0.08865879005402322,
-        "tss": 13.985677049505192
+        "et": 0.1133008163265306,
+        "inf": 1.1502372848963631,
+        "runoff": 0.7364618987771062,
+        "tn": 0.497097918498848,
+        "tp": 0.08026617889179026,
+        "bod": 73.72737786903835,
+        "tss": 12.61551895971084
+    },
+    "modified": {
+        "cell_count": 147,
+        "distribution": {
+            "a:deciduous_forest": {
+                'inf': 1.7060957171334694,
+                'cell_count': 72,
+                'tp': 3.9101893977641545e-05,
+                'tn': 0.0003910189397764155,
+                'runoff': 0.09696678286653043,
+                'et': 0.1969375,
+                'distribution': {
+                    'a:deciduous_forest': {
+                        'cell_count': 67,
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.207,
+                        'inf': 1.793,
+                        'bod': 0.0,
+                        'tss': 0.0
+                    },
+                    'd:barren_land:': {
+                        'cell_count': 5,
+                        'tp': 3.9101893977641545e-05,
+                        'tn': 0.0003910189397764155,
+                        'runoff': 1.3963216732780384,
+                        'et': 0.0621,
+                        'inf': 0.5415783267219616,
+                        'bod': 5.1614500050486845,
+                        'tss': 0.03910189397764155
+                    }
+                },
+                'bod': 5.1614500050486845,
+                'tss': 0.03910189397764155
+            },
+            "c:developed_high": {
+                'inf': 0.7866861254657073,
+                'cell_count': 42,
+                'tp': 0.03787323138005428,
+                'tn': 0.23933778163784303,
+                'runoff': 1.1180938745342925,
+                'et': 0.09522,
+                'distribution': {
+                    'c:developed_high:no_till': {
+                        'cell_count': 20,
+                        'tp': 0.010463817791574277,
+                        'tn': 0.06612551521064301,
+                        'runoff': 0.6487171365220146,
+                        'et': 0.1863,
+                        'inf': 1.1649828634779853,
+                        'bod': 9.010509764966741,
+                        'tss': 1.8377079996452328
+                    },
+                    'c:developed_high': {
+                        'cell_count': 22,
+                        'tp': 0.02740941358848,
+                        'tn': 0.1732122664272,
+                        'runoff': 1.5448,
+                        'et': 0.012419999999999999,
+                        'inf': 0.44277999999999995,
+                        'bod': 23.60255059008,
+                        'tss': 4.813778261476799
+                    }
+                },
+                'bod': 32.61306035504674,
+                'tss': 6.651486261122033
+            },
+            "d:developed_med": {
+                'inf': 0.7441409145669375,
+                'cell_count': 33,
+                'tp': 0.024940967394893893,
+                'tn': 0.14856141448262886,
+                'runoff': 1.173435449069426,
+                'et': 0.08242363636363635,
+                'distribution': {
+                    'd:developed_med:no_till': {
+                        'cell_count': 10,
+                        'tp': 0.005468249773992795,
+                        'tn': 0.03257174865378317,
+                        'runoff': 0.8490009826400262,
+                        'et': 0.1863,
+                        'inf': 0.9646990173599737,
+                        'bod': 5.610899768096954,
+                        'tss': 0.6704549722895514
+                    },
+                    'd:developed_med': {
+                        'cell_count': 23,
+                        'tp': 0.0194727176209011,
+                        'tn': 0.11598966582884568,
+                        'runoff': 1.3144939127343824,
+                        'et': 0.037259999999999995,
+                        'inf': 0.6482460872656175,
+                        'bod': 19.980701558837648,
+                        'tss': 2.387524508301787
+                    }
+                },
+                'bod': 25.5916013269346,
+                'tss': 3.0579794805913383
+            }
+        },
+        "et": 0.1421681632653061,
+        "inf": 1.2274582250603976,
+        "runoff": 0.6303736116742962,
+        "tn": 0.3882902150602483,
+        "tp": 0.06285330066892582,
+        "bod": 63.36611168703003,
+        "tss": 9.748567635691012
     }
 }
 
 CENSUS_2 = {
     'cell_count': 40,
     'BMPs': {
-        'rain_garden': 33,
+        'rain_garden': 8,
         'green_roof': 16
     },
     'distribution': {
@@ -258,183 +258,183 @@ CENSUS_2 = {
 DAY_OUTPUT_2 = {
     'unmodified': {
         'BMPs': {
-            'rain_garden': 33,
+            'rain_garden': 8,
             'green_roof': 16
         },
-        'inf': 1.1166794893660754,
+        'inf': 1.1535619337299798,
         'cell_count': 40,
-        'tp': 0.024279302519227997,
-        'tn': 0.151799090357274,
-        'et': 0.07969499999999999,
-        'runoff': 0.8036255106339244,
+        'tp': 0.02215393321295682,
+        'tn': 0.1385832470154011,
+        'et': 0.11333250000000002,
+        'runoff': 0.7331055662700201,
         'distribution': {
             'a:deciduous_forest': {
                 'cell_count': 10,
-                'tp': 0,
-                'tn': 0,
-                'runoff': 0,
-                'et': 0.14489999999999997,
-                'inf': 1.8550999999999997,
-                'bod': 0,
-                'tss': 0
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.207,
+                'inf': 1.793,
+                'bod': 0.0,
+                'tss': 0.0
             },
             'b:pasture': {
                 'cell_count': 10,
                 'tp': 0.0012287098889476472,
                 'tn': 0.00942010914859863,
                 'runoff': 0.0731283523456977,
-                'et': 0.1242,
-                'inf': 1.8026716476543023,
+                'et': 0.19665,
+                'inf': 1.7302216476543024,
                 'bod': 0.40956996298254905,
                 'tss': 0.20478498149127453
             },
             'c:developed_high': {
                 'cell_count': 10,
-                'tp': 0.013990927082331196,
-                'tn': 0.0884148864230652,
-                'runoff': 1.7347691511690002,
+                'tp': 0.012458824358399997,
+                'tn': 0.07873284837599999,
+                'runoff': 1.5448,
                 'et': 0.012419999999999999,
-                'inf': 0.2528108488309999,
-                'bod': 12.047742765340752,
-                'tss': 2.457156568834417
+                'inf': 0.44277999999999995,
+                'bod': 10.728432086399998,
+                'tss': 2.1880810279439995
             },
             'd:developed_med': {
                 'cell_count': 10,
-                'tp': 0.009059665547949153,
-                'tn': 0.053964094785610164,
-                'runoff': 1.406604539021,
+                'tp': 0.008466398965609172,
+                'tn': 0.050430289490802464,
+                'runoff': 1.3144939127343824,
                 'et': 0.037259999999999995,
-                'inf': 0.5561354609789999,
-                'bod': 9.2960046492,
-                'tss': 1.1107937758789828
+                'inf': 0.6482460872656175,
+                'bod': 8.687261547320718,
+                'tss': 1.0380541340442553
             }
         },
-        'bod': 21.753317377523302,
-        'tss': 3.772735326204674
+        'bod': 19.825263596703266,
+        'tss': 3.430920143479529
     },
     'modified': {
         'BMPs': {
-            'rain_garden': 33,
+            'rain_garden': 8,
             'green_roof': 16
         },
-        'inf': 1.9175105,
+        'inf': 1.3850589586187518,
         'cell_count': 40,
-        'tp': 0,
-        'tn': 0,
-        'et': 0.0824895,
-        'runoff': 0,
+        'tp': 0.015306658255669639,
+        'tn': 0.09618879545927836,
+        'et': 0.11431574999999998,
+        'runoff': 0.5006252913812481,
+        'bod': 13.521705043227245,
+        'tss': 2.3779226104673947,
         'distribution': {
             'a:deciduous_forest': {
-                'inf': 1.8550999999999997,
+                'inf': 1.793,
                 'cell_count': 10,
-                'tp': 0,
-                'tn': 0,
-                'runoff': 0,
-                'et': 0.14489999999999997,
+                'tp': 0.0,
+                'tn': 0.0,
+                'runoff': 0.0,
+                'et': 0.207,
+                'bod': 0.0,
+                'tss': 0.0,
                 'distribution': {
                     'a:deciduous_forest': {
                         'cell_count': 10,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
-                        'et': 0.14489999999999997,
-                        'inf': 1.8550999999999997,
-                        'bod': 0,
-                        'tss': 0
+                        'tp': 0.0,
+                        'tn': 0.0,
+                        'runoff': 0.0,
+                        'et': 0.207,
+                        'inf': 1.793,
+                        'bod': 0.0,
+                        'tss': 0.0
                     }
-                },
-                'bod': 0,
-                'tss': 0
+                }
             },
             'b:pasture': {
-                'inf': 1.86959,
+                'inf': 1.7374787818180983,
                 'cell_count': 10,
-                'tp': 0,
-                'tn': 0,
-                'runoff': 0,
-                'et': 0.13040999999999997,
+                'tp': 0.0011241649685141293,
+                'tn': 0.008618598091941659,
+                'runoff': 0.06690621818190162,
+                'et': 0.19561499999999998,
+                'bod': 0.3747216561713764,
+                'tss': 0.1873608280856882,
                 'distribution': {
                     'b:pasture:no_till': {
                         'cell_count': 1,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
+                        'tp': 0.0003679912573490844,
+                        'tn': 0.0028212663063429807,
+                        'runoff': 0.21901503820896456,
                         'et': 0.1863,
-                        'inf': 1.8137,
-                        'bod': 0,
-                        'tss': 0
+                        'inf': 1.5946849617910355,
+                        'bod': 0.1226637524496948,
+                        'tss': 0.0613318762248474
                     },
                     'b:pasture': {
                         'cell_count': 9,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
-                        'et': 0.12419999999999999,
-                        'inf': 1.8758000000000001,
-                        'bod': 0,
-                        'tss': 0
+                        'tp': 0.0007561737111650449,
+                        'tn': 0.005797331785598678,
+                        'runoff': 0.05000523817889463,
+                        'et': 0.19665,
+                        'inf': 1.7533447618211053,
+                        'bod': 0.25205790372168163,
+                        'tss': 0.12602895186084082
                     }
-                },
-                'bod': 0,
-                'tss': 0
+                }
             },
             'c:developed_high': {
-                'inf': 1.9875800000000001,
+                'inf': 0.9312442634366546,
                 'cell_count': 10,
-                'tp': 0,
-                'tn': 0,
-                'runoff': 0,
+                'tp': 0.008519356166069273,
+                'tn': 0.05383759799390998,
+                'runoff': 1.0563357365633455,
                 'et': 0.012419999999999999,
+                'bod': 7.336112254115208,
+                'tss': 1.496211926665916,
                 'distribution': {
                     'c:developed_high': {
                         'cell_count': 10,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
+                        'tp': 0.008519356166069273,
+                        'tn': 0.05383759799390998,
+                        'runoff': 1.0563357365633455,
                         'et': 0.012419999999999999,
-                        'inf': 1.9875800000000001,
-                        'bod': 0,
-                        'tss': 0
+                        'inf': 0.9312442634366546,
+                        'bod': 7.336112254115208,
+                        'tss': 1.496211926665916
                     }
-                },
-                'bod': 0,
-                'tss': 0
+                }
             },
             'd:developed_med': {
-                'inf': 1.9577719999999998,
+                'inf': 1.0785127892202548,
                 'cell_count': 10,
-                'tp': 0,
-                'tn': 0,
-                'runoff': 0,
+                'tp': 0.005663137121086236,
+                'tn': 0.03373259937342671,
+                'runoff': 0.8792592107797452,
                 'et': 0.042228,
+                'bod': 5.81087113294066,
+                'tss': 0.6943498557157908,
                 'distribution': {
                     'd:developed_med': {
                         'cell_count': 9,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
+                        'tp': 0.005210398633245935,
+                        'tn': 0.031035852728464916,
+                        'runoff': 0.8988522109763772,
                         'et': 0.037259999999999995,
-                        'inf': 1.9627399999999997,
-                        'bod': 0,
-                        'tss': 0
+                        'inf': 1.0638877890236227,
+                        'bod': 5.346322075852351,
+                        'tss': 0.6388401802501538
                     },
                     'd:developed_med:cluster_housing': {
                         'cell_count': 1,
-                        'tp': 0,
-                        'tn': 0,
-                        'runoff': 0,
+                        'tp': 0.00045273848784030136,
+                        'tn': 0.002696746644961795,
+                        'runoff': 0.702922209010056,
                         'et': 0.08693999999999999,
-                        'inf': 1.9130600000000002,
-                        'bod': 0,
-                        'tss': 0
+                        'inf': 1.210137790989944,
+                        'bod': 0.46454905708830924,
+                        'tss': 0.055509675465636954
                     }
-                },
-                'bod': 0,
-                'tss': 0
+                }
             }
-        },
-        'bod': 0,
-        'tss': 0
+        }
     }
 }
 
@@ -502,7 +502,6 @@ class TestModel(unittest.TestCase):
         runnoff_test_suite = [round(runoff,2)
                    for runoff in PITT_RES_A]
         self.assertEqual(runoff_modeled, runnoff_test_suite)
-
 
     def test_simulate_cell_day(self):
         """
@@ -812,6 +811,7 @@ class TestModel(unittest.TestCase):
         """
         Test the simulate_day function with lots of BMPs.
         """
+        self.maxDiff = None
         precip = 2
         actual = simulate_day(CENSUS_2, precip)
         expected = DAY_OUTPUT_2
@@ -877,14 +877,14 @@ class TestModel(unittest.TestCase):
                 "d:developed_med": {"cell_count": 1}
             },
         }
-
         precip = 0.984
         result = simulate_day(census, precip)
         runoff = result['modified']['runoff']
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        self.assertAlmostEqual(total, precip)
+        # self.assertAlmostEqual(total, precip)
+        self.assertEqual(total, precip)
 
     def test_water_balance_1(self):
         """
@@ -897,7 +897,8 @@ class TestModel(unittest.TestCase):
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        self.assertAlmostEqual(total, precip)
+        # self.assertAlmostEqual(total, precip)
+        self.assertEqual(total, precip)
 
     def test_water_balance_2(self):
         """
@@ -910,8 +911,32 @@ class TestModel(unittest.TestCase):
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        self.assertAlmostEqual(total, precip)
+        # self.assertAlmostEqual(total, precip)
+        self.assertEqual(total, precip)
 
+    def test_compute_bmp_effect(self):
+        """
+        Test that the BMP reduction is working as expected.
+        """
+        # This is an abbreviated census without postpass for 3.2"
+        # of rain on developed_med on soil type c
+        mod_census = {
+            'BMPs': {
+                'porous_paving': 10,
+                'infiltration_basin': 15
+            },
+            'cell_count': 100,
+            'inf-vol': 90.44788778622261,
+            'et-vol': 3.7259999999999995,
+            'runoff-vol': 225.8261122137774,
+        }
+
+        precip = 3.2 # should fill basin but not porous paving
+        m2_per_pixel = 10
+        pct = compute_bmp_effect(mod_census, m2_per_pixel, precip)
+
+        # No exception should be raised, no bmp effect given
+        self.assertAlmostEqual(0.8121403161, pct)
 
     def test_compute_bmp_no_runoff(self):
         """
@@ -925,7 +950,7 @@ class TestModel(unittest.TestCase):
         }
 
         # No exception should be raised, no bmp effect given
-        self.assertEqual(0, compute_bmp_effect(census, 42))
+        self.assertEqual(0, compute_bmp_effect(census, 42, 0.393))
 
 if __name__ == "__main__":
     unittest.main()

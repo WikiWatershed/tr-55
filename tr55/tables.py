@@ -117,7 +117,7 @@ LAND_USE_VALUES = {
         # Assume porous bituminous asphalt used as the paving surface
         # 2.5" of porous paving service at 16% porosity, 1" of bedding layer/choker course at 50% porosity,
         # and 24" of infiltration bed/reservoir layer at 40% porosity
-        # Assume some allowable additional drainage area (2:1) from roofs or adjacect pavement
+        # Assume some allowable additional drainage area (2:1) from roofs or adjacent pavement
         # Note that inflow from any pervious areas is not recommended due to potential clogging
         # Sources:  PA stormwater manual 6.4.1,
         # StormTech (http://www.stormtech.com/download_files/pdf/techsheet1.pdf),

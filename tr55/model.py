@@ -20,7 +20,7 @@ import numpy as np
 
 from tr55.tablelookup import lookup_cn, lookup_bmp_storage, \
     lookup_ki, is_bmp, is_built_type, make_precolumbian, \
-    get_pollutants, get_bmps, lookup_pitt_runoff
+    get_pollutants, get_bmps, lookup_pitt_runoff, lookup_bmp_drainage_ratio
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
 from tr55.operations import dict_plus
 
@@ -83,7 +83,9 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
 
     `precip` is the amount of precipitation in inches.
 
-    `evaptrans` is evapotranspiration.
+    `evaptrans` is evapotranspiration in inches per day - this is the
+    ET for the cell after taking the crop/landscape factor into account
+    this is NOT the ETmax.
 
     `cell` is a string which contains a soil type and land use
     separated by a colon.
@@ -91,7 +93,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
     `cell_count` is the number of cells to simulate.
 
     The return value is a dictionary of runoff, evapotranspiration, and
-    infiltration as volumes of water.
+    infiltration as a volume (inches * #cells).
     """
     def clamp(runoff, et, inf, precip):
         """
@@ -142,7 +144,7 @@ def simulate_cell_day(precip, evaptrans, cell, cell_count):
         runoff = runoff_nrcs(precip, evaptrans, soil_type, land_use)
     inf = max(0.0, precip - (evaptrans + runoff))
 
-    (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
+    # (runoff, evaptrans, inf) = clamp(runoff, evaptrans, inf, precip)
     return {
         'runoff-vol': cell_count * runoff,
         'et-vol': cell_count * evaptrans,
@@ -222,8 +224,8 @@ def simulate_water_quality(tree, cell_res, fn,
 
     `pct` is the percentage of calculated water volume to retain.
 
-    `cell_res` is the size of each cell (used for turning inches of
-    water into volumes of water).
+    `cell_res` is the size of each cell/pixel in meters squared
+     (used for turning inches of water into volumes of water).
 
     `fn` is a function that takes a cell type and a number of cells
     and returns a dictionary containing runoff, et, and inf as
@@ -303,25 +305,34 @@ def postpass(tree):
             postpass(subtree)
 
 
-def compute_bmp_effect(census, m2_per_pixel):
+def compute_bmp_effect(census, m2_per_pixel, precip):
     """
-    Compute the overall amount of water retained by BMP's
+    Compute the overall amount of water retained by infiltration/retention
+    type BMP's.
+
+    Result is a percent of runoff remaining after water is trapped in
+    infiltration/retention BMP's
     """
     meters_per_inch = 0.0254
     cubic_meters = census['runoff-vol'] * meters_per_inch * m2_per_pixel
+    #'runoff-vol' in census is in inches*#cells
     bmp_dict = census.get('BMPs', {})
     bmp_keys = set(bmp_dict.keys())
+
 
     reduction = 0.0
     for bmp in set.intersection(set(get_bmps()), bmp_keys):
         bmp_area = bmp_dict[bmp]
-        reduction += lookup_bmp_storage(bmp) * bmp_area
+        storage_space = (lookup_bmp_storage(bmp) * bmp_area)
+        max_reduction = lookup_bmp_drainage_ratio(bmp) * bmp_area * precip * meters_per_inch
+        bmp_reduction = min(max_reduction, storage_space)
+        reduction += bmp_reduction
 
     return 0 if not cubic_meters else \
         max(0.0, cubic_meters - reduction) / cubic_meters
 
 
-def simulate_modifications(census, fn, cell_res, pc=False):
+def simulate_modifications(census, fn, cell_res, precip, pc=False):
     """
     Simulate effects of modifications.
 
@@ -333,7 +344,7 @@ def simulate_modifications(census, fn, cell_res, pc=False):
     """
     mod = create_modified_census(census)
     simulate_water_quality(mod, cell_res, fn, precolumbian=pc)
-    pct = compute_bmp_effect(mod, cell_res)
+    pct = compute_bmp_effect(mod, cell_res, precip)
     simulate_water_quality(mod, cell_res, fn, pct=pct, precolumbian=pc)
     postpass(mod)
 
@@ -380,7 +391,7 @@ def simulate_day(census, precip, cell_res=10, precolumbian=False):
         # Simulate the cell for one day
         return simulate_cell_day(precip, et, cell, cell_count)
 
-    return simulate_modifications(census, fn, cell_res, precolumbian)
+    return simulate_modifications(census, fn, cell_res, precip, precolumbian)
 
 
 def verify_census(census):

@@ -33,9 +33,9 @@ def lookup_bmp_storage(bmp):
         return LAND_USE_VALUES[bmp]['storage']
 
 
-def lookup_bmp_drainage(bmp):
+def lookup_bmp_drainage_ratio(bmp):
     """
-    Lookup the amount of infiltration caused by a particular BMP.
+    Lookup maximum drainage ratio for a bmp.
     """
     if not is_bmp(bmp):
         raise KeyError('%s not a BMP' % bmp)

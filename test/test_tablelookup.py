@@ -9,7 +9,7 @@ Table Lookup test set.
 
 import unittest
 
-from tr55.tablelookup import lookup_bmp_storage, lookup_bmp_drainage, lookup_cn
+from tr55.tablelookup import lookup_bmp_storage, lookup_bmp_drainage_ratio, lookup_cn
 
 
 class TestTablelookups(unittest.TestCase):
@@ -29,10 +29,10 @@ class TestTablelookups(unittest.TestCase):
         """
         Do some spot-checks on the data from Table B.
         """
-        self.assertEqual(lookup_bmp_drainage('green_roof'), 1)
-        self.assertEqual(lookup_bmp_drainage('infiltration_basin'), 8)  # noqa
-        self.assertEqual(lookup_bmp_drainage('porous_paving'), 2)
-        self.assertEqual(lookup_bmp_drainage('rain_garden'), 5)
+        self.assertEqual(lookup_bmp_drainage_ratio('green_roof'), 1)
+        self.assertEqual(lookup_bmp_drainage_ratio('infiltration_basin'), 8)  # noqa
+        self.assertEqual(lookup_bmp_drainage_ratio('porous_paving'), 2)
+        self.assertEqual(lookup_bmp_drainage_ratio('rain_garden'), 5)
 
     def test_lookup_cn(self):
         """
