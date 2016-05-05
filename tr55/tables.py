@@ -90,8 +90,8 @@ LAND_USE_VALUES = {
         # Ki Source: FAO for either Cattail/Bulrush wetland or Reed Swamp wetland during growing season.
 
     # NRCS Curve Numbers for BMP's acting as land cover changes
-    'cluster_housing':      {'ki': 0.42},
-        # Curve Number Source: At this time, code uses curve numbers for developed_low/residential
+    'cluster_housing':      {'ki': 0.42, 'cn': {'a': 62, 'b': 77, 'c': 84, 'd': 88}},
+        # Curve Number Source:  Blend of Pasture - medium and paved parking assuming 26.8% impervious.
         # Ki Source: UNKNOWN
     'no_till':              {'ki': 0.9, 'cn': {'a': 57, 'b': 73, 'c': 82, 'd': 86}},
         # Curve Number Source:  UNKNOWN
@@ -154,6 +154,11 @@ LAND_USE_VALUES = {
     #    NLCD class 23 (Developed, Medium) = "Institutional"
     #    NLCD class 24 (Developed, High) = "Commercial"
 
+    # The runoff coeffients for Cluster Housing were derived by taking the numbers for the residential SLU and
+    # halving the amount of street, driveway, and parking and adding that amount to the amount of small
+    # landscaping.  This simulates LID concentrating housing and decreasing paving, while maintaining the
+    # same residential density (ie, the same amount of roof space).
+
 SSH_RAINFALL_STEPS = [0.01, 0.08, 0.12, 0.2, 0.39, 0.59, 0.79, 0.98, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 3.5, 3.9, 4.9]
 SSH_RUNOFF_RATIOS = {
     'developed_open' :
@@ -186,6 +191,14 @@ SSH_RUNOFF_RATIOS = {
                'b': [0.1966,0.2815,0.4034,0.4895,0.5803,0.6343,0.6647,0.6818,0.7045,0.7274,0.7724,0.7820,0.7925,0.8005,0.8059,0.8104,0.8203],
                'c': [0.1966,0.2815,0.4034,0.4895,0.5807,0.6358,0.6677,0.6865,0.7090,0.7398,0.7724,0.7820,0.7925,0.8005,0.8059,0.8197,0.8390],
                'd': [0.1966,0.2815,0.4034,0.4895,0.5807,0.6358,0.6677,0.6865,0.7090,0.7398,0.7724,0.7820,0.7925,0.8005,0.8059,0.8197,0.8390],
+               }
+         },
+    'cluster_housing' :
+         {'runoff_ratio':
+              {'a': [0.0466,0.0733,0.0956,0.1084,0.1262,0.1387,0.1452,0.1492,0.1538,0.1580,0.1623,0.1641,0.1664,0.1684,0.1701,0.1717,0.1743],
+               'b': [0.0466,0.0733,0.0956,0.1084,0.1395,0.1578,0.1718,0.1758,0.1856,0.1897,0.3146,0.3157,0.3171,0.3183,0.3193,0.3201,0.3218],
+               'c': [0.0466,0.0733,0.0956,0.1084,0.1411,0.1645,0.1851,0.1966,0.2056,0.2449,0.3146,0.3157,0.3171,0.3183,0.3193,0.3619,0.4056],
+               'd': [0.0466,0.0733,0.0956,0.1084,0.1411,0.1645,0.1851,0.1966,0.2056,0.2449,0.3146,0.3157,0.3171,0.3183,0.3193,0.3619,0.4056],
                }
          },
 }

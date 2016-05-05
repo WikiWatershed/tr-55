@@ -34,8 +34,6 @@ def runoff_pitt(precip, evaptrans, soil_type, land_use):
 
     `precip` is the amount of precipitation in inches.
     """
-    if land_use == 'cluster_housing':
-        land_use = 'developed_low'  # Do not have better numbers for this!
 
     runoff_ratios = lookup_pitt_runoff(soil_type, land_use)
 
@@ -63,8 +61,7 @@ def runoff_nrcs(precip, evaptrans, soil_type, land_use):
 
     `precip` is the amount of precipitation in inches.
     """
-    if land_use == 'cluster_housing':
-        land_use = 'developed_low'
+
     curve_number = lookup_cn(soil_type, land_use)
     if nrcs_cutoff(precip, curve_number):
         return 0.0
