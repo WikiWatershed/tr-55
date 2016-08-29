@@ -1,3 +1,14 @@
+## 1.2.0
+
+- Added lots of information into tables.py about all of the data sources for the values
+- Improved curve numbers for TR55 (NRCS) for developed lands
+- Rewrote Pitt's Small Storm Hydrology model to correctly be soil-type dependent and to use a look-up table for values instead of a polynomial derived from that look-up table
+- For the new implementation of the Pitt/SSH model, numpy is now a requirement
+- Improved evapotranspiration crop coefficients for all except developed lands. Developed Ki's still need to be sourced and fixed.
+- Added a limit to the amount of runoff that can be converted to infiltration for infiltration-type BMP's. This is based on the amount of rainfall that lands on the BMP and an artificial ratio of contributing area to BMP area. Note that this ratio is based only on recommendations by the PA DEP and has nothing to do with the actual contributing areas for the BMPs as drawn.
+- Recreated cluster housing as an independent land use rather than using numbers for developed_low.
+- Rewrote all test modules to reflect all of the above changes.
+
 ## 1.1.3
 
 - Fix bug which elevated the Green Roof BMP type storage capacity.  Aligned with provided documentation.
