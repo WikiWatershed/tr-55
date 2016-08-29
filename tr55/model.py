@@ -37,7 +37,7 @@ def runoff_pitt(precip, evaptrans, soil_type, land_use):
 
     runoff_ratios = lookup_pitt_runoff(soil_type, land_use)
 
-    runoff_ratio = np.interp(precip,runoff_ratios['precip'],runoff_ratios['Rv'])
+    runoff_ratio = np.interp(precip, runoff_ratios['precip'], runoff_ratios['Rv'])
     runoff = precip*runoff_ratio
 
     return min(runoff, precip - evaptrans)
@@ -312,7 +312,7 @@ def compute_bmp_effect(census, m2_per_pixel, precip):
     """
     meters_per_inch = 0.0254
     cubic_meters = census['runoff-vol'] * meters_per_inch * m2_per_pixel
-    #'runoff-vol' in census is in inches*#cells
+    # 'runoff-vol' in census is in inches*#cells
     bmp_dict = census.get('BMPs', {})
     bmp_keys = set(bmp_dict.keys())
 

@@ -28,9 +28,9 @@ CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.
 CN95 = [0.560, 0.740, 0.920, 1.110, 1.290, 1.480, 1.960, 2.450, 2.940, 3.430, 3.920, 4.420, 5.410, 6.410, 7.400, 8.400, 9.400, 10.39, 11.39, 12.39, 13.39, 14.39]  # noqa
 # These are runoffs calculated by Sara Damiano.
 PS_PITT = [0.01, 0.08, 0.12, 0.2, 0.39, 0.59, 0.79, 0.98, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 3.5, 3.9, 4.9]
-PITT_RES_A = [0.0008,0.0089,0.0172,0.0320,0.0718,0.1211,0.1689,0.2143,0.2699,0.3685,0.4717,0.5718,0.6753,0.7806,0.8626,0.9692,1.2363]
-PITT_COMM_C = [0.0020,0.0225,0.0484,0.0979,0.2265,0.3751,0.5275,0.6728,0.8508,1.1836,1.5448,1.8767,2.2189,2.5615,2.8206,3.1969,4.1109]
-PITT_OPEN_B = [0.0004,0.0038,0.0072,0.0129,0.0459,0.0862,0.1293,0.1663,0.2171,0.2998,0.6254,0.7554,0.8862,1.0182,1.1196,1.2502,1.5824]
+PITT_RES_A = [0.0008, 0.0089, 0.0172, 0.0320, 0.0718, 0.1211, 0.1689, 0.2143, 0.2699, 0.3685, 0.4717, 0.5718, 0.6753, 0.7806, 0.8626, 0.9692, 1.2363]
+PITT_COMM_C = [0.0020, 0.0225, 0.0484, 0.0979, 0.2265, 0.3751, 0.5275, 0.6728, 0.8508, 1.1836, 1.5448, 1.8767,2.2189,2.5615,2.8206,3.1969,4.1109]
+PITT_OPEN_B = [0.0004, 0.0038, 0.0072, 0.0129, 0.0459, 0.0862, 0.1293, 0.1663, 0.2171, 0.2998, 0.6254, 0.7554, 0.8862, 1.0182, 1.1196, 1.2502, 1.5824]
 
 # A census containing several land covers and several land cover modifications.
 # This includes BMP's that act as land cover changes.
@@ -90,7 +90,7 @@ DAY_OUTPUT_1 = {
                 "bod": 0.0,
                 "cell_count": 72,
                 "et": 0.207,
-                "inf": 1.7930000000000001,  # should be 0.03726, but float point rounding issues
+                "inf": 1.7930000000000001,  # should be 1.793, but float point rounding issues
                 "runoff": 0.0,
                 "tn": 0.0,
                 "tp": 0.0,
@@ -472,11 +472,6 @@ class TestModel(unittest.TestCase):
         runoffs = [round(runoff_nrcs(precip, 0.0, 'd', 'pasture'), 2)
                    for precip in PS]
         self.assertEqual(runoffs, CN80)
-
-        # This pair has CN=90 - SRGD Updated curve numbers on 2/25/16 - this is no longer true
-        # runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_med'), 2)
-        #            for precip in PS]
-        # self.assertEqual(runoffs, CN90)
 
         # This pair has CN=95
         runoffs = [round(runoff_nrcs(precip, 0.0, 'c', 'developed_high'), 2)
@@ -883,7 +878,6 @@ class TestModel(unittest.TestCase):
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        # self.assertAlmostEqual(total, precip)
         self.assertEqual(total, precip)
 
     def test_water_balance_1(self):
@@ -897,7 +891,6 @@ class TestModel(unittest.TestCase):
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        # self.assertAlmostEqual(total, precip)
         self.assertEqual(total, precip)
 
     def test_water_balance_2(self):
@@ -911,7 +904,6 @@ class TestModel(unittest.TestCase):
         et = result['modified']['et']
         inf = result['modified']['inf']
         total = runoff + et + inf
-        # self.assertAlmostEqual(total, precip)
         self.assertEqual(total, precip)
 
     def test_compute_bmp_effect(self):
