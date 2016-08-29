@@ -8,7 +8,7 @@ Various routines to do table lookups.
 """
 
 from tr55.tables import BMPS, BUILT_TYPES, LAND_USE_VALUES, \
-    NON_NATURAL, POLLUTANTS, POLLUTION_LOADS
+    SSH_RAINFALL_STEPS, SSH_RUNOFF_RATIOS, NON_NATURAL, POLLUTANTS, POLLUTION_LOADS
 
 
 def lookup_ki(land_use):
@@ -33,6 +33,16 @@ def lookup_bmp_storage(bmp):
         return LAND_USE_VALUES[bmp]['storage']
 
 
+def lookup_bmp_drainage_ratio(bmp):
+    """
+    Lookup maximum drainage ratio for a bmp.
+    """
+    if not is_bmp(bmp):
+        raise KeyError('%s not a BMP' % bmp)
+    else:
+        return LAND_USE_VALUES[bmp]['max_drainage_ratio']
+
+
 def lookup_cn(soil_type, land_use):
     """
     Lookup the runoff curve number for a particular soil type and land use.
@@ -45,6 +55,21 @@ def lookup_cn(soil_type, land_use):
         raise KeyError('Unknown soil type: %s' % soil_type)
     else:
         return LAND_USE_VALUES[land_use]['cn'][soil_type]
+
+
+def lookup_pitt_runoff(soil_type, land_use):
+    """
+    Returns a dictionary of two lists, one of the rainfall steps for the runoff model
+    and the other of the runoff values for each rainfall step for the given landuse and soil type.
+    """
+    if land_use not in SSH_RUNOFF_RATIOS:
+        raise KeyError('Land use %s not a built-type.' % land_use)
+    elif 'runoff_ratio' not in SSH_RUNOFF_RATIOS[land_use]:
+        raise KeyError('No runoff ratios for land use %s' % land_use)
+    elif soil_type not in SSH_RUNOFF_RATIOS[land_use]['runoff_ratio']:
+        raise KeyError('Unknown soil type: %s' % soil_type)
+    else:
+        return {'precip': SSH_RAINFALL_STEPS, 'Rv': SSH_RUNOFF_RATIOS[land_use]['runoff_ratio'][soil_type]}
 
 
 def is_bmp(land_use):
@@ -105,4 +130,4 @@ def get_pollutants():
 
 
 def get_bmps():
-    return ['green_roof', 'infiltration_trench', 'porous_paving', 'rain_garden']
+    return list(BMPS)

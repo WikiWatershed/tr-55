@@ -11,8 +11,8 @@ def get_volume_of_runoff(runoff, cell_count, cell_resolution):
     Calculate the volume of runoff over the entire modeled area
 
     Args:
-        runoff (number): Q from TR55, averaged amount of runoff over a number
-        of cells.
+        runoff (number): Q from TR55, averaged amount of runoff in inches
+        per cell over a number of cells.
 
         cell_count (integer): The number of cells included in the area
 

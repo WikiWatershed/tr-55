@@ -37,8 +37,14 @@ class TestWaterQuality(unittest.TestCase):
         self.assertEquals(expected, load)
 
     def test_load_bad_nlcd(self):
+        """
+        Test that a bad land use value generates an error.
+        """
         self.assertRaises(Exception, get_pollutant_load, 'asdf', 'tn', 1000)
 
     def test_load_bad_pollutant(self):
+        """
+        Test that a pollutant name generates an error.
+        """
         self.assertRaises(Exception, get_pollutant_load, 'developed_high',
                           'asdf', 1000)
