@@ -224,8 +224,16 @@ $ git flow release publish 0.1.0
 $ git flow release finish 0.1.0
 ```
 
-To kick off the deployment, you'll still need to push the local tags remotely
-`git push --tags`
+After you've completed the `git flow` steps, you'll need to push the changes from your local `master` and `develop` branches back to the main repository.
+
+```bash
+$ git checkout develop
+$ git push origin develop
+$ git checkout master
+$ git push origin master
+# Trigger PyPi deployment
+$ git push --tags
+```
 
 ## License
 
