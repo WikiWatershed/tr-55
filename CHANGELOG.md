@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Restore perennial ice land use option
+
 ## 1.2.0
 
 - Added lots of information into tables.py about all of the data sources for the values
