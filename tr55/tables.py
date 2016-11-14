@@ -25,6 +25,7 @@ LAND_USE_VALUES = {
     'open_water':           {'nlcd': 11, 'ki': 0.6525, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
         # Ki Source: FAO for Open Water, > 5 m depth, clear of turbidity, temperate climate.
+    'perennial_ice':        {'nlcd': 12, 'ki': 0.0, 'cn': {'a': 100, 'b': 100, 'c': 100, 'd': 100}},
         # Curve Number Source:  Assumes 100% runoff
         # Ki Source: Assumes no ET.
     'developed_open':       {'nlcd': 21, 'ki': 0.95, 'cn': {'a': 59, 'b': 75, 'c': 83, 'd': 87}},
