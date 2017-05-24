@@ -247,7 +247,7 @@ POLLUTION_LOADS = {
     32: {'tn': 0.10, 'tp': 0.01,  'bod': 0.0,   'tss': 1},      # Quarries/Strip Mines/Gravel Pits
     41: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Deciduous Forest
     42: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Evergreen Forest
-    43: {'tn': 1.09, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Mixed Forest
+    43: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Mixed Forest
     51: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Dwarf Scrub (Alaska Only, N/A)
     52: {'tn': 0.19, 'tp': 0.15,  'bod': 0.5,   'tss': 39},     # Shrub/Scrub
     71: {'tn': 2.30, 'tp': 0.22,  'bod': 0.5,   'tss': 48.8},   # Grassland/Herbaceous
