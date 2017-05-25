@@ -223,34 +223,47 @@ POLLUTANTS = set(['tn', 'tp', 'bod', 'tss'])
 # Event mean concentrations (mg/l) by pollutant and NLCD type
 # tn: Total Nitrogen, tp: Total Phosphorus,
 # bod: Biochemical Oxygen Demand, tss: Total Suspended Solids
+# Data from:
+# (1)	USEPA, 2011. User’s Guide: Spreadsheet Tool for Estimation of Pollutant Load (STEPL), Version 4.1, 57 pp.
+# (2)	Pennsylvania Department of Environmental Protection, 2006.
+#       Pennsylvania Stormwater Best Management Practices Manual. 685 pp.
+# (3)	USEPA, 2005. The National Stormwater Quality Database, Version 1.2: A Compilation and Analysis of NPDES
+#       Stormwater Monitoring Information. USEPA, Office of Water, Washington, DC, 447 pp.
+# (4)	New Hampshire Dept. of Environmental Services, 2010. Guidance for Estimating Pre- and Post-Development
+#       Stormwater Loads. (EMCs available at
+#       http://www.des.nh.gov/organization/divisions/water/stormwater/documents/wd-08-20a_apxd.pdf)
+# (5)	Washington State Dept. of Ecology, 2007. Efficiency of Urban Stormwater Best Management Practices:
+#       A Literature Review.  Publication No. 07-03-009, 12 pp.
+# (6)	Keiser & Associates, 2003. Empirical Sediment and Phosphorus Nonpoint Source Model for the St. Joseph River
+#       Watershed. 48 pp.
 POLLUTION_LOADS = {
-    11: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    12: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    21: {'tn': 2.8,  'tp': 0.62,  'bod': 61,    'tss': 155.6},
-    22: {'tn': 4.15, 'tp': 0.8,   'bod': 309,   'tss': 147.1},
-    23: {'tn': 6.85, 'tp': 1.15,  'bod': 1180,  'tss': 141.0},
-    24: {'tn': 9.1,  'tp': 1.44,  'bod': 1240,  'tss': 252.9},
-    31: {'tn': 0.1,  'tp': 0.01,  'bod': 1320,  'tss': 10},
-    32: {'tn': 0.1,  'tp': 0.01,  'bod': 30,    'tss': 10},
-    41: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 39},
-    42: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 39},
-    43: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 39},
-    51: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    52: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 39},
-    71: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 47},
-    72: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    73: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    74: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},
-    81: {'tn': 23.0, 'tp': 3.0,   'bod': 1000,  'tss': 500},
-    82: {'tn': 23.0, 'tp': 3.0,   'bod': 1000,  'tss': 1000},
-    90: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    91: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    92: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    93: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    94: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    95: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    96: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    97: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    98: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0},
-    99: {'tn': 0.19, 'tp': 0.006, 'bod': 61,    'tss': 0}
+    11: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Open water
+    12: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Perennial Ice/Snow
+    21: {'tn': 2.26, 'tp': 0.32,  'bod': 5.7,   'tss': 99.8},   # Developed, Open Space
+    22: {'tn': 2.58, 'tp': 0.38,  'bod': 6.0,   'tss': 126},    # Developed, Low Intensity
+    23: {'tn': 3.62, 'tp': 0.38,  'bod': 9.0,   'tss': 134.7},  # Developed, Medium Intensity
+    24: {'tn': 3.54, 'tp': 0.35,  'bod': 9.9,   'tss': 163.7},  # Developed High Intensity
+    31: {'tn': 0.10, 'tp': 0.01,  'bod': 0.0,   'tss': 1},      # Barren Land (Rock/Sand/Clay)
+    32: {'tn': 0.10, 'tp': 0.01,  'bod': 0.0,   'tss': 1},      # Quarries/Strip Mines/Gravel Pits
+    41: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Deciduous Forest
+    42: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Evergreen Forest
+    43: {'tn': 1.05, 'tp': 0.13,  'bod': 0.5,   'tss': 45},     # Mixed Forest
+    51: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Dwarf Scrub (Alaska Only, N/A)
+    52: {'tn': 0.19, 'tp': 0.15,  'bod': 0.5,   'tss': 39},     # Shrub/Scrub
+    71: {'tn': 2.30, 'tp': 0.22,  'bod': 0.5,   'tss': 48.8},   # Grassland/Herbaceous
+    72: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Sedge/Herbaceous (Alaska Only, N/A)
+    73: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Lichens (Alaska Only, N/A)
+    74: {'tn': 0,    'tp': 0,     'bod': 0,     'tss': 0},      # Moss (Alaska Only, N/A)
+    81: {'tn': 5.71, 'tp': 0.55,  'bod': 13,    'tss': 145},    # Pasture/Hay
+    82: {'tn': 7.70, 'tp': 1.07,  'bod': 12.45, 'tss': 216},    # Cultivated Crops
+    90: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},      # Woody Wetlands
+    91: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    92: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    93: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    94: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    95: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},      # Emergent Herbaceous Wetlands
+    96: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    97: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    98: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0},
+    99: {'tn': 0.19, 'tp': 0.006, 'bod': 0.5,   'tss': 0}
 }
