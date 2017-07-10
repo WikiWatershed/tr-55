@@ -1,3 +1,8 @@
+## 1.3.0
+
+- Improved Water Quality event mean concentrations per updated sources from Barry Evans
+
+
 ## 1.2.1
 
 - Restore perennial ice land use option
