@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
 
 """
 Model test set
@@ -23,7 +20,7 @@ from tr55.tablelookup import lookup_ki
 PS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]  # noqa
 CN55 = [0.000, 0.000, 0.000, 0.000, 0.000, 0.020, 0.080, 0.190, 0.350, 0.530, 0.740, 0.980, 1.520, 2.120, 2.780, 3.490, 4.230, 5.000, 5.790, 6.610, 7.440, 8.290]  # noqa
 CN70 = [0.000, 0.030, 0.060, 0.110, 0.170, 0.240, 0.460, 0.710, 1.010, 1.330, 1.670, 2.040, 2.810, 3.620, 4.460, 5.330, 6.220, 7.130, 8.050, 8.980, 9.910, 10.85]  # noqa
-CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.630, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
+CN80 = [0.080, 0.150, 0.240, 0.340, 0.440, 0.560, 0.890, 1.250, 1.640, 2.040, 2.460, 2.890, 3.780, 4.690, 5.620, 6.570, 7.520, 8.480, 9.450, 10.42, 11.39, 12.37]  # noqa
 CN90 = [0.320, 0.460, 0.610, 0.760, 0.930, 1.090, 1.530, 1.980, 2.450, 2.920, 3.400, 3.880, 4.850, 5.820, 6.810, 7.790, 8.780, 9.770, 10.76, 11.76, 12.75, 13.74]  # noqa
 CN95 = [0.560, 0.740, 0.920, 1.110, 1.290, 1.480, 1.960, 2.450, 2.940, 3.430, 3.920, 4.420, 5.410, 6.410, 7.400, 8.400, 9.400, 10.39, 11.39, 12.39, 13.39, 14.39]  # noqa
 # These are runoffs calculated by Sara Damiano.
@@ -453,6 +450,23 @@ class TestModel(unittest.TestCase):
     """
     Model test set.
     """
+    # Test for Almost Equal, for unstable floating point results
+    # via https://stackoverflow.com/a/53081544/6995854
+    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
+        # check if both inputs are dicts
+        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
+        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
+
+        # check if both inputs have the same keys
+        self.assertEqual(d1.keys(), d2.keys())
+
+        # check each key
+        for key, value in d1.items():
+            if isinstance(value, dict):
+                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg)
+            else:
+                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
+
     def test_nrcs(self):
         """
         Test the implementation of the runoff equation.
@@ -800,7 +814,7 @@ class TestModel(unittest.TestCase):
         precip = 2
         actual = simulate_day(CENSUS_1, precip)
         expected = DAY_OUTPUT_1
-        self.assertEqual(actual, expected)
+        self.assertDictAlmostEqual(actual, expected)
 
     def test_day_2(self):
         """
@@ -810,7 +824,7 @@ class TestModel(unittest.TestCase):
         precip = 2
         actual = simulate_day(CENSUS_2, precip)
         expected = DAY_OUTPUT_2
-        self.assertEqual(actual, expected)
+        self.assertDictAlmostEqual(actual, expected)
 
     def test_day_with_invalid_census(self):
         """

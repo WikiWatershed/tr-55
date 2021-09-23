@@ -131,9 +131,6 @@ The following land use values are implemented and correspond to the keys listed:
 The output of the following program:
 ```Python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
 
 import pprint
 
@@ -206,33 +203,72 @@ u'unmodified': {u'bod': 43.11309178874012,
 The output shown is a tree-like dictionary, akin to the one in the discussion of the first parameter of the `simulate_water_quality` function, except with additional keys and values attached to each  node in the tree.  The additional keys, `runoff`, `tss`, and so on, have associated values which are the water volumes and pollutant loads that have been calculated.  The volumes and loads at the leaves of the tree are those returned by the `fn` function (the second parameter of the `simulate_modifications` function), while those of internal nodes are the sums of the amounts found in their child nodes.
 
 
+## Development
+
+Development uses [pipenv](https://pipenv.pypa.io/en/latest/). After cloning this repository, setup your local development environment with:
+
+```console
+$ pipenv install --dev
+```
+
 ## Testing
 
-Run `python setup.py test` from within the project directory.
-
+```console
+$ pipenv run nosetests --verbosity=2
+```
 
 ## Deployments
 
-Deployments to PyPi are handled through [Travis-CI](https://travis-ci.org/WikiWatershed/tr-55). The following git flow commands approximate a release using Travis:
+Create a new release using git flow:
 
-``` bash
-$ git flow release start 0.1.0
+```console
+$ git flow release start 2.0.0
 $ vim CHANGELOG.md
 $ vim setup.py
-$ git commit -m "0.1.0"
-$ git flow release publish 0.1.0
-$ git flow release finish 0.1.0
+$ git add CHANGELOG.md setup.py
+$ git commit -m "2.0.0"
+$ git flow release publish 2.0.0
 ```
 
-After you've completed the `git flow` steps, you'll need to push the changes from your local `master` and `develop` branches back to the main repository.
+Then create a wheel to publish to PyPI using [build](https://github.com/pypa/build):
 
-```bash
-$ git checkout develop
-$ git push origin develop
-$ git checkout master
-$ git push origin master
-# Trigger PyPi deployment
-$ git push --tags
+```console
+$ pipenv run python -m build
+```
+
+This should create two files under `dist/`:
+
+```console
+$ ls -1 dist/
+tr55-2.0.0.tar.gz
+tr55-2.0.0-py2.py3-none-any.whl
+```
+
+Then publish the wheel to PyPI using [twine](https://github.com/pypa/twine/) and credentials from LastPass:
+
+```console
+$ python -m twine check dist/*
+Checking dist/tr55-2.0.0-py2.py3-none-any.whl: PASSED
+Checking dist/tr55-2.0.0.tar.gz: PASSED
+```
+```console
+$ python -m twine upload dist/*
+Uploading distributions to https://upload.pypi.org/legacy/
+Enter your username: azavea
+Enter your password:
+Uploading tr55-2.0.0-py2.py3-none-any.whl
+100%|
+Uploading tr55-2.0.0.tar.gz
+100%|
+
+View at:
+https://pypi.org/project/tr-55/2.0.0/
+```
+
+Finally, finish the release:
+
+```console
+$ git flow release finish -p 2.0.0
 ```
 
 ## License

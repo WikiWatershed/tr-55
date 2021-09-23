@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
 
 import unittest
 from tr55.water_quality import get_volume_of_runoff, get_pollutant_load
