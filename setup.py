@@ -16,6 +16,7 @@ setup(
     version='1.3.0',
     description='A Python implementation of TR-55.',
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     url='https://github.com/azavea/tr-55',
     author='Azavea Inc.',
     license='Apache License 2.0',
@@ -30,7 +31,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     keywords='tr-55 watershed hydrology',
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['test']),
     install_requires=[
         'numpy >= 1.20.3',
     ],
