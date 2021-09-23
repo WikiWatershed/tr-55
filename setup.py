@@ -9,7 +9,7 @@ with open(path.join(path.abspath(path.dirname(__file__)),
           'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-tests_require = ['nose >= 1.3.4']
+tests_require = ['nose >= 1.3.7']
 
 setup(
     name='tr55',
@@ -31,7 +31,9 @@ setup(
     ],
     keywords='tr-55 watershed hydrology',
     packages=find_packages(exclude=['tests']),
-    install_requires=[],
+    install_requires=[
+        'numpy >= 1.20.3',
+    ],
     extras_require={
         'dev': [],
         'test': tests_require,
