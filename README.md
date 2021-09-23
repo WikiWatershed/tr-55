@@ -206,10 +206,19 @@ u'unmodified': {u'bod': 43.11309178874012,
 The output shown is a tree-like dictionary, akin to the one in the discussion of the first parameter of the `simulate_water_quality` function, except with additional keys and values attached to each  node in the tree.  The additional keys, `runoff`, `tss`, and so on, have associated values which are the water volumes and pollutant loads that have been calculated.  The volumes and loads at the leaves of the tree are those returned by the `fn` function (the second parameter of the `simulate_modifications` function), while those of internal nodes are the sums of the amounts found in their child nodes.
 
 
+## Development
+
+Development uses [pipenv](https://pipenv.pypa.io/en/latest/). After cloning this repository, setup your local development environment with:
+
+```console
+$ pipenv install --dev
+```
+
 ## Testing
 
-Run `python setup.py test` from within the project directory.
-
+```console
+$ pipenv run nosetests --verbosity=2
+```
 
 ## Deployments
 
