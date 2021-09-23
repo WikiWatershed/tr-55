@@ -20,18 +20,16 @@ setup(
     url='https://github.com/azavea/tr-55',
     author='Azavea Inc.',
     license='Apache License 2.0',
-    # TODO Determine Python version support
-    # See also: https://github.com/azavea/tr-55/issues/16
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
     ],
     keywords='tr-55 watershed hydrology',
     packages=find_packages(exclude=['test']),
+    python_requires=">=3.7",
     install_requires=[
         'numpy >= 1.20.3',
     ],

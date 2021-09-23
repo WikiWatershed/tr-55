@@ -131,9 +131,6 @@ The following land use values are implemented and correspond to the keys listed:
 The output of the following program:
 ```Python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
 
 import pprint
 
