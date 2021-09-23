@@ -450,6 +450,23 @@ class TestModel(unittest.TestCase):
     """
     Model test set.
     """
+    # Test for Almost Equal, for unstable floating point results
+    # via https://stackoverflow.com/a/53081544/6995854
+    def assertDictAlmostEqual(self, d1, d2, msg=None, places=7):
+        # check if both inputs are dicts
+        self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
+        self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
+
+        # check if both inputs have the same keys
+        self.assertEqual(d1.keys(), d2.keys())
+
+        # check each key
+        for key, value in d1.items():
+            if isinstance(value, dict):
+                self.assertDictAlmostEqual(d1[key], d2[key], msg=msg)
+            else:
+                self.assertAlmostEqual(d1[key], d2[key], places=places, msg=msg)
+
     def test_nrcs(self):
         """
         Test the implementation of the runoff equation.
@@ -797,7 +814,7 @@ class TestModel(unittest.TestCase):
         precip = 2
         actual = simulate_day(CENSUS_1, precip)
         expected = DAY_OUTPUT_1
-        self.assertEqual(actual, expected)
+        self.assertDictAlmostEqual(actual, expected)
 
     def test_day_2(self):
         """
@@ -807,7 +824,7 @@ class TestModel(unittest.TestCase):
         precip = 2
         actual = simulate_day(CENSUS_2, precip)
         expected = DAY_OUTPUT_2
-        self.assertEqual(actual, expected)
+        self.assertDictAlmostEqual(actual, expected)
 
     def test_day_with_invalid_census(self):
         """
